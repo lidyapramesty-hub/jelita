@@ -35,7 +35,7 @@ export default function KecamatanBarChart({ byKecamatan }: KecamatanBarChartProp
                     withTooltip
                     withBarValueLabel
                     barProps={{ radius: 4 }}
-                    gridAxis="y"
+                    gridAxis="none"
                 />
             )}
         </Paper>

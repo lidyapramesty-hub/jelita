@@ -33,26 +33,6 @@ export default function KelasUsahaChart({ stats }: KelasUsahaChartProps) {
                 <Text c="dimmed" size="sm" ta="center" py="xl">Belum ada data</Text>
             ) : (
                 <>
-                    <BarChart
-                        h={60}
-                        data={data}
-                        dataKey="name"
-                        type="stacked"
-                        orientation="horizontal"
-                        series={[
-                            { name: 'Mikro', color: '#003087' },
-                            { name: 'Kecil', color: '#FFB81C' },
-                            { name: 'Menengah', color: '#C8102E' },
-                            { name: 'Besar', color: '#059669' },
-                        ]}
-                        withLegend
-                        legendProps={{ verticalAlign: 'bottom' }}
-                        withTooltip
-                        withXAxis={false}
-                        withYAxis={false}
-                        gridAxis="none"
-                        barProps={{ radius: 4 }}
-                    />
                     <div className="mt-4 space-y-2">
                         {[
                             { label: 'Mikro', value: stats.mikro, color: '#003087' },

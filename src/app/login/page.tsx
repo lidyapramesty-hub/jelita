@@ -64,12 +64,11 @@ export default function LoginPage() {
         </div>
 
         <div className="relative z-10">
-          <h1 className="text-4xl font-bold text-white leading-tight mb-4" style={{ fontFamily: 'DM Sans' }}>
-            Dashboard<br />
-            <span className="text-[#FFB81C]">Ekonomi Digital</span><br />
-            Kabupaten Tabanan
+          <h1 className="text-5xl font-bold text-white leading-tight mb-4" style={{ fontFamily: 'DM Sans' }}>
+            JELITA<br />
+            <span className="text-2xl text-[#FFB81C] block mt-2">Jendela Ekonomi Digital<br />Kabupaten Tabanan</span>
           </h1>
-          <p className="text-white/60 text-base leading-relaxed max-w-sm">
+          <p className="text-white/80 text-base leading-relaxed max-w-sm">
             Sistem pendataan dan monitoring usaha ekonomi digital berbasis teknologi informasi untuk mendukung kebijakan pembangunan ekonomi daerah.
           </p>
 

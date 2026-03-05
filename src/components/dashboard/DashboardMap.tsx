@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Paper, Text, Group, Select, Badge, LoadingOverlay } from '@mantine/core'
 import { IconMap } from '@tabler/icons-react'
+import 'leaflet/dist/leaflet.css'
 import { Usaha } from '@/types/usaha'
 
 interface DashboardMapProps {
@@ -37,10 +38,8 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
 
             try {
                 const L = (await import('leaflet')).default
-                // @ts-ignore - CSS import for leaflet
-                await import('leaflet/dist/leaflet.css')
 
-                const map = L.map(mapRef.current!, { zoomControl: true }).setView([-8.5, 115.13], 11)
+                const map = L.map(mapRef.current!, { zoomControl: true }).setView([-8.4418, 115.0294], 12)
 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors',
@@ -79,7 +78,7 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
             markersRef.current = []
 
             const kelasColors: Record<string, string> = {
-                mikro: '#003087',
+                mikro: '#e65100',
                 kecil: '#FFB81C',
                 menengah: '#C8102E',
                 besar: '#059669',
@@ -88,7 +87,7 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
             filtered.forEach((u) => {
                 if (!u.latitude || !u.longitude) return
 
-                const color = kelasColors[u.kelas_usaha] || '#003087'
+                const color = kelasColors[u.kelas_usaha] || '#e65100'
 
                 const icon = L.divIcon({
                     className: '',
@@ -124,7 +123,7 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
         <Paper radius="lg" p="lg" shadow="xs" withBorder>
             <Group gap="xs" mb="md" justify="space-between" wrap="wrap">
                 <Group gap="xs">
-                    <IconMap size={17} className="text-[#003087]" />
+                    <IconMap size={17} className="text-[#e65100]" />
                     <Text fw={700} size="sm">Peta Lokasi Usaha</Text>
                     <Badge size="sm" variant="light" color="blue">{filtered.length} titik</Badge>
                 </Group>
@@ -162,7 +161,7 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
 
             <Group mt="xs" gap="md">
                 {[
-                    { label: 'Mikro', color: '#003087' },
+                    { label: 'Mikro', color: '#e65100' },
                     { label: 'Kecil', color: '#FFB81C' },
                     { label: 'Menengah', color: '#C8102E' },
                     { label: 'Besar', color: '#059669' },
