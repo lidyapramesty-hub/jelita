@@ -43,7 +43,7 @@ export default function DashboardPage() {
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div>
               <Title order={3} style={{ fontFamily: 'DM Sans' }}>Dashboard</Title>
-              <Text size="sm" c="dimmed" mt={2}>Ringkasan data ekonomi digital Kabupaten Tabanan</Text>
+              <Text size="sm" c="dimmed" mt={2}>Statistik Ekonomi Digital Kabupaten Tabanan</Text>
             </div>
             <Button
               variant="default"

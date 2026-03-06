@@ -26,6 +26,14 @@ export default function StatCards({ stats }: StatCardsProps) {
         return top ? { name: top[0], count: top[1], pct: ((top[1] / (stats.total || 1)) * 100).toFixed(1) } : null
     })()
 
+    const dominantCakupan = (() => {
+        const counts = { lokal: stats.lokal, regional: stats.regional, nasional: stats.nasional, internasional: stats.internasional }
+        const max = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]
+        return max ? { name: max[0], count: max[1], pct: ((max[1] / (stats.total || 1)) * 100).toFixed(1) } : null
+    })()
+
+    const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
     const cards = [
         {
             label: 'Total Usaha',
@@ -36,28 +44,28 @@ export default function StatCards({ stats }: StatCardsProps) {
             sub: `+${stats.recentCount} bulan ini`,
         },
         {
-            label: 'Kelas Dominan',
+            label: dominantKelas ? `Usaha (${capitalize(dominantKelas.name)})` : 'Kelas Dominan',
             value: dominantKelas ? `${dominantKelas.count}` : '0',
             icon: <IconUsers size={22} />,
             bg: '#d97706',
             iconBg: 'rgba(217,119,6,0.1)',
-            sub: dominantKelas ? `${dominantKelas.name.charAt(0).toUpperCase() + dominantKelas.name.slice(1)} (${dominantKelas.pct}%)` : '-',
+            sub: dominantKelas ? `(${dominantKelas.pct}%) dari total usaha` : '-',
         },
         {
-            label: 'Pasar Nas/Intl',
-            value: (stats.nasional + stats.internasional).toString(),
+            label: dominantCakupan ? `Usaha (${capitalize(dominantCakupan.name)})` : 'Cakupan Pasar',
+            value: dominantCakupan ? `${dominantCakupan.count}` : '0',
             icon: <IconTrendingUp size={22} />,
             bg: '#059669',
             iconBg: 'rgba(5,150,105,0.1)',
-            sub: `${stats.nasional} nasional, ${stats.internasional} internasional`,
+            sub: dominantCakupan ? `(${dominantCakupan.pct}%) dari total usaha` : '-',
         },
         {
-            label: 'KBLI Dominan',
+            label: dominantKBLI ? `Usaha (${dominantKBLI.name.length > 25 ? dominantKBLI.name.slice(0, 25) + '...' : dominantKBLI.name})` : 'KBLI Dominan',
             value: dominantKBLI ? `${dominantKBLI.count}` : '0',
             icon: <IconWorld size={22} />,
             bg: '#7c3aed',
             iconBg: 'rgba(124,58,237,0.1)',
-            sub: dominantKBLI ? `${dominantKBLI.name.length > 30 ? dominantKBLI.name.slice(0, 30) + '...' : dominantKBLI.name} (${dominantKBLI.pct}%)` : '-',
+            sub: dominantKBLI ? `(${dominantKBLI.pct}%) dari total usaha` : '-',
         },
     ]
 

@@ -34,31 +34,56 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
         let isMounted = true
 
         const initMap = async () => {
-            if (!mapRef.current || mapInstanceRef.current) return
+            if (!mapRef.current) return
 
             try {
                 const L = (await import('leaflet')).default
 
-                const map = L.map(mapRef.current!, { zoomControl: true }).setView([-8.4418, 115.0294], 12)
+                // Clean up any leftover Leaflet container state (React Strict Mode fix)
+                const container = mapRef.current as HTMLDivElement & { _leaflet_id?: number }
+                if (container._leaflet_id) {
+                    container.innerHTML = ''
+                    delete container._leaflet_id
+                }
+
+                // Remove previous map instance if it exists
+                if (mapInstanceRef.current) {
+                    try { (mapInstanceRef.current as any).remove() } catch (_) { /* ignore */ }
+                    mapInstanceRef.current = null
+                }
+
+                const map = L.map(container, { zoomControl: true }).setView([-8.4418, 115.0294], 12)
 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
+                    attribution: '&copy; OpenStreetMap contributors',
                     maxZoom: 19,
                 }).addTo(map)
 
                 mapInstanceRef.current = map
+
+                // Force proper sizing after initialization
+                setTimeout(() => {
+                    if (isMounted && map) {
+                        map.invalidateSize()
+                    }
+                }, 200)
+
                 if (isMounted) setMapReady(true)
             } catch (err) {
                 console.error('Map init error:', err)
+                // Still set mapReady to remove loading overlay even on error
+                if (isMounted) setMapReady(true)
             }
         }
 
-        initMap()
+        // Small delay to ensure DOM is fully ready
+        const timer = setTimeout(initMap, 50)
 
         return () => {
             isMounted = false
+            clearTimeout(timer)
             if (mapInstanceRef.current) {
-                (mapInstanceRef.current as L.Map).remove()
+                try { (mapInstanceRef.current as any).remove() } catch (_) { /* ignore */ }
                 mapInstanceRef.current = null
             }
         }
@@ -71,10 +96,12 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
 
         const updateMarkers = async () => {
             const L = (await import('leaflet')).default
-            const map = mapInstanceRef.current as L.Map
+            const map = mapInstanceRef.current as any
 
             // Remove existing markers
-            markersRef.current.forEach((m) => (m as L.Marker).remove())
+            markersRef.current.forEach((m) => {
+                try { (m as any).remove() } catch (_) { /* ignore */ }
+            })
             markersRef.current = []
 
             const kelasColors: Record<string, string> = {

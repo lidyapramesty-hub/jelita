@@ -63,8 +63,8 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
             <IconChartBar className="w-5 h-5 text-[#003087]" />
           </div>
           <div className="min-w-0">
-            <p className="text-white font-bold text-sm leading-tight truncate">Ekonomi Digital</p>
-            <p className="text-white/50 text-xs truncate">Kab. Tabanan</p>
+            <p className="text-white font-bold text-sm leading-tight truncate">BPS</p>
+            <p className="text-white/50 text-xs truncate">Kabupaten Tabanan</p>
           </div>
         </div>
       </div>
@@ -80,8 +80,8 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
               href={item.href}
               onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all group relative ${isActive
-                  ? 'bg-white/15 text-white shadow-sm'
-                  : 'text-white/60 hover:bg-white/10 hover:text-white'
+                ? 'bg-white/15 text-white shadow-sm'
+                : 'text-white/60 hover:bg-white/10 hover:text-white'
                 }`}
             >
               {isActive && (
@@ -158,7 +158,7 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
           <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center">
             <IconChartBar className="w-4 h-4 text-[#003087]" />
           </div>
-          <span className="text-white font-bold text-sm">Ekonomi Digital Tabanan</span>
+          <span className="text-white font-bold text-sm">BPS Kabupaten Tabanan</span>
         </div>
         <ActionIcon variant="transparent" color="white" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <IconX size={24} /> : <IconMenu2 size={24} />}
