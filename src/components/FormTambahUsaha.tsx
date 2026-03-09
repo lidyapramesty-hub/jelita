@@ -14,10 +14,6 @@ import {
   kbliKategori, getGolonganPokokByKategori, getGolonganByGolonganPokok,
   getSubgolonganByGolongan, getKelompokBySubgolongan,
 } from '@/data/kbli2025'
-import {
-  provinsiData, getKabKotByProvinsi, getKecamatanByKabKot,
-  getDesaByKecamatan,
-} from '@/data/wilayah'
 import { Usaha } from '@/types/usaha'
 
 const GeotagMap = dynamic(() => import('./GeotagMap'), { ssr: false })
@@ -73,8 +69,8 @@ const initialForm: FormData = {
   kbli_golongan_kode: '', kbli_golongan_nama: '',
   kbli_subgolongan_kode: '', kbli_subgolongan_nama: '',
   kbli_kelompok_kode: '', kbli_kelompok_nama: '',
-  provinsi_kode: '', provinsi_nama: '',
-  kabkot_kode: '', kabkot_nama: '',
+  provinsi_kode: '51', provinsi_nama: 'Bali',
+  kabkot_kode: '5102', kabkot_nama: 'Tabanan',
   kecamatan_kode: '', kecamatan_nama: '',
   desa_kode: '', desa_nama: '',
   sls_kode: '', sls_nama: '',
@@ -97,6 +93,41 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [activeStep, setActiveStep] = useState(0)
   const [visitedSteps, setVisitedSteps] = useState<Set<number>>(new Set([0]))
+  const [kecamatanMap, setKecamatanMap] = useState<Record<string, string[]>>({})
+
+  useEffect(() => {
+    const fetchKecamatanData = async () => {
+      try {
+        const response = await fetch('https://docs.google.com/spreadsheets/d/17lGIDL91TvOwwgNRGukq_pDgonUHw_LXhUUchpZcfac/export?format=csv')
+        if (!response.ok) throw new Error('Network response not ok')
+        const text = await response.text()
+        const rows = text.split('\n').map(row => row.split(','))
+
+        const map: Record<string, string[]> = {}
+        let currentKecamatan = ''
+
+        // Skip header
+        rows.slice(1).forEach(row => {
+          if (row.length >= 2) {
+            const kec = row[0].replace(/\r/g, '').trim()
+            const desa = row[1].replace(/\r/g, '').trim()
+
+            if (kec) {
+              currentKecamatan = kec
+              map[currentKecamatan] = []
+            }
+            if (currentKecamatan && desa) {
+              map[currentKecamatan].push(desa)
+            }
+          }
+        })
+        setKecamatanMap(map)
+      } catch (err) {
+        console.error('Failed to fetch kecamatan data:', err)
+      }
+    }
+    fetchKecamatanData()
+  }, [])
 
   // Pre-fill form if editing
   useEffect(() => {
@@ -115,10 +146,10 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
         kbli_subgolongan_nama: editData.kbli_subgolongan_nama || '',
         kbli_kelompok_kode: editData.kbli_kelompok_kode || '',
         kbli_kelompok_nama: editData.kbli_kelompok_nama || '',
-        provinsi_kode: editData.provinsi_kode || '',
-        provinsi_nama: editData.provinsi_nama || '',
-        kabkot_kode: editData.kabkot_kode || '',
-        kabkot_nama: editData.kabkot_nama || '',
+        provinsi_kode: editData.provinsi_kode || '51',
+        provinsi_nama: editData.provinsi_nama || 'Bali',
+        kabkot_kode: editData.kabkot_kode || '5102',
+        kabkot_nama: editData.kabkot_nama || 'Tabanan',
         kecamatan_kode: editData.kecamatan_kode || '',
         kecamatan_nama: editData.kecamatan_nama || '',
         desa_kode: editData.desa_kode || '',
@@ -140,11 +171,6 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
   const golongan = form.kbli_golongan_pokok_kode ? getGolonganByGolonganPokok(form.kbli_golongan_pokok_kode) : []
   const subgolongan = form.kbli_golongan_kode ? getSubgolonganByGolongan(form.kbli_golongan_kode) : []
   const kelompok = form.kbli_subgolongan_kode ? getKelompokBySubgolongan(form.kbli_subgolongan_kode) : []
-
-  // Wilayah derived data
-  const kabKot = form.provinsi_kode ? getKabKotByProvinsi(form.provinsi_kode) : []
-  const kecamatan = form.kabkot_kode ? getKecamatanByKabKot(form.kabkot_kode) : []
-  const desa = form.kecamatan_kode ? getDesaByKecamatan(form.kecamatan_kode) : []
 
   const setField = (key: keyof FormData, val: unknown) => {
     setForm((prev) => ({ ...prev, [key]: val }))
@@ -185,9 +211,9 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
     if (!form.kbli_kelompok_kode) e.kbli_k = 'Kelompok KBLI wajib dipilih'
     if (!form.provinsi_kode) e.provinsi = 'Provinsi wajib dipilih'
     if (!form.kabkot_kode) e.kabkot = 'Kabupaten/Kota wajib dipilih'
-    if (!form.kecamatan_kode) e.kecamatan = 'Kecamatan wajib dipilih'
-    if (!form.desa_kode) e.desa = 'Desa/Kelurahan wajib dipilih'
-    if (!form.sls_nama.trim()) e.sls_nama = 'SLS wajib diisi'
+    if (!form.kecamatan_nama) e.kecamatan = 'Kecamatan wajib dipilih'
+    if (!form.desa_nama) e.desa = 'Desa/Kelurahan wajib dipilih'
+    if (!form.sls_nama.trim()) e.sls_nama = 'Nama SLS wajib diisi'
     if (!form.kelas_usaha) e.kelas_usaha = 'Skala usaha wajib dipilih'
     if (!form.cakupan_pasar) e.cakupan_pasar = 'Cakupan pasar wajib dipilih'
     const validPlatforms = form.platform_digital.filter((p) => p.platform && p.nama_akun)
@@ -225,13 +251,21 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
 
   const nextStep = () => {
     const next = Math.min(activeStep + 1, 5)
-    setVisitedSteps((prev) => new Set([...prev, next]))
+    setVisitedSteps((prev) => {
+      const s = new Set(prev)
+      s.add(next)
+      return s
+    })
     setActiveStep(next)
   }
   const prevStep = () => setActiveStep((c) => Math.max(c - 1, 0))
 
   const handleStepClick = (step: number) => {
-    setVisitedSteps((prev) => new Set([...prev, step]))
+    setVisitedSteps((prev) => {
+      const s = new Set(prev)
+      s.add(step)
+      return s
+    })
     setActiveStep(step)
   }
 
@@ -441,91 +475,64 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
               <Select
                 label="Provinsi"
                 placeholder="Pilih Provinsi"
-                data={provinsiData.map((p) => ({ value: p.kode, label: `${p.kode} — ${p.nama}` }))}
-                value={form.provinsi_kode || null}
-                onChange={(val) => {
-                  const item = provinsiData.find((p) => p.kode === val)
-                  setForm((prev) => ({
-                    ...prev,
-                    provinsi_kode: val || '', provinsi_nama: item?.nama || '',
-                    kabkot_kode: '', kabkot_nama: '',
-                    kecamatan_kode: '', kecamatan_nama: '',
-                    desa_kode: '', desa_nama: '',
-                    sls_kode: '', sls_nama: '',
-                  }))
-                }}
-                searchable
-                error={errors.provinsi}
+                data={[{ value: '51', label: 'Bali' }]}
+                value="51"
+                disabled
                 required
               />
               <Select
                 label="Kabupaten / Kota"
-                placeholder={form.provinsi_kode ? 'Pilih Kab/Kota' : 'Pilih Provinsi dahulu'}
-                data={kabKot.map((k) => ({ value: k.kode, label: `${k.kode} — ${k.nama}` }))}
-                value={form.kabkot_kode || null}
-                onChange={(val) => {
-                  const item = kabKot.find((k) => k.kode === val)
-                  setForm((prev) => ({
-                    ...prev,
-                    kabkot_kode: val || '', kabkot_nama: item?.nama || '',
-                    kecamatan_kode: '', kecamatan_nama: '',
-                    desa_kode: '', desa_nama: '',
-                    sls_kode: '', sls_nama: '',
-                  }))
-                }}
-                disabled={!form.provinsi_kode}
-                searchable
-                error={errors.kabkot}
+                placeholder="Pilih Kab/Kota"
+                data={[{ value: '5102', label: 'Tabanan' }]}
+                value="5102"
+                disabled
                 required
               />
               <Select
                 label="Kecamatan"
-                placeholder={form.kabkot_kode ? 'Pilih Kecamatan' : 'Pilih Kab/Kota dahulu'}
-                data={kecamatan.map((k) => ({ value: k.kode, label: `${k.kode} — ${k.nama}` }))}
-                value={form.kecamatan_kode || null}
+                placeholder="Pilih Kecamatan"
+                data={Object.keys(kecamatanMap).map((k) => ({ value: k, label: k }))}
+                value={form.kecamatan_nama || null}
                 onChange={(val) => {
-                  const item = kecamatan.find((k) => k.kode === val)
                   setForm((prev) => ({
                     ...prev,
-                    kecamatan_kode: val || '', kecamatan_nama: item?.nama || '',
+                    kecamatan_kode: val || '', kecamatan_nama: val || '',
                     desa_kode: '', desa_nama: '',
                     sls_kode: '', sls_nama: '',
                   }))
                 }}
-                disabled={!form.kabkot_kode}
                 searchable
                 error={errors.kecamatan}
                 required
               />
               <Select
                 label="Desa / Kelurahan"
-                placeholder={form.kecamatan_kode ? 'Pilih Desa/Kelurahan' : 'Pilih Kecamatan dahulu'}
-                data={desa.map((d) => ({ value: d.kode, label: `${d.kode} — ${d.nama}` }))}
-                value={form.desa_kode || null}
+                placeholder={form.kecamatan_nama ? 'Pilih Desa/Kelurahan' : 'Pilih Kecamatan dahulu'}
+                data={(kecamatanMap[form.kecamatan_nama] || []).map((d) => ({ value: d, label: d }))}
+                value={form.desa_nama || null}
                 onChange={(val) => {
-                  const item = desa.find((d) => d.kode === val)
                   setForm((prev) => ({
                     ...prev,
-                    desa_kode: val || '', desa_nama: item?.nama || '',
+                    desa_kode: val || '', desa_nama: val || '',
                     sls_kode: '', sls_nama: '',
                   }))
                 }}
-                disabled={!form.kecamatan_kode}
+                disabled={!form.kecamatan_nama}
                 searchable
                 error={errors.desa}
                 required
               />
               <TextInput
-                label="SLS (Dusun / Lingkungan / Banjar)"
-                placeholder="Cth: Banjar Anyar Tengah"
+                label="Nama SLS"
+                placeholder="Cth: Banjar Dauh Pala"
                 value={form.sls_nama}
                 onChange={(e) => setField('sls_nama', e.currentTarget.value)}
                 error={errors.sls_nama}
                 required
               />
               <TextInput
-                label="Sub SLS (opsional)"
-                placeholder="Cth: RT 01, Gang Melati, Blok A, dll."
+                label="Sub SLS"
+                placeholder="Cth: Jl. Pulau Nias, Gang XI, No. 14"
                 value={form.sub_sls}
                 onChange={(e) => setField('sub_sls', e.currentTarget.value)}
               />

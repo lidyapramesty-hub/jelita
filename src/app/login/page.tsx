@@ -47,16 +47,57 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    setTimeout(() => {
-      if (username && password) {
-        localStorage.setItem('user_email', username)
-        localStorage.setItem('login_method', loginMethod || 'pegawai')
-        router.push('/dashboard')
-      } else {
+    try {
+      if (!username || !password) {
         setError('Username dan password wajib diisi.')
+        setLoading(false)
+        return
       }
+
+      if (loginMethod === 'pegawai') {
+        try {
+          const response = await fetch('https://docs.google.com/spreadsheets/d/1iwNuvYTqajsbROiMNDNgqL6Yjs2PLP3G/export?format=csv')
+          if (!response.ok) throw new Error('Network response was not ok')
+          const csvText = await response.text()
+
+          const rows = csvText.split('\n').map(row => row.split(','))
+
+          // Skip header row [0]
+          const match = rows.slice(1).some((row) => {
+            if (row.length >= 2) {
+              const sheetUser = row[0].trim()
+              const sheetPass = row[1].trim()
+              return sheetUser === username && sheetPass === password
+            }
+            return false
+          })
+
+          if (!match) {
+            setError('Username atau password salah.')
+            setLoading(false)
+            return
+          }
+        } catch (fetchErr) {
+          console.error('Fetch error:', fetchErr)
+          setError('Gagal terhubung ke server autentikasi.')
+          setLoading(false)
+          return
+        }
+      } else {
+        // Mitra BPS mock login
+        // Add a small delay for UX
+        await new Promise(resolve => setTimeout(resolve, 800))
+      }
+
+      localStorage.setItem('user_email', username)
+      localStorage.setItem('login_method', loginMethod || 'pegawai')
+      router.push('/dashboard')
+
+    } catch (err) {
+      console.error(err)
+      setError('Terjadi kesalahan sistem. Silakan coba lagi.')
       setLoading(false)
-    }, 800)
+    }
   }
 
   return (
