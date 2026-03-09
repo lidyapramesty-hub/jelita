@@ -3,12 +3,13 @@
 import { useMemo, useState } from 'react'
 import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
 import { Badge, Text, Group, ActionIcon, Tooltip } from '@mantine/core'
-import { IconEye, IconExternalLink, IconTrash } from '@tabler/icons-react'
+import { IconEye, IconExternalLink, IconTrash, IconPencil } from '@tabler/icons-react'
 import { Usaha } from '@/types/usaha'
 
 interface UsahaTableProps {
     data: Usaha[]
     onView: (usaha: Usaha) => void
+    onEdit: (usaha: Usaha) => void
     onDelete: (id: string) => void
 }
 
@@ -26,7 +27,7 @@ const BADGE_PASAR: Record<string, { color: string }> = {
     internasional: { color: 'violet' },
 }
 
-export default function UsahaTable({ data, onView, onDelete }: UsahaTableProps) {
+export default function UsahaTable({ data, onView, onEdit, onDelete }: UsahaTableProps) {
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus<Usaha>>({
         columnAccessor: 'nama_usaha',
         direction: 'asc',
@@ -91,7 +92,7 @@ export default function UsahaTable({ data, onView, onDelete }: UsahaTableProps) 
                 },
                 {
                     accessor: 'kelas_usaha',
-                    title: 'Kelas',
+                    title: 'Skala',
                     sortable: true,
                     textAlign: 'center',
                     render: (record) => (
@@ -133,7 +134,7 @@ export default function UsahaTable({ data, onView, onDelete }: UsahaTableProps) 
                     accessor: 'actions',
                     title: 'Aksi',
                     textAlign: 'right',
-                    width: 120,
+                    width: 150,
                     render: (record) => (
                         <Group gap={4} justify="flex-end" wrap="nowrap">
                             <Tooltip label="Lihat Detail">
@@ -146,6 +147,18 @@ export default function UsahaTable({ data, onView, onDelete }: UsahaTableProps) 
                                     }}
                                 >
                                     <IconEye size={16} />
+                                </ActionIcon>
+                            </Tooltip>
+                            <Tooltip label="Edit">
+                                <ActionIcon
+                                    variant="subtle"
+                                    color="yellow"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        onEdit(record)
+                                    }}
+                                >
+                                    <IconPencil size={16} />
                                 </ActionIcon>
                             </Tooltip>
                             {record.latitude && record.longitude && (

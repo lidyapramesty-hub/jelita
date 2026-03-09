@@ -15,7 +15,6 @@ import {
   TextInput,
   Select,
   Group,
-  ActionIcon,
   Stack,
   Paper,
   ThemeIcon,
@@ -36,9 +35,11 @@ export default function DaftarUsahaPage() {
   const [usahaList, setUsahaList] = useState<Usaha[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [editUsaha, setEditUsaha] = useState<Usaha | null>(null)
   const [search, setSearch] = useState('')
   const [filterKelas, setFilterKelas] = useState<string | null>(null)
   const [filterPasar, setFilterPasar] = useState<string | null>(null)
+  const [filterKecamatan, setFilterKecamatan] = useState<string | null>(null)
   const [selectedUsaha, setSelectedUsaha] = useState<Usaha | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -46,7 +47,6 @@ export default function DaftarUsahaPage() {
   useEffect(() => {
     const email = localStorage.getItem('user_email') || 'pencacah01@bps.go.id'
     setUserEmail(email)
-    // Simulate loading from static data
     const timer = setTimeout(() => {
       setUsahaList(staticUsahaData)
       setLoading(false)
@@ -54,19 +54,29 @@ export default function DaftarUsahaPage() {
     return () => clearTimeout(timer)
   }, [])
 
+  const kecamatanOptions = useMemo(() => {
+    const names = Array.from(new Set(usahaList.map((u) => u.kecamatan_nama).filter(Boolean))).sort()
+    return names.map((name) => ({ value: name, label: name }))
+  }, [usahaList])
+
   const handleSuccess = () => {
     setShowForm(false)
+    setEditUsaha(null)
     notifications.show({
       title: 'Berhasil',
-      message: 'Usaha berhasil ditambahkan!',
+      message: editUsaha ? 'Usaha berhasil diperbarui!' : 'Usaha berhasil ditambahkan!',
       color: 'green',
     })
+  }
+
+  const handleEdit = (usaha: Usaha) => {
+    setEditUsaha(usaha)
+    setShowForm(true)
   }
 
   const handleDelete = () => {
     if (!deleteId) return
     setDeleting(true)
-    // Simulate delete
     setTimeout(() => {
       setUsahaList((prev) => prev.filter((u) => u.id !== deleteId))
       setDeleteId(null)
@@ -90,9 +100,10 @@ export default function DaftarUsahaPage() {
         u.kecamatan_nama?.toLowerCase().includes(q)
       const matchKelas = !filterKelas || u.kelas_usaha === filterKelas
       const matchPasar = !filterPasar || u.cakupan_pasar === filterPasar
-      return matchSearch && matchKelas && matchPasar
+      const matchKecamatan = !filterKecamatan || u.kecamatan_nama === filterKecamatan
+      return matchSearch && matchKelas && matchPasar && matchKecamatan
     })
-  }, [usahaList, search, filterKelas, filterPasar])
+  }, [usahaList, search, filterKelas, filterPasar, filterKecamatan])
 
   const handleRefresh = () => {
     setLoading(true)
@@ -102,7 +113,7 @@ export default function DaftarUsahaPage() {
     }, 500)
   }
 
-  const hasFilters = search || filterKelas || filterPasar
+  const hasFilters = search || filterKelas || filterPasar || filterKecamatan
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -132,7 +143,7 @@ export default function DaftarUsahaPage() {
               <Button
                 size="sm"
                 leftSection={<IconPlus size={16} />}
-                onClick={() => setShowForm(true)}
+                onClick={() => { setEditUsaha(null); setShowForm(true) }}
                 style={{ backgroundColor: '#003087' }}
               >
                 Tambah Usaha
@@ -154,7 +165,17 @@ export default function DaftarUsahaPage() {
                 size="sm"
               />
               <Select
-                placeholder="Semua Kelas"
+                placeholder="Semua Kecamatan"
+                data={kecamatanOptions}
+                value={filterKecamatan}
+                onChange={setFilterKecamatan}
+                clearable
+                searchable
+                size="sm"
+                style={{ minWidth: 160 }}
+              />
+              <Select
+                placeholder="Semua Skala"
                 data={[
                   { value: 'mikro', label: 'Mikro' },
                   { value: 'kecil', label: 'Kecil' },
@@ -191,6 +212,7 @@ export default function DaftarUsahaPage() {
                     setSearch('')
                     setFilterKelas(null)
                     setFilterPasar(null)
+                    setFilterKecamatan(null)
                   }}
                 >
                   Reset
@@ -236,6 +258,7 @@ export default function DaftarUsahaPage() {
             <UsahaTable
               data={filtered}
               onView={(usaha) => setSelectedUsaha(usaha)}
+              onEdit={handleEdit}
               onDelete={(id) => setDeleteId(id)}
             />
           )}
@@ -244,7 +267,11 @@ export default function DaftarUsahaPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <FormTambahUsaha onClose={() => setShowForm(false)} onSuccess={handleSuccess} />
+        <FormTambahUsaha
+          onClose={() => { setShowForm(false); setEditUsaha(null) }}
+          onSuccess={handleSuccess}
+          editData={editUsaha}
+        />
       )}
 
       {/* Detail Modal */}

@@ -1,7 +1,7 @@
 'use client'
 
 import { Modal, Text, Badge, Group, Stack, Paper, Divider, Anchor } from '@mantine/core'
-import { IconTag, IconMapPin, IconDeviceMobile, IconExternalLink, IconCalendar, IconUser } from '@tabler/icons-react'
+import { IconTag, IconMapPin, IconDeviceMobile, IconExternalLink, IconCalendar, IconUser, IconPencil } from '@tabler/icons-react'
 import { Usaha } from '@/types/usaha'
 
 interface UsahaDetailModalProps {
@@ -25,7 +25,7 @@ const BADGE_PASAR: Record<string, string> = {
 
 export default function UsahaDetailModal({ usaha, onClose }: UsahaDetailModalProps) {
     const formatDate = (d: string) => {
-        return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+        return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
     }
 
     return (
@@ -116,18 +116,37 @@ export default function UsahaDetailModal({ usaha, onClose }: UsahaDetailModalPro
                     <Divider />
 
                     {/* Metadata */}
-                    <Group justify="space-between">
-                        <Group gap="xs">
-                            <IconCalendar size={14} className="text-gray-400" />
-                            <Text size="xs" c="dimmed">Ditambahkan: {formatDate(usaha.created_at)}</Text>
-                        </Group>
-                        {usaha.created_by_email && (
+                    <Stack gap={6}>
+                        {/* Created info */}
+                        <Group justify="space-between">
                             <Group gap="xs">
-                                <IconUser size={14} className="text-gray-400" />
-                                <Text size="xs" c="dimmed">Pelapor: {usaha.created_by_email}</Text>
+                                <IconCalendar size={14} className="text-gray-400" />
+                                <Text size="xs" c="dimmed">Ditambahkan: {formatDate(usaha.created_at)}</Text>
+                            </Group>
+                            {usaha.created_by_email && (
+                                <Group gap="xs">
+                                    <IconUser size={14} className="text-gray-400" />
+                                    <Text size="xs" c="dimmed">Pelapor: {usaha.created_by_email}</Text>
+                                </Group>
+                            )}
+                        </Group>
+
+                        {/* Updated info */}
+                        {usaha.updated_at && (
+                            <Group justify="space-between">
+                                <Group gap="xs">
+                                    <IconPencil size={14} className="text-orange-400" />
+                                    <Text size="xs" c="orange.7">Diedit: {formatDate(usaha.updated_at)}</Text>
+                                </Group>
+                                {usaha.updated_by_email && (
+                                    <Group gap="xs">
+                                        <IconUser size={14} className="text-orange-400" />
+                                        <Text size="xs" c="orange.7">Editor: {usaha.updated_by_email}</Text>
+                                    </Group>
+                                )}
                             </Group>
                         )}
-                    </Group>
+                    </Stack>
                 </Stack>
             )}
         </Modal>

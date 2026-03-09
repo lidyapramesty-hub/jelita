@@ -1,6 +1,6 @@
 'use client'
 
-import { Paper, Text, Group, SimpleGrid, Badge } from '@mantine/core'
+import { Paper, Text, Group } from '@mantine/core'
 import { IconChartBar } from '@tabler/icons-react'
 
 interface KategoriKBLIChartProps {
@@ -9,40 +9,43 @@ interface KategoriKBLIChartProps {
 }
 
 export default function KategoriKBLIChart({ byKategori, total }: KategoriKBLIChartProps) {
-    const sorted = Object.entries(byKategori)
-        .sort((a, b) => b[1] - a[1])
+    const sorted = Object.entries(byKategori).sort((a, b) => b[1] - a[1])
+    const denominator = total || 1
+    const maxVal = sorted.length > 0 ? sorted[0][1] : 0
+    const minVal = sorted.length > 0 ? sorted[sorted.length - 1][1] : 0
 
-    const maxCount = sorted[0]?.[1] || 1
+    const getColor = (count: number) => {
+        if (count === maxVal && maxVal > 0) return '#FFB81C'
+        if (maxVal === minVal) return '#003087'
+        const ratio = (count - minVal) / (maxVal - minVal)
+        const r = Math.round(139 + (0 - 139) * ratio)
+        const g = Math.round(188 + (48 - 188) * ratio)
+        const b = Math.round(235 + (135 - 235) * ratio)
+        return `rgb(${r}, ${g}, ${b})`
+    }
 
     return (
         <Paper radius="lg" p="lg" shadow="xs" withBorder>
             <Group gap="xs" mb="md">
                 <IconChartBar size={17} className="text-[#003087]" />
-                <Text fw={700} size="sm">Distribusi Kategori KBLI</Text>
+                <Text fw={700} size="sm">Distribusi Usaha Menurut KBLI</Text>
             </Group>
-
             {sorted.length === 0 ? (
                 <Text c="dimmed" size="sm" ta="center" py="xl">Belum ada data usaha terdaftar</Text>
             ) : (
-                <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+                <div className="mt-4 space-y-2">
                     {sorted.map(([kat, count]) => (
-                        <div key={kat} className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                            <Text size="xs" fw={600} c="dimmed" tt="uppercase" lineClamp={1} mb="xs">{kat}</Text>
-                            <div className="flex items-end gap-3">
-                                <Text size="xl" fw={700} c="#003087">{count}</Text>
-                                <div className="flex-1 mb-1">
-                                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-[#FFB81C] rounded-full"
-                                            style={{ width: `${(count / maxCount) * 100}%` }}
-                                        />
-                                    </div>
-                                </div>
+                        <div key={kat}>
+                            <div className="flex justify-between text-sm mb-1">
+                                <span className="font-medium text-gray-700 truncate mr-2" title={kat}>{kat}</span>
+                                <span className="text-gray-500 whitespace-nowrap">{count} ({((count / denominator) * 100).toFixed(1)}%)</span>
                             </div>
-                            <Text size="xs" c="dimmed" mt={4}>{((count / (total || 1)) * 100).toFixed(1)}% dari total</Text>
+                            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${(count / denominator) * 100}%`, backgroundColor: getColor(count) }} />
+                            </div>
                         </div>
                     ))}
-                </SimpleGrid>
+                </div>
             )}
         </Paper>
     )

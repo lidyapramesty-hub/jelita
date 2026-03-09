@@ -45,6 +45,8 @@ export interface Usaha {
     created_at: string;
     created_by?: string;
     created_by_email?: string;
+    updated_at?: string;
+    updated_by_email?: string;
     is_active: boolean;
 }
 

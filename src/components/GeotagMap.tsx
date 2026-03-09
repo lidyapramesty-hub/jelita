@@ -25,12 +25,29 @@ export default function GeotagMap({ latitude, longitude, onChange }: GeotagMapPr
     let isMounted = true
 
     const initMap = async () => {
-      if (!mapRef.current || mapInstanceRef.current) return
+      if (!mapRef.current) return
 
       try {
         const L = (await import('leaflet')).default
         // @ts-ignore - CSS import for leaflet
         await import('leaflet/dist/leaflet.css')
+
+        if (!isMounted) return
+
+        const container = mapRef.current as HTMLDivElement & { _leaflet_id?: number }
+
+        // Clean up any leftover Leaflet container state (React Strict Mode fix)
+        if (container._leaflet_id) {
+          container.innerHTML = ''
+          delete container._leaflet_id
+          container.className = container.className.replace(/\s?leaflet-container.*/, '')
+        }
+
+        // Remove previous map instance if it exists
+        if (mapInstanceRef.current) {
+          try { (mapInstanceRef.current as any).remove() } catch (_) { /* ignore */ }
+          mapInstanceRef.current = null
+        }
 
         // Fix default icon
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,7 +61,7 @@ export default function GeotagMap({ latitude, longitude, onChange }: GeotagMapPr
         const initLat = latitude || defaultLat
         const initLng = longitude || defaultLng
 
-        const map = L.map(mapRef.current!, { zoomControl: true }).setView([initLat, initLng], latitude ? 16 : 12)
+        const map = L.map(container, { zoomControl: true }).setView([initLat, initLng], latitude ? 16 : 12)
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors',
@@ -68,22 +85,22 @@ export default function GeotagMap({ latitude, longitude, onChange }: GeotagMapPr
 
         if (latitude && longitude) {
           const marker = L.marker([latitude, longitude], { draggable: true, icon: customIcon }).addTo(map)
-          marker.on('dragend', (e: L.LeafletEvent) => {
-            const pos = (e as L.DragEndEvent).target.getLatLng()
+          marker.on('dragend', (e: any) => {
+            const pos = e.target.getLatLng()
             onChange(pos.lat, pos.lng)
           })
           markerRef.current = marker
         }
 
-        map.on('click', (e: L.LeafletMouseEvent) => {
+        map.on('click', (e: any) => {
           const { lat, lng } = e.latlng
 
           if (markerRef.current) {
-            (markerRef.current as L.Marker).setLatLng([lat, lng])
+            (markerRef.current as any).setLatLng([lat, lng])
           } else {
             const marker = L.marker([lat, lng], { draggable: true, icon: customIcon }).addTo(map)
-            marker.on('dragend', (ev: L.LeafletEvent) => {
-              const pos = (ev as L.DragEndEvent).target.getLatLng()
+            marker.on('dragend', (ev: any) => {
+              const pos = ev.target.getLatLng()
               onChange(pos.lat, pos.lng)
             })
             markerRef.current = marker
@@ -92,6 +109,14 @@ export default function GeotagMap({ latitude, longitude, onChange }: GeotagMapPr
         })
 
         mapInstanceRef.current = map
+
+        // Force proper sizing after initialization (important for maps inside Drawers)
+        setTimeout(() => {
+          if (isMounted && map) {
+            map.invalidateSize()
+          }
+        }, 300)
+
         if (isMounted) setMapReady(true)
       } catch (err) {
         console.error('Map init error:', err)
@@ -99,12 +124,13 @@ export default function GeotagMap({ latitude, longitude, onChange }: GeotagMapPr
       }
     }
 
-    initMap()
+    const timer = setTimeout(initMap, 50)
 
     return () => {
       isMounted = false
+      clearTimeout(timer)
       if (mapInstanceRef.current) {
-        (mapInstanceRef.current as L.Map).remove()
+        try { (mapInstanceRef.current as any).remove() } catch (_) { /* ignore */ }
         mapInstanceRef.current = null
         markerRef.current = null
       }
@@ -112,26 +138,44 @@ export default function GeotagMap({ latitude, longitude, onChange }: GeotagMapPr
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Update marker when props change externally
   useEffect(() => {
-    if (!mapInstanceRef.current || !latitude || !longitude) return
+    let isMounted = true
 
-    const L = require('leaflet')
-    const map = mapInstanceRef.current as L.Map
+    const updateMarker = async () => {
+      if (!mapInstanceRef.current || !latitude || !longitude) return
 
-    if (markerRef.current) {
-      (markerRef.current as L.Marker).setLatLng([latitude, longitude])
-    } else {
-      const customIcon = L.divIcon({
-        className: '',
-        html: `<div style="width:32px;height:32px;background:#003087;border:3px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 12px rgba(0,48,135,0.4)"></div>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
-      })
-      markerRef.current = L.marker([latitude, longitude], { draggable: true, icon: customIcon }).addTo(map)
+      try {
+        const L = (await import('leaflet')).default
+        if (!isMounted) return
+
+        const map = mapInstanceRef.current as any
+
+        if (markerRef.current) {
+          (markerRef.current as any).setLatLng([latitude, longitude])
+        } else {
+          const customIcon = L.divIcon({
+            className: '',
+            html: `<div style="width:32px;height:32px;background:#003087;border:3px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 12px rgba(0,48,135,0.4)"></div>`,
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+          })
+
+          const marker = L.marker([latitude, longitude], { draggable: true, icon: customIcon }).addTo(map)
+          marker.on('dragend', (e: any) => {
+            const pos = e.target.getLatLng()
+            onChange(pos.lat, pos.lng)
+          })
+          markerRef.current = marker
+        }
+
+        map.setView([latitude, longitude], 16)
+      } catch (err) {
+        console.error('Error updating marker:', err)
+      }
     }
 
-    map.setView([latitude, longitude], 16)
+    updateMarker()
+    return () => { isMounted = false }
   }, [latitude, longitude])
 
   const getCurrentLocation = () => {

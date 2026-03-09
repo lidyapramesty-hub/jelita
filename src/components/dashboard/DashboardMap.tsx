@@ -17,6 +17,32 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
     const [mapReady, setMapReady] = useState(false)
     const [filterKecamatan, setFilterKecamatan] = useState<string | null>(null)
     const [filterKelas, setFilterKelas] = useState<string | null>(null)
+    const [filterKBLI, setFilterKBLI] = useState<string | null>(null)
+
+    const kbliKategoriOptions = [
+        { value: 'A', label: 'A - Pertanian, Kehutanan, dan Perikanan' },
+        { value: 'B', label: 'B - Pertambangan dan Penggalian' },
+        { value: 'C', label: 'C - Industri' },
+        { value: 'D', label: 'D - Penyediaan Listrik, Gas, Uap/Air Panas, dan Udara Dingin' },
+        { value: 'E', label: 'E - Penyediaan Air, Pengelolaan Air Limbah, Penanganan Limbah, dan Remediasi' },
+        { value: 'F', label: 'F - Konstruksi' },
+        { value: 'G', label: 'G - Perdagangan Besar dan Eceran' },
+        { value: 'H', label: 'H - Transportasi dan Penyimpanan' },
+        { value: 'I', label: 'I - Aktivitas Penyediaan Akomodasi dan Makan Minum' },
+        { value: 'J', label: 'J - Aktivitas Penerbitan, Penyiaran, serta Produksi dan Distribusi Konten' },
+        { value: 'K', label: 'K - Aktivitas Telekomunikasi, Pemrograman Komputer, Konsultansi, Infrastruktur Komputasi, dan Jasa Informasi Lainnya' },
+        { value: 'L', label: 'L - Aktivitas Keuangan dan Asuransi' },
+        { value: 'M', label: 'M - Aktivitas Real Estat' },
+        { value: 'N', label: 'N - Aktivitas Profesional, Ilmiah, dan Teknis' },
+        { value: 'O', label: 'O - Aktivitas Administratif dan Penunjang Usaha' },
+        { value: 'P', label: 'P - Administrasi Pemerintahan dan Pertahanan, serta Jaminan Sosial Wajib' },
+        { value: 'Q', label: 'Q - Pendidikan' },
+        { value: 'R', label: 'R - Aktivitas Kesehatan Manusia dan Aktivitas Sosial' },
+        { value: 'S', label: 'S - Kesenian, Olahraga, dan Rekreasi' },
+        { value: 'T', label: 'T - Aktivitas Jasa Lainnya' },
+        { value: 'U', label: 'U - Aktivitas Rumah Tangga sebagai Pemberi Kerja' },
+        { value: 'V', label: 'V - Aktivitas Badan Internasional dan Badan Ekstra Internasional Lainnya' },
+    ]
 
     const kecamatanOptions = Array.from(new Set(usahaList.map((u) => u.kecamatan_nama).filter(Boolean))).map((k) => ({
         value: k,
@@ -27,6 +53,7 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
         if (!u.latitude || !u.longitude) return false
         if (filterKecamatan && u.kecamatan_nama !== filterKecamatan) return false
         if (filterKelas && u.kelas_usaha !== filterKelas) return false
+        if (filterKBLI && u.kbli_kategori_kode !== filterKBLI) return false
         return true
     })
 
@@ -105,16 +132,16 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
             markersRef.current = []
 
             const kelasColors: Record<string, string> = {
-                mikro: '#e65100',
-                kecil: '#FFB81C',
-                menengah: '#C8102E',
-                besar: '#059669',
+                mikro: '#C8102E', // Merah
+                kecil: '#FFB81C', // Kuning
+                menengah: '#003087', // Biru
+                besar: '#059669', // Hijau
             }
 
             filtered.forEach((u) => {
                 if (!u.latitude || !u.longitude) return
 
-                const color = kelasColors[u.kelas_usaha] || '#e65100'
+                const color = kelasColors[u.kelas_usaha] || '#C8102E'
 
                 const icon = L.divIcon({
                     className: '',
@@ -154,7 +181,7 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
                     <Text fw={700} size="sm">Peta Lokasi Usaha</Text>
                     <Badge size="sm" variant="light" color="blue">{filtered.length} titik</Badge>
                 </Group>
-                <Group gap="xs">
+                <Group gap="xs" wrap="wrap">
                     <Select
                         placeholder="Filter Kecamatan"
                         data={kecamatanOptions}
@@ -165,7 +192,7 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
                         style={{ width: 160 }}
                     />
                     <Select
-                        placeholder="Filter Kelas"
+                        placeholder="Filter Skala"
                         data={[
                             { value: 'mikro', label: 'Mikro' },
                             { value: 'kecil', label: 'Kecil' },
@@ -178,6 +205,16 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
                         size="xs"
                         style={{ width: 130 }}
                     />
+                    <Select
+                        placeholder="Filter KBLI"
+                        data={kbliKategoriOptions}
+                        value={filterKBLI}
+                        onChange={setFilterKBLI}
+                        clearable
+                        searchable
+                        size="xs"
+                        style={{ width: 220 }}
+                    />
                 </Group>
             </Group>
 
@@ -188,9 +225,9 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
 
             <Group mt="xs" gap="md">
                 {[
-                    { label: 'Mikro', color: '#e65100' },
+                    { label: 'Mikro', color: '#C8102E' },
                     { label: 'Kecil', color: '#FFB81C' },
-                    { label: 'Menengah', color: '#C8102E' },
+                    { label: 'Menengah', color: '#003087' },
                     { label: 'Besar', color: '#059669' },
                 ].map((item) => (
                     <Group key={item.label} gap={6}>
