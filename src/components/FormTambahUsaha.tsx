@@ -12,7 +12,7 @@ import {
 } from '@tabler/icons-react'
 import {
   kbliKategori, getGolonganPokokByKategori, getGolonganByGolonganPokok,
-  getSubgolonganByGolongan, getKelompokBySubgolongan,
+  getSubgolonganByGolongan, getKelompokBySubgolongan, getKbliPathByKelompokKode,
 } from '@/data/kbli2025'
 import { Usaha } from '@/types/usaha'
 import { useCreateUsahaMutation, useUpdateUsahaMutation } from '@/store/services/usahaApi'
@@ -26,7 +26,7 @@ const PLATFORM_OPTIONS = [
   'Twitter/X', 'Website Sendiri', 'WhatsApp', 'YouTube', 'Lainnya',
 ]
 
-interface Platform {
+interface PlatformEntry {
   platform: string
   nama_akun: string
 }
@@ -35,49 +35,40 @@ interface FormData {
   nama_pemilik: string
   nama_usaha: string
   deskripsi_kegiatan: string
+  // KBLI — intermediate kode fields for cascading dropdowns (UI state)
   kbli_kategori_kode: string
-  kbli_kategori_nama: string
   kbli_golongan_pokok_kode: string
-  kbli_golongan_pokok_nama: string
   kbli_golongan_kode: string
-  kbli_golongan_nama: string
   kbli_subgolongan_kode: string
-  kbli_subgolongan_nama: string
   kbli_kelompok_kode: string
-  kbli_kelompok_nama: string
-  provinsi_kode: string
-  provinsi_nama: string
-  kabkot_kode: string
-  kabkot_nama: string
-  kecamatan_kode: string
+  // Lokasi
   kecamatan_nama: string
-  desa_kode: string
   desa_nama: string
-  sls_kode: string
   sls_nama: string
   sub_sls: string
+  // Geo
   latitude: number | null
   longitude: number | null
-  platform_digital: Platform[]
+  // Platform
+  platforms: PlatformEntry[]
+  // Klasifikasi
   kelas_usaha: string
   cakupan_pasar: string
 }
 
 const initialForm: FormData = {
   nama_pemilik: '', nama_usaha: '', deskripsi_kegiatan: '',
-  kbli_kategori_kode: '', kbli_kategori_nama: '',
-  kbli_golongan_pokok_kode: '', kbli_golongan_pokok_nama: '',
-  kbli_golongan_kode: '', kbli_golongan_nama: '',
-  kbli_subgolongan_kode: '', kbli_subgolongan_nama: '',
-  kbli_kelompok_kode: '', kbli_kelompok_nama: '',
-  provinsi_kode: '51', provinsi_nama: 'Bali',
-  kabkot_kode: '5102', kabkot_nama: 'Tabanan',
-  kecamatan_kode: '', kecamatan_nama: '',
-  desa_kode: '', desa_nama: '',
-  sls_kode: '', sls_nama: '',
+  kbli_kategori_kode: '',
+  kbli_golongan_pokok_kode: '',
+  kbli_golongan_kode: '',
+  kbli_subgolongan_kode: '',
+  kbli_kelompok_kode: '',
+  kecamatan_nama: '',
+  desa_nama: '',
+  sls_nama: '',
   sub_sls: '',
   latitude: null, longitude: null,
-  platform_digital: [{ platform: '', nama_akun: '' }],
+  platforms: [{ platform: '', nama_akun: '' }],
   kelas_usaha: '', cakupan_pasar: '',
 }
 
@@ -136,34 +127,24 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
   // Pre-fill form if editing
   useEffect(() => {
     if (editData) {
+      // Reverse lookup KBLI hierarchy from kelompok_kode
+      const kbliPath = editData.kbli_kelompok_kode ? getKbliPathByKelompokKode(editData.kbli_kelompok_kode) : null
       setForm({
         nama_pemilik: editData.nama_pemilik || '',
         nama_usaha: editData.nama_usaha || '',
         deskripsi_kegiatan: editData.deskripsi_kegiatan || '',
-        kbli_kategori_kode: editData.kbli_kategori_kode || '',
-        kbli_kategori_nama: editData.kbli_kategori_nama || '',
-        kbli_golongan_pokok_kode: editData.kbli_golongan_pokok_kode || '',
-        kbli_golongan_pokok_nama: editData.kbli_golongan_pokok_nama || '',
-        kbli_golongan_kode: editData.kbli_golongan_kode || '',
-        kbli_golongan_nama: editData.kbli_golongan_nama || '',
-        kbli_subgolongan_kode: editData.kbli_subgolongan_kode || '',
-        kbli_subgolongan_nama: editData.kbli_subgolongan_nama || '',
-        kbli_kelompok_kode: editData.kbli_kelompok_kode || '',
-        kbli_kelompok_nama: editData.kbli_kelompok_nama || '',
-        provinsi_kode: editData.provinsi_kode || '51',
-        provinsi_nama: editData.provinsi_nama || 'Bali',
-        kabkot_kode: editData.kabkot_kode || '5102',
-        kabkot_nama: editData.kabkot_nama || 'Tabanan',
-        kecamatan_kode: editData.kecamatan_kode || '',
+        kbli_kategori_kode: kbliPath?.kategori.kode || editData.kbli_kategori_kode || '',
+        kbli_golongan_pokok_kode: kbliPath?.golongan_pokok.kode || '',
+        kbli_golongan_kode: kbliPath?.golongan.kode || '',
+        kbli_subgolongan_kode: kbliPath?.subgolongan.kode || '',
+        kbli_kelompok_kode: kbliPath?.kelompok.kode || editData.kbli_kelompok_kode || '',
         kecamatan_nama: editData.kecamatan_nama || '',
-        desa_kode: editData.desa_kode || '',
         desa_nama: editData.desa_nama || '',
-        sls_kode: editData.sls_kode || '',
         sls_nama: editData.sls_nama || '',
         sub_sls: editData.sub_sls || '',
         latitude: editData.latitude,
         longitude: editData.longitude,
-        platform_digital: editData.platform_digital?.length > 0 ? editData.platform_digital : [{ platform: '', nama_akun: '' }],
+        platforms: editData.platforms?.length > 0 ? editData.platforms.map(p => ({ platform: p.platform, nama_akun: p.nama_akun })) : [{ platform: '', nama_akun: '' }],
         kelas_usaha: editData.kelas_usaha || '',
         cakupan_pasar: editData.cakupan_pasar || '',
       })
@@ -186,11 +167,11 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
     switch (step) {
       case 0: return !!(form.nama_pemilik.trim() && form.nama_usaha.trim())
       case 1: return !!(form.kbli_kategori_kode && form.kbli_golongan_pokok_kode && form.kbli_golongan_kode && form.kbli_subgolongan_kode && form.kbli_kelompok_kode && form.deskripsi_kegiatan.trim())
-      case 2: return !!(form.provinsi_kode && form.kabkot_kode && form.kecamatan_kode && form.desa_kode && form.sls_nama.trim())
+      case 2: return !!(form.kecamatan_nama && form.desa_nama && form.sls_nama.trim())
       case 3: return true // Geo is optional
       case 4: {
-        const valid = form.platform_digital.filter((p) => p.platform && p.nama_akun)
-        const incomplete = form.platform_digital.some((p) => (p.platform && !p.nama_akun) || (!p.platform && p.nama_akun))
+        const valid = form.platforms.filter((p) => p.platform && p.nama_akun)
+        const incomplete = form.platforms.some((p) => (p.platform && !p.nama_akun) || (!p.platform && p.nama_akun))
         return valid.length > 0 && !incomplete
       }
       case 5: return !!(form.kelas_usaha && form.cakupan_pasar)
@@ -213,16 +194,14 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
     if (!form.kbli_golongan_kode) e.kbli_g = 'Golongan wajib dipilih'
     if (!form.kbli_subgolongan_kode) e.kbli_sg = 'Subgolongan wajib dipilih'
     if (!form.kbli_kelompok_kode) e.kbli_k = 'Kelompok KBLI wajib dipilih'
-    if (!form.provinsi_kode) e.provinsi = 'Provinsi wajib dipilih'
-    if (!form.kabkot_kode) e.kabkot = 'Kabupaten/Kota wajib dipilih'
     if (!form.kecamatan_nama) e.kecamatan = 'Kecamatan wajib dipilih'
     if (!form.desa_nama) e.desa = 'Desa/Kelurahan wajib dipilih'
     if (!form.sls_nama.trim()) e.sls_nama = 'Nama SLS wajib diisi'
     if (!form.kelas_usaha) e.kelas_usaha = 'Skala usaha wajib dipilih'
     if (!form.cakupan_pasar) e.cakupan_pasar = 'Cakupan pasar wajib dipilih'
-    const validPlatforms = form.platform_digital.filter((p) => p.platform && p.nama_akun)
+    const validPlatforms = form.platforms.filter((p) => p.platform && p.nama_akun)
     if (validPlatforms.length === 0) e.platform = 'Minimal 1 platform dan nama akun wajib diisi'
-    if (form.platform_digital.some((p) => (p.platform && !p.nama_akun) || (!p.platform && p.nama_akun))) {
+    if (form.platforms.some((p) => (p.platform && !p.nama_akun) || (!p.platform && p.nama_akun))) {
       e.platform = 'Platform dan nama akun harus diisi keduanya'
     }
     setErrors(e)
@@ -245,31 +224,16 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
         nama_usaha: form.nama_usaha,
         deskripsi_kegiatan: form.deskripsi_kegiatan || undefined,
         kbli_kategori_kode: form.kbli_kategori_kode,
-        kbli_kategori_nama: form.kbli_kategori_nama,
-        kbli_golongan_pokok_kode: form.kbli_golongan_pokok_kode,
-        kbli_golongan_pokok_nama: form.kbli_golongan_pokok_nama,
-        kbli_golongan_kode: form.kbli_golongan_kode,
-        kbli_golongan_nama: form.kbli_golongan_nama,
-        kbli_subgolongan_kode: form.kbli_subgolongan_kode,
-        kbli_subgolongan_nama: form.kbli_subgolongan_nama,
         kbli_kelompok_kode: form.kbli_kelompok_kode,
-        kbli_kelompok_nama: form.kbli_kelompok_nama,
-        provinsi_kode: form.provinsi_kode,
-        provinsi_nama: form.provinsi_nama,
-        kabkot_kode: form.kabkot_kode,
-        kabkot_nama: form.kabkot_nama,
-        kecamatan_kode: form.kecamatan_kode,
         kecamatan_nama: form.kecamatan_nama,
-        desa_kode: form.desa_kode,
         desa_nama: form.desa_nama,
-        sls_kode: form.sls_kode,
         sls_nama: form.sls_nama,
         sub_sls: form.sub_sls,
         latitude: form.latitude,
         longitude: form.longitude,
-        platform_digital: form.platform_digital.filter((p) => p.platform && p.nama_akun),
-        kelas_usaha: form.kelas_usaha as 'mikro' | 'kecil' | 'menengah' | 'besar',
-        cakupan_pasar: form.cakupan_pasar as 'lokal' | 'regional' | 'nasional' | 'internasional',
+        platforms: form.platforms.filter((p) => p.platform && p.nama_akun),
+        kelas_usaha: form.kelas_usaha,
+        cakupan_pasar: form.cakupan_pasar,
       }
       if (isEdit && editData) {
         await updateUsaha({ id: editData.id, data: payload }).unwrap()
@@ -314,7 +278,7 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
         </div>
       }
       position="right"
-      size="lg"
+      size="xl"
       styles={{
         header: { backgroundColor: '#003087', padding: '16px 24px' },
         title: { color: 'white' },
@@ -395,11 +359,11 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
                   const item = kbliKategori.find((k) => k.kode === val)
                   setForm((prev) => ({
                     ...prev,
-                    kbli_kategori_kode: val || '', kbli_kategori_nama: item?.nama || '',
-                    kbli_golongan_pokok_kode: '', kbli_golongan_pokok_nama: '',
-                    kbli_golongan_kode: '', kbli_golongan_nama: '',
-                    kbli_subgolongan_kode: '', kbli_subgolongan_nama: '',
-                    kbli_kelompok_kode: '', kbli_kelompok_nama: '',
+                    kbli_kategori_kode: val || '',
+                    kbli_golongan_pokok_kode: '',
+                    kbli_golongan_kode: '',
+                    kbli_subgolongan_kode: '',
+                    kbli_kelompok_kode: '',
                   }))
                 }}
                 searchable
@@ -415,10 +379,10 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
                   const item = golonganPokok.find((g) => g.kode === val)
                   setForm((prev) => ({
                     ...prev,
-                    kbli_golongan_pokok_kode: val || '', kbli_golongan_pokok_nama: item?.nama || '',
-                    kbli_golongan_kode: '', kbli_golongan_nama: '',
-                    kbli_subgolongan_kode: '', kbli_subgolongan_nama: '',
-                    kbli_kelompok_kode: '', kbli_kelompok_nama: '',
+                    kbli_golongan_pokok_kode: val || '',
+                    kbli_golongan_kode: '',
+                    kbli_subgolongan_kode: '',
+                    kbli_kelompok_kode: '',
                   }))
                 }}
                 disabled={!form.kbli_kategori_kode}
@@ -435,9 +399,9 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
                   const item = golongan.find((g) => g.kode === val)
                   setForm((prev) => ({
                     ...prev,
-                    kbli_golongan_kode: val || '', kbli_golongan_nama: item?.nama || '',
-                    kbli_subgolongan_kode: '', kbli_subgolongan_nama: '',
-                    kbli_kelompok_kode: '', kbli_kelompok_nama: '',
+                    kbli_golongan_kode: val || '',
+                    kbli_subgolongan_kode: '',
+                    kbli_kelompok_kode: '',
                   }))
                 }}
                 disabled={!form.kbli_golongan_pokok_kode}
@@ -454,8 +418,8 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
                   const item = subgolongan.find((g) => g.kode === val)
                   setForm((prev) => ({
                     ...prev,
-                    kbli_subgolongan_kode: val || '', kbli_subgolongan_nama: item?.nama || '',
-                    kbli_kelompok_kode: '', kbli_kelompok_nama: '',
+                    kbli_subgolongan_kode: val || '',
+                    kbli_kelompok_kode: '',
                   }))
                 }}
                 disabled={!form.kbli_golongan_kode}
@@ -470,7 +434,7 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
                 value={form.kbli_kelompok_kode || null}
                 onChange={(val) => {
                   const item = kelompok.find((g) => g.kode === val)
-                  setForm((prev) => ({ ...prev, kbli_kelompok_kode: val || '', kbli_kelompok_nama: item?.nama || '' }))
+                  setForm((prev) => ({ ...prev, kbli_kelompok_kode: val || '' }))
                 }}
                 disabled={!form.kbli_subgolongan_kode}
                 searchable
@@ -478,14 +442,17 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
                 required
               />
 
-              {form.kbli_kelompok_kode && (
-                <Paper p="md" radius="md" bg="blue.0" withBorder style={{ borderColor: 'var(--mantine-color-blue-2)' }}>
-                  <Text size="xs" fw={700} c="blue.9" mb="xs">KBLI Terpilih:</Text>
-                  <Text size="sm" fw={700}>{form.kbli_kelompok_kode}</Text>
-                  <Text size="sm" c="dimmed">{form.kbli_kelompok_nama}</Text>
-                  <Text size="xs" c="dimmed" mt="xs">{form.kbli_kategori_nama}</Text>
-                </Paper>
-              )}
+              {form.kbli_kelompok_kode && (() => {
+                const path = getKbliPathByKelompokKode(form.kbli_kelompok_kode)
+                return (
+                  <Paper p="md" radius="md" bg="blue.0" withBorder style={{ borderColor: 'var(--mantine-color-blue-2)' }}>
+                    <Text size="xs" fw={700} c="blue.9" mb="xs">KBLI Terpilih:</Text>
+                    <Text size="sm" fw={700}>{form.kbli_kelompok_kode}</Text>
+                    <Text size="sm" c="dimmed">{path?.kelompok.nama || '-'}</Text>
+                    <Text size="xs" c="dimmed" mt="xs">{path?.kategori.nama || '-'}</Text>
+                  </Paper>
+                )
+              })()}
 
               <Textarea
                 label="Deskripsi Kegiatan Usaha"
@@ -530,9 +497,9 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
                 onChange={(val) => {
                   setForm((prev) => ({
                     ...prev,
-                    kecamatan_kode: val || '', kecamatan_nama: val || '',
-                    desa_kode: '', desa_nama: '',
-                    sls_kode: '', sls_nama: '',
+                    kecamatan_nama: val || '',
+                    desa_nama: '',
+                    sls_nama: '',
                   }))
                 }}
                 searchable
@@ -547,8 +514,8 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
                 onChange={(val) => {
                   setForm((prev) => ({
                     ...prev,
-                    desa_kode: val || '', desa_nama: val || '',
-                    sls_kode: '', sls_nama: '',
+                    desa_nama: val || '',
+                    sls_nama: '',
                   }))
                 }}
                 disabled={!form.kecamatan_nama}
@@ -619,7 +586,7 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
               <Text size="sm" c="dimmed">Tambahkan semua platform yang digunakan untuk menjalankan usaha secara digital. Minimal 1 platform wajib diisi.</Text>
               {errors.platform && <Text size="xs" c="red">{errors.platform}</Text>}
 
-              {form.platform_digital.map((item, idx) => (
+              {form.platforms.map((item, idx) => (
                 <Paper key={idx} p="md" radius="md" bg="gray.0" withBorder>
                   <Group align="start" gap="sm">
                     <Stack gap="sm" style={{ flex: 1 }}>
@@ -629,9 +596,9 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
                         data={PLATFORM_OPTIONS}
                         value={item.platform || null}
                         onChange={(val) => {
-                          const updated = [...form.platform_digital]
+                          const updated = [...form.platforms]
                           updated[idx] = { ...updated[idx], platform: val || '' }
-                          setField('platform_digital', updated)
+                          setField('platforms', updated)
                         }}
                         searchable
                         size="sm"
@@ -642,22 +609,22 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
                         placeholder="@nama_akun / URL / nomor"
                         value={item.nama_akun}
                         onChange={(e) => {
-                          const updated = [...form.platform_digital]
+                          const updated = [...form.platforms]
                           updated[idx] = { ...updated[idx], nama_akun: e.currentTarget.value }
-                          setField('platform_digital', updated)
+                          setField('platforms', updated)
                         }}
                         size="sm"
                         required
                       />
                     </Stack>
-                    {form.platform_digital.length > 1 && (
+                    {form.platforms.length > 1 && (
                       <ActionIcon
                         variant="subtle"
                         color="red"
                         mt={28}
                         onClick={() => {
-                          const updated = form.platform_digital.filter((_, i) => i !== idx)
-                          setField('platform_digital', updated)
+                          const updated = form.platforms.filter((_, i) => i !== idx)
+                          setField('platforms', updated)
                         }}
                       >
                         <IconTrash size={16} />
@@ -672,7 +639,7 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
                 color="gray"
                 fullWidth
                 leftSection={<IconPlus size={16} />}
-                onClick={() => setField('platform_digital', [...form.platform_digital, { platform: '', nama_akun: '' }])}
+                onClick={() => setField('platforms', [...form.platforms, { platform: '', nama_akun: '' }])}
                 styles={{ root: { borderStyle: 'dashed' } }}
               >
                 Tambah Platform Lain
@@ -747,9 +714,9 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
                   {[
                     { label: 'Nama Usaha', val: form.nama_usaha || '-' },
                     { label: 'Pemilik', val: form.nama_pemilik || '-' },
-                    { label: 'KBLI', val: form.kbli_kelompok_kode ? `${form.kbli_kelompok_kode} — ${form.kbli_kelompok_nama}` : (form.kbli_kategori_nama || '-') },
-                    { label: 'Lokasi', val: [form.desa_nama, form.kecamatan_nama, form.kabkot_nama].filter(Boolean).join(', ') || '-' },
-                    { label: 'Platform', val: form.platform_digital.filter((p) => p.platform).map((p) => `${p.platform}`).join(', ') || '-' },
+                    { label: 'KBLI', val: form.kbli_kelompok_kode ? `${form.kbli_kelompok_kode} — ${getKbliPathByKelompokKode(form.kbli_kelompok_kode)?.kelompok.nama || ''}` : '-' },
+                    { label: 'Lokasi', val: [form.desa_nama, form.kecamatan_nama, 'Tabanan'].filter(Boolean).join(', ') || '-' },
+                    { label: 'Platform', val: form.platforms.filter((p) => p.platform).map((p) => `${p.platform}`).join(', ') || '-' },
                     { label: 'Koordinat', val: form.latitude ? `${form.latitude.toFixed(6)}, ${form.longitude?.toFixed(6)}` : '-' },
                   ].map((row) => (
                     <Group key={row.label} gap="sm">

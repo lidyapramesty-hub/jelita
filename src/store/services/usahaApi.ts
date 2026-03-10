@@ -1,5 +1,5 @@
 import { baseApi } from '../baseApi'
-import type { Usaha, StatsData } from '@/types/usaha'
+import type { Usaha, StatsData, Platform } from '@/types/usaha'
 
 interface UsahaListResponse {
   data: Usaha[]
@@ -29,7 +29,22 @@ interface UsahaListParams {
   sort_dir?: string
 }
 
-export type UsahaCreateInput = Omit<Usaha, 'id' | 'created_at' | 'updated_at' | 'created_by' | 'created_by_email' | 'updated_by_email' | 'is_active'>
+export interface UsahaCreateInput {
+  nama_pemilik: string
+  nama_usaha: string
+  deskripsi_kegiatan?: string
+  kbli_kategori_kode?: string
+  kbli_kelompok_kode?: string
+  kecamatan_nama?: string
+  desa_nama?: string
+  sls_nama?: string
+  sub_sls?: string
+  latitude?: number | null
+  longitude?: number | null
+  platforms?: Pick<Platform, 'platform' | 'nama_akun'>[]
+  kelas_usaha?: string
+  cakupan_pasar?: string
+}
 
 export const usahaApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

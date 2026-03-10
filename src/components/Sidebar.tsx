@@ -15,6 +15,7 @@ import {
   IconX,
   IconActivity,
   IconChevronRight,
+  IconShieldCheck,
 } from '@tabler/icons-react'
 import useAuth from '@/hooks/useAuth'
 
@@ -23,22 +24,8 @@ interface NavItem {
   label: string
   icon: React.ReactNode
   description?: string
+  adminOnly?: boolean
 }
-
-const navItems: NavItem[] = [
-  {
-    href: '/dashboard',
-    label: 'Dashboard',
-    icon: <IconChartBar size={20} />,
-    description: 'Statistik & Peta',
-  },
-  {
-    href: '/daftar-usaha',
-    label: 'Daftar Usaha',
-    icon: <IconBuildingStore size={20} />,
-    description: 'Kelola Data Usaha',
-  },
-]
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -46,6 +33,13 @@ export default function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const userEmail = user?.username
+  const isAdmin = user?.role === 'admin'
+
+  const navItems: NavItem[] = [
+    { href: '/dashboard', label: 'Dashboard', icon: <IconChartBar size={20} />, description: 'Statistik & Peta' },
+    { href: '/daftar-usaha', label: 'Daftar Usaha', icon: <IconBuildingStore size={20} />, description: 'Kelola Data Usaha' },
+    { href: '/admin', label: 'Admin Panel', icon: <IconShieldCheck size={20} />, description: 'Kelola Pengguna', adminOnly: true },
+  ].filter(item => !item.adminOnly || isAdmin)
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -113,7 +107,7 @@ export default function Sidebar() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-white text-xs font-semibold truncate">{userEmail || 'Pengguna'}</p>
-            <p className="text-white/40 text-xs">BPS Tabanan</p>
+            <p className="text-white/40 text-xs">{user?.role === 'admin' ? 'Administrator' : user?.role === 'mitra' ? 'Mitra BPS' : 'Pegawai BPS'}</p>
           </div>
         </div>
         <button

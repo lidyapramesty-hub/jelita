@@ -11,6 +11,7 @@ interface UsahaTableProps {
     onView: (usaha: Usaha) => void
     onEdit: (usaha: Usaha) => void
     onDelete: (id: string) => void
+    isAdmin?: boolean
 }
 
 const BADGE_KELAS: Record<string, { color: string }> = {
@@ -27,7 +28,7 @@ const BADGE_PASAR: Record<string, { color: string }> = {
     internasional: { color: 'violet' },
 }
 
-export default function UsahaTable({ data, onView, onEdit, onDelete }: UsahaTableProps) {
+export default function UsahaTable({ data, onView, onEdit, onDelete, isAdmin }: UsahaTableProps) {
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus<Usaha>>({
         columnAccessor: 'nama_usaha',
         direction: 'asc',
@@ -80,13 +81,13 @@ export default function UsahaTable({ data, onView, onEdit, onDelete }: UsahaTabl
                     ),
                 },
                 {
-                    accessor: 'kbli_kategori_nama',
+                    accessor: 'kbli_kategori_kode',
                     title: 'Kategori',
                     sortable: true,
                     render: (record) => (
                         <div>
                             <Text size="xs" fw={500}>{record.kbli_kelompok_kode || '—'}</Text>
-                            <Text size="xs" c="dimmed" lineClamp={1} style={{ maxWidth: 160 }}>{record.kbli_kategori_nama || '—'}</Text>
+                            <Text size="xs" c="dimmed" lineClamp={1} style={{ maxWidth: 160 }}>{record.kbli_kategori_kode || '—'}</Text>
                         </div>
                     ),
                 },
@@ -176,18 +177,20 @@ export default function UsahaTable({ data, onView, onEdit, onDelete }: UsahaTabl
                                     </ActionIcon>
                                 </Tooltip>
                             )}
-                            <Tooltip label="Hapus">
-                                <ActionIcon
-                                    variant="subtle"
-                                    color="red"
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        onDelete(record.id)
-                                    }}
-                                >
-                                    <IconTrash size={16} />
-                                </ActionIcon>
-                            </Tooltip>
+                            {isAdmin && (
+                                <Tooltip label="Hapus">
+                                    <ActionIcon
+                                        variant="subtle"
+                                        color="red"
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            onDelete(record.id)
+                                        }}
+                                    >
+                                        <IconTrash size={16} />
+                                    </ActionIcon>
+                                </Tooltip>
+                            )}
                         </Group>
                     ),
                 },

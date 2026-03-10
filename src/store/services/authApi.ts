@@ -4,6 +4,7 @@ import type { AuthUser } from '../authSlice'
 interface LoginRequest {
   username: string
   password: string
+  role?: 'pegawai' | 'mitra'
 }
 
 interface LoginResponse {

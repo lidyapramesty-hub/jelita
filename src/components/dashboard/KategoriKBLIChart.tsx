@@ -2,14 +2,21 @@
 
 import { Paper, Text, Group } from '@mantine/core'
 import { IconChartBar } from '@tabler/icons-react'
+import { kbliKategori } from '@/data/kbli2025'
 
 interface KategoriKBLIChartProps {
     byKategori: Record<string, number>
     total: number
 }
 
+const kategoriNamaMap: Record<string, string> = Object.fromEntries(
+    kbliKategori.map(k => [k.kode, k.nama])
+)
+
 export default function KategoriKBLIChart({ byKategori, total }: KategoriKBLIChartProps) {
-    const sorted = Object.entries(byKategori).sort((a, b) => b[1] - a[1])
+    const sorted = Object.entries(byKategori)
+        .map(([kode, count]) => [kategoriNamaMap[kode] || kode, count] as [string, number])
+        .sort((a, b) => b[1] - a[1])
     const denominator = total || 1
     const maxVal = sorted.length > 0 ? sorted[0][1] : 0
     const minVal = sorted.length > 0 ? sorted[sorted.length - 1][1] : 0

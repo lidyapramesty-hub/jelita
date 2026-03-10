@@ -51,7 +51,8 @@ export default function LoginPage() {
     }
 
     try {
-      await login(username, password)
+      const role = loginMethod === 'mitra' ? 'mitra' : 'pegawai'
+      await login(username, password, role)
     } catch (err: unknown) {
       const apiError = err as { data?: { message?: string; errors?: Record<string, string[]> } }
       if (apiError?.data?.errors?.username) {

@@ -27,10 +27,13 @@ import {
   IconBuildingStore,
 } from '@tabler/icons-react'
 import { useGetUsahaListQuery, useDeleteUsahaMutation } from '@/store/services/usahaApi'
+import useAuth from '@/hooks/useAuth'
 
 const FormTambahUsaha = dynamic(() => import('@/components/FormTambahUsaha'), { ssr: false })
 
 export default function DaftarUsahaPage() {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
   const [showForm, setShowForm] = useState(false)
   const [editUsaha, setEditUsaha] = useState<Usaha | null>(null)
   const [search, setSearch] = useState('')
@@ -91,7 +94,7 @@ export default function DaftarUsahaPage() {
         !q ||
         u.nama_usaha?.toLowerCase().includes(q) ||
         u.nama_pemilik?.toLowerCase().includes(q) ||
-        u.kbli_kategori_nama?.toLowerCase().includes(q) ||
+        u.kbli_kategori_kode?.toLowerCase().includes(q) ||
         u.kecamatan_nama?.toLowerCase().includes(q)
       const matchKelas = !filterKelas || u.kelas_usaha === filterKelas
       const matchPasar = !filterPasar || u.cakupan_pasar === filterPasar
@@ -251,6 +254,7 @@ export default function DaftarUsahaPage() {
               onView={(usaha) => setSelectedUsaha(usaha)}
               onEdit={handleEdit}
               onDelete={(id) => setDeleteId(id)}
+              isAdmin={isAdmin}
             />
           )}
         </div>

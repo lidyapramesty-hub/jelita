@@ -4,6 +4,7 @@ export interface AuthUser {
   id: number
   name: string
   username: string
+  role: 'pegawai' | 'mitra' | 'admin'
 }
 
 interface AuthState {

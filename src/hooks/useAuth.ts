@@ -18,8 +18,8 @@ export default function useAuth() {
   const [triggerGetMe, { isLoading: isLoadingUser }] = useLazyGetMeQuery()
 
   const login = useCallback(
-    async (username: string, password: string) => {
-      const result = await loginMutation({ username, password }).unwrap()
+    async (username: string, password: string, role?: 'pegawai' | 'mitra') => {
+      const result = await loginMutation({ username, password, role }).unwrap()
       setToken(result.token)
       dispatch(setCredentials({ user: result.user, token: result.token }))
       router.push('/dashboard')

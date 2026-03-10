@@ -1,6 +1,4 @@
-import { Usaha } from '@/types/usaha';
-
-export const staticUsahaData: Usaha[] = [
+export const staticUsahaData: Record<string, unknown>[] = [
     {
         id: '1',
         nama_pemilik: 'I Wayan Sudirman',
@@ -697,7 +695,7 @@ export const staticUsahaData: Usaha[] = [
 ];
 
 // Helper: compute stats from static data
-export function computeStats(data: Usaha[]): import('@/types/usaha').StatsData {
+export function computeStats(data: Record<string, unknown>[]): import('@/types/usaha').StatsData {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -706,9 +704,11 @@ export function computeStats(data: Usaha[]): import('@/types/usaha').StatsData {
     let recentCount = 0;
 
     data.forEach((r) => {
-        if (r.kecamatan_nama) byKecamatan[r.kecamatan_nama] = (byKecamatan[r.kecamatan_nama] || 0) + 1;
-        if (r.kbli_kategori_nama) byKategori[r.kbli_kategori_nama] = (byKategori[r.kbli_kategori_nama] || 0) + 1;
-        if (new Date(r.created_at) > thirtyDaysAgo) recentCount++;
+        const kecNama = r.kecamatan_nama as string | undefined;
+        const katNama = r.kbli_kategori_nama as string | undefined;
+        if (kecNama) byKecamatan[kecNama] = (byKecamatan[kecNama] || 0) + 1;
+        if (katNama) byKategori[katNama] = (byKategori[katNama] || 0) + 1;
+        if (new Date(r.created_at as string) > thirtyDaysAgo) recentCount++;
     });
 
     return {
