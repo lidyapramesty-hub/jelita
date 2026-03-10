@@ -15,6 +15,7 @@ import {
   getSubgolonganByGolongan, getKelompokBySubgolongan,
 } from '@/data/kbli2025'
 import { Usaha } from '@/types/usaha'
+import { useCreateUsahaMutation, useUpdateUsahaMutation } from '@/store/services/usahaApi'
 
 const GeotagMap = dynamic(() => import('./GeotagMap'), { ssr: false })
 
@@ -89,11 +90,14 @@ interface Props {
 export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props) {
   const isEdit = !!editData
   const [form, setForm] = useState<FormData>(initialForm)
-  const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [activeStep, setActiveStep] = useState(0)
   const [visitedSteps, setVisitedSteps] = useState<Set<number>>(new Set([0]))
   const [kecamatanMap, setKecamatanMap] = useState<Record<string, string[]>>({})
+
+  const [createUsaha, { isLoading: isCreating }] = useCreateUsahaMutation()
+  const [updateUsaha, { isLoading: isUpdating }] = useUpdateUsahaMutation()
+  const submitting = isCreating || isUpdating
 
   useEffect(() => {
     const fetchKecamatanData = async () => {
@@ -235,18 +239,48 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
       }
       return
     }
-    setSubmitting(true)
-    const userEmail = typeof window !== 'undefined' ? localStorage.getItem('user_email') || 'pencacah01@bps.go.id' : 'pencacah01@bps.go.id'
-    const now = new Date().toISOString()
-    if (isEdit) {
-      console.log('Updating usaha:', { ...form, updated_by_email: userEmail, updated_at: now })
-    } else {
-      console.log('Saving usaha:', { ...form, created_by_email: userEmail, created_at: now, is_active: true })
-    }
-    setTimeout(() => {
-      setSubmitting(false)
+    try {
+      const payload = {
+        nama_pemilik: form.nama_pemilik,
+        nama_usaha: form.nama_usaha,
+        deskripsi_kegiatan: form.deskripsi_kegiatan || undefined,
+        kbli_kategori_kode: form.kbli_kategori_kode,
+        kbli_kategori_nama: form.kbli_kategori_nama,
+        kbli_golongan_pokok_kode: form.kbli_golongan_pokok_kode,
+        kbli_golongan_pokok_nama: form.kbli_golongan_pokok_nama,
+        kbli_golongan_kode: form.kbli_golongan_kode,
+        kbli_golongan_nama: form.kbli_golongan_nama,
+        kbli_subgolongan_kode: form.kbli_subgolongan_kode,
+        kbli_subgolongan_nama: form.kbli_subgolongan_nama,
+        kbli_kelompok_kode: form.kbli_kelompok_kode,
+        kbli_kelompok_nama: form.kbli_kelompok_nama,
+        provinsi_kode: form.provinsi_kode,
+        provinsi_nama: form.provinsi_nama,
+        kabkot_kode: form.kabkot_kode,
+        kabkot_nama: form.kabkot_nama,
+        kecamatan_kode: form.kecamatan_kode,
+        kecamatan_nama: form.kecamatan_nama,
+        desa_kode: form.desa_kode,
+        desa_nama: form.desa_nama,
+        sls_kode: form.sls_kode,
+        sls_nama: form.sls_nama,
+        sub_sls: form.sub_sls,
+        latitude: form.latitude,
+        longitude: form.longitude,
+        platform_digital: form.platform_digital.filter((p) => p.platform && p.nama_akun),
+        kelas_usaha: form.kelas_usaha as 'mikro' | 'kecil' | 'menengah' | 'besar',
+        cakupan_pasar: form.cakupan_pasar as 'lokal' | 'regional' | 'nasional' | 'internasional',
+      }
+      if (isEdit && editData) {
+        await updateUsaha({ id: editData.id, data: payload }).unwrap()
+      } else {
+        await createUsaha(payload).unwrap()
+      }
       onSuccess()
-    }, 800)
+    } catch (err) {
+      console.error('Submit error:', err)
+      setErrors({ submit: 'Gagal menyimpan data. Silakan coba lagi.' })
+    }
   }
 
   const nextStep = () => {

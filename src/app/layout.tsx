@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { MantineProvider, ColorSchemeScript, createTheme } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
+import ReduxProvider from '@/components/providers/ReduxProvider'
+import AuthGuard from '@/components/providers/AuthGuard'
 import './globals.css'
 
 const theme = createTheme({
@@ -41,10 +43,14 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider theme={theme}>
-          <Notifications position="top-right" />
-          {children}
-        </MantineProvider>
+        <ReduxProvider>
+          <MantineProvider theme={theme}>
+            <Notifications position="top-right" />
+            <AuthGuard>
+              {children}
+            </AuthGuard>
+          </MantineProvider>
+        </ReduxProvider>
       </body>
     </html>
   )

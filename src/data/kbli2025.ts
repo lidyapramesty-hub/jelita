@@ -135,6 +135,47 @@ export const kbliGolonganPokok: KBLIGolonganPokok[] = [
   { kode: '97', nama: 'Aktivitas Rumah Tangga sebagai Pemberi Kerja dari Pekerja Rumah Tangga', kategori_kode: 'U' },
   // V - Badan Internasional
   { kode: '99', nama: 'Aktivitas Badan Internasional dan Badan Ekstra Internasional Lainnya', kategori_kode: 'V' },
+  // === Tambahan Golongan Pokok yang belum ada ===
+  // A
+  { kode: '02', nama: 'Kehutanan dan Penebangan Kayu', kategori_kode: 'A' },
+  // B
+  { kode: '06', nama: 'Pertambangan Minyak Bumi dan Gas Alam dan Panas Bumi', kategori_kode: 'B' },
+  { kode: '07', nama: 'Pertambangan Bijih Logam', kategori_kode: 'B' },
+  { kode: '09', nama: 'Aktivitas Penunjang Pertambangan dan Penggalian', kategori_kode: 'B' },
+  // C
+  { kode: '12', nama: 'Industri Pengolahan Tembakau', kategori_kode: 'C' },
+  { kode: '19', nama: 'Industri Produk dari Batu Bara dan Pengilangan Minyak Bumi', kategori_kode: 'C' },
+  { kode: '20', nama: 'Industri Bahan Kimia dan Barang dari Bahan Kimia', kategori_kode: 'C' },
+  { kode: '21', nama: 'Industri Farmasi, Produk Obat Kimia dan Obat Tradisional', kategori_kode: 'C' },
+  { kode: '22', nama: 'Industri Karet, Barang dari Karet dan Plastik', kategori_kode: 'C' },
+  { kode: '23', nama: 'Industri Barang Galian Bukan Logam', kategori_kode: 'C' },
+  { kode: '24', nama: 'Industri Logam Dasar', kategori_kode: 'C' },
+  { kode: '25', nama: 'Industri Barang Logam, Bukan Mesin dan Peralatannya', kategori_kode: 'C' },
+  { kode: '26', nama: 'Industri Komputer, Barang Elektronik dan Optik', kategori_kode: 'C' },
+  { kode: '27', nama: 'Industri Peralatan Listrik', kategori_kode: 'C' },
+  { kode: '28', nama: 'Industri Mesin dan Perlengkapan YTDL', kategori_kode: 'C' },
+  { kode: '29', nama: 'Industri Kendaraan Bermotor, Trailer dan Semi Trailer', kategori_kode: 'C' },
+  { kode: '30', nama: 'Industri Alat Angkutan Lainnya', kategori_kode: 'C' },
+  { kode: '33', nama: 'Reparasi dan Pemasangan Mesin dan Peralatan', kategori_kode: 'C' },
+  // E
+  { kode: '37', nama: 'Pengelolaan Air Limbah', kategori_kode: 'E' },
+  { kode: '39', nama: 'Aktivitas Remediasi dan Pengelolaan Limbah Lainnya', kategori_kode: 'E' },
+  // H
+  { kode: '51', nama: 'Angkutan Udara', kategori_kode: 'H' },
+  // L
+  { kode: '65', nama: 'Asuransi, Reasuransi, dan Dana Pensiun', kategori_kode: 'L' },
+  // N
+  { kode: '72', nama: 'Penelitian dan Pengembangan Ilmiah', kategori_kode: 'N' },
+  { kode: '75', nama: 'Aktivitas Kesehatan Hewan', kategori_kode: 'N' },
+  // O
+  { kode: '77', nama: 'Aktivitas Persewaan dan Sewa Guna Usaha Tanpa Hak Opsi', kategori_kode: 'O' },
+  { kode: '78', nama: 'Aktivitas Ketenagakerjaan', kategori_kode: 'O' },
+  { kode: '80', nama: 'Aktivitas Keamanan dan Penyelidikan', kategori_kode: 'O' },
+  { kode: '81', nama: 'Aktivitas Penunjang Perawatan Bangunan dan Lansekap', kategori_kode: 'O' },
+  // S
+  { kode: '91', nama: 'Aktivitas Perpustakaan, Arsip, Museum dan Kegiatan Kebudayaan Lainnya', kategori_kode: 'S' },
+  { kode: '92', nama: 'Aktivitas Perjudian dan Pertaruhan', kategori_kode: 'S' },
+  { kode: '94', nama: 'Aktivitas Keanggotaan Organisasi', kategori_kode: 'S' },
 ]
 
 export const kbliGolongan: KBLIGolongan[] = [
@@ -298,6 +339,107 @@ export const kbliGolongan: KBLIGolongan[] = [
   { kode: '970', nama: 'Aktivitas Rumah Tangga sebagai Pemberi Kerja', golongan_pokok_kode: '97' },
   // Badan internasional 99
   { kode: '990', nama: 'Aktivitas Badan Internasional', golongan_pokok_kode: '99' },
+  // === Tambahan Golongan untuk GP baru ===
+  // Kehutanan 02
+  { kode: '021', nama: 'Silvikultur dan Kegiatan Kehutanan Lainnya', golongan_pokok_kode: '02' },
+  { kode: '022', nama: 'Penebangan Kayu', golongan_pokok_kode: '02' },
+  { kode: '023', nama: 'Pengumpulan Hasil Hutan Bukan Kayu', golongan_pokok_kode: '02' },
+  { kode: '024', nama: 'Jasa Penunjang Kehutanan', golongan_pokok_kode: '02' },
+  // Pertambangan Migas 06
+  { kode: '061', nama: 'Pertambangan Minyak Bumi', golongan_pokok_kode: '06' },
+  { kode: '062', nama: 'Pertambangan Gas Alam dan Panas Bumi', golongan_pokok_kode: '06' },
+  // Pertambangan Bijih Logam 07
+  { kode: '071', nama: 'Pertambangan Bijih Besi', golongan_pokok_kode: '07' },
+  { kode: '072', nama: 'Pertambangan Bijih Logam Bukan Besi', golongan_pokok_kode: '07' },
+  // Jasa Pertambangan 09
+  { kode: '091', nama: 'Aktivitas Penunjang Pertambangan Minyak Bumi dan Gas Alam', golongan_pokok_kode: '09' },
+  { kode: '099', nama: 'Aktivitas Penunjang Pertambangan dan Penggalian Lainnya', golongan_pokok_kode: '09' },
+  // Tembakau 12
+  { kode: '120', nama: 'Industri Pengolahan Tembakau', golongan_pokok_kode: '12' },
+  // Batu Bara & Minyak 19
+  { kode: '191', nama: 'Industri Produk dari Batu Bara', golongan_pokok_kode: '19' },
+  { kode: '192', nama: 'Industri Pengilangan Minyak Bumi', golongan_pokok_kode: '19' },
+  // Bahan Kimia 20
+  { kode: '201', nama: 'Industri Bahan Kimia Dasar, Pupuk dan Nitrogen, Plastik dan Karet Sintetis', golongan_pokok_kode: '20' },
+  { kode: '202', nama: 'Industri Bahan Kimia dan Barang Kimia Lainnya', golongan_pokok_kode: '20' },
+  // Farmasi 21
+  { kode: '210', nama: 'Industri Farmasi, Produk Obat Kimia dan Obat Tradisional', golongan_pokok_kode: '21' },
+  // Karet & Plastik 22
+  { kode: '221', nama: 'Industri Karet dan Barang dari Karet', golongan_pokok_kode: '22' },
+  { kode: '222', nama: 'Industri Barang dari Plastik', golongan_pokok_kode: '22' },
+  // Barang Galian 23
+  { kode: '231', nama: 'Industri Kaca dan Barang dari Kaca', golongan_pokok_kode: '23' },
+  { kode: '239', nama: 'Industri Barang Galian Bukan Logam Lainnya', golongan_pokok_kode: '23' },
+  // Logam Dasar 24
+  { kode: '241', nama: 'Industri Logam Dasar Besi dan Baja', golongan_pokok_kode: '24' },
+  { kode: '242', nama: 'Industri Logam Dasar Mulia dan Logam Dasar Bukan Besi', golongan_pokok_kode: '24' },
+  { kode: '243', nama: 'Industri Pengecoran Logam', golongan_pokok_kode: '24' },
+  // Barang Logam 25
+  { kode: '251', nama: 'Industri Barang Logam Siap Pasang untuk Bangunan dan Tangki', golongan_pokok_kode: '25' },
+  { kode: '259', nama: 'Industri Barang Logam Lainnya dan Jasa Pembuatan Barang Logam', golongan_pokok_kode: '25' },
+  // Komputer & Elektronik 26
+  { kode: '261', nama: 'Industri Komponen dan Papan Elektronik', golongan_pokok_kode: '26' },
+  { kode: '262', nama: 'Industri Komputer dan Perlengkapannya', golongan_pokok_kode: '26' },
+  { kode: '263', nama: 'Industri Peralatan Komunikasi', golongan_pokok_kode: '26' },
+  { kode: '264', nama: 'Industri Peralatan Audio dan Video Elektronik', golongan_pokok_kode: '26' },
+  // Peralatan Listrik 27
+  { kode: '271', nama: 'Industri Motor Listrik, Generator dan Transformator', golongan_pokok_kode: '27' },
+  { kode: '272', nama: 'Industri Batu Baterai dan Akumulator Listrik', golongan_pokok_kode: '27' },
+  { kode: '274', nama: 'Industri Peralatan Penerangan Listrik', golongan_pokok_kode: '27' },
+  { kode: '279', nama: 'Industri Peralatan Listrik Lainnya', golongan_pokok_kode: '27' },
+  // Mesin 28
+  { kode: '281', nama: 'Industri Mesin untuk Keperluan Umum', golongan_pokok_kode: '28' },
+  { kode: '282', nama: 'Industri Mesin untuk Keperluan Khusus', golongan_pokok_kode: '28' },
+  // Kendaraan Bermotor 29
+  { kode: '291', nama: 'Industri Kendaraan Bermotor', golongan_pokok_kode: '29' },
+  { kode: '292', nama: 'Industri Karoseri Kendaraan Bermotor', golongan_pokok_kode: '29' },
+  { kode: '293', nama: 'Industri Suku Cadang dan Aksesori Kendaraan Bermotor', golongan_pokok_kode: '29' },
+  // Alat Angkutan Lainnya 30
+  { kode: '301', nama: 'Industri Pembuatan Kapal dan Perahu', golongan_pokok_kode: '30' },
+  { kode: '303', nama: 'Industri Pesawat Terbang dan Perlengkapannya', golongan_pokok_kode: '30' },
+  { kode: '309', nama: 'Industri Alat Angkutan Lainnya YTDL', golongan_pokok_kode: '30' },
+  // Reparasi Mesin 33
+  { kode: '331', nama: 'Reparasi Produk Logam Pabrikasi, Mesin dan Peralatan', golongan_pokok_kode: '33' },
+  { kode: '332', nama: 'Pemasangan Mesin dan Peralatan Industri', golongan_pokok_kode: '33' },
+  // Air Limbah 37
+  { kode: '370', nama: 'Pengelolaan Air Limbah', golongan_pokok_kode: '37' },
+  // Remediasi 39
+  { kode: '390', nama: 'Aktivitas Remediasi dan Pengelolaan Limbah Lainnya', golongan_pokok_kode: '39' },
+  // Angkutan Udara 51
+  { kode: '511', nama: 'Angkutan Udara Penumpang', golongan_pokok_kode: '51' },
+  { kode: '512', nama: 'Angkutan Udara Barang', golongan_pokok_kode: '51' },
+  // Asuransi 65
+  { kode: '651', nama: 'Asuransi', golongan_pokok_kode: '65' },
+  { kode: '652', nama: 'Reasuransi', golongan_pokok_kode: '65' },
+  { kode: '653', nama: 'Dana Pensiun', golongan_pokok_kode: '65' },
+  // Penelitian 72
+  { kode: '721', nama: 'Penelitian dan Pengembangan Ilmu Pengetahuan Alam dan Teknologi', golongan_pokok_kode: '72' },
+  { kode: '722', nama: 'Penelitian dan Pengembangan Ilmu Pengetahuan Sosial dan Humaniora', golongan_pokok_kode: '72' },
+  // Kesehatan Hewan 75
+  { kode: '750', nama: 'Aktivitas Kesehatan Hewan', golongan_pokok_kode: '75' },
+  // Persewaan 77
+  { kode: '771', nama: 'Persewaan dan Sewa Guna Usaha Kendaraan Bermotor', golongan_pokok_kode: '77' },
+  { kode: '772', nama: 'Persewaan dan Sewa Guna Usaha Barang Pribadi dan Rumah Tangga', golongan_pokok_kode: '77' },
+  { kode: '773', nama: 'Persewaan dan Sewa Guna Usaha Mesin dan Peralatan', golongan_pokok_kode: '77' },
+  // Ketenagakerjaan 78
+  { kode: '781', nama: 'Aktivitas Agen Tenaga Kerja', golongan_pokok_kode: '78' },
+  { kode: '782', nama: 'Aktivitas Penyedia Tenaga Kerja Sementara', golongan_pokok_kode: '78' },
+  // Keamanan 80
+  { kode: '801', nama: 'Aktivitas Keamanan Swasta', golongan_pokok_kode: '80' },
+  { kode: '802', nama: 'Aktivitas Jasa Sistem Keamanan', golongan_pokok_kode: '80' },
+  { kode: '803', nama: 'Aktivitas Penyelidikan', golongan_pokok_kode: '80' },
+  // Perawatan Bangunan 81
+  { kode: '811', nama: 'Aktivitas Penunjang Fasilitas', golongan_pokok_kode: '81' },
+  { kode: '812', nama: 'Aktivitas Kebersihan', golongan_pokok_kode: '81' },
+  { kode: '813', nama: 'Aktivitas Perawatan Lansekap', golongan_pokok_kode: '81' },
+  // Perpustakaan Museum 91
+  { kode: '910', nama: 'Aktivitas Perpustakaan, Arsip, Museum dan Kegiatan Kebudayaan Lainnya', golongan_pokok_kode: '91' },
+  // Perjudian 92
+  { kode: '920', nama: 'Aktivitas Perjudian dan Pertaruhan', golongan_pokok_kode: '92' },
+  // Organisasi 94
+  { kode: '941', nama: 'Aktivitas Organisasi Bisnis, Pengusaha dan Profesional', golongan_pokok_kode: '94' },
+  { kode: '942', nama: 'Aktivitas Serikat Pekerja', golongan_pokok_kode: '94' },
+  { kode: '949', nama: 'Aktivitas Organisasi Keanggotaan Lainnya', golongan_pokok_kode: '94' },
 ]
 
 export const kbliSubgolongan: KBLISubgolongan[] = [
@@ -422,6 +564,131 @@ export const kbliSubgolongan: KBLISubgolongan[] = [
   { kode: '8810', nama: 'Aktivitas Sosial Tanpa Akomodasi', golongan_kode: '881' },
   { kode: '9700', nama: 'Aktivitas Rumah Tangga sebagai Pemberi Kerja', golongan_kode: '970' },
   { kode: '9900', nama: 'Aktivitas Badan Internasional', golongan_kode: '990' },
+  // === Tambahan Subgolongan untuk Golongan baru ===
+  // Kehutanan
+  { kode: '0210', nama: 'Silvikultur dan Kegiatan Kehutanan Lainnya', golongan_kode: '021' },
+  { kode: '0220', nama: 'Penebangan Kayu', golongan_kode: '022' },
+  { kode: '0230', nama: 'Pengumpulan Hasil Hutan Bukan Kayu', golongan_kode: '023' },
+  { kode: '0240', nama: 'Jasa Penunjang Kehutanan', golongan_kode: '024' },
+  // Pertambangan Migas
+  { kode: '0610', nama: 'Pertambangan Minyak Bumi', golongan_kode: '061' },
+  { kode: '0620', nama: 'Pertambangan Gas Alam dan Panas Bumi', golongan_kode: '062' },
+  // Bijih Logam
+  { kode: '0710', nama: 'Pertambangan Bijih Besi', golongan_kode: '071' },
+  { kode: '0721', nama: 'Pertambangan Bijih Logam Mulia', golongan_kode: '072' },
+  { kode: '0729', nama: 'Pertambangan Bijih Logam Bukan Besi Lainnya', golongan_kode: '072' },
+  // Jasa Pertambangan
+  { kode: '0910', nama: 'Aktivitas Penunjang Pertambangan Minyak Bumi dan Gas Alam', golongan_kode: '091' },
+  { kode: '0990', nama: 'Aktivitas Penunjang Pertambangan dan Penggalian Lainnya', golongan_kode: '099' },
+  // Tembakau
+  { kode: '1200', nama: 'Industri Pengolahan Tembakau', golongan_kode: '120' },
+  // Batu Bara & Minyak
+  { kode: '1910', nama: 'Industri Produk dari Batu Bara', golongan_kode: '191' },
+  { kode: '1920', nama: 'Industri Pengilangan Minyak Bumi', golongan_kode: '192' },
+  // Bahan Kimia
+  { kode: '2011', nama: 'Industri Bahan Kimia Dasar', golongan_kode: '201' },
+  { kode: '2012', nama: 'Industri Pupuk dan Nitrogen', golongan_kode: '201' },
+  { kode: '2013', nama: 'Industri Plastik dan Karet Sintetis dalam Bentuk Dasar', golongan_kode: '201' },
+  { kode: '2021', nama: 'Industri Pestisida dan Produk Agrokimia Lainnya', golongan_kode: '202' },
+  { kode: '2022', nama: 'Industri Cat, Pernis dan Pelapisan Sejenis', golongan_kode: '202' },
+  { kode: '2023', nama: 'Industri Sabun, Deterjen, Bahan Pembersih, Parfum dan Kosmetik', golongan_kode: '202' },
+  { kode: '2029', nama: 'Industri Bahan Kimia Lainnya YTDL', golongan_kode: '202' },
+  // Farmasi
+  { kode: '2100', nama: 'Industri Farmasi, Produk Obat Kimia dan Obat Tradisional', golongan_kode: '210' },
+  // Karet & Plastik
+  { kode: '2211', nama: 'Industri Ban dan Vulkanisir Ban', golongan_kode: '221' },
+  { kode: '2219', nama: 'Industri Barang dari Karet Lainnya', golongan_kode: '221' },
+  { kode: '2220', nama: 'Industri Barang dari Plastik', golongan_kode: '222' },
+  // Barang Galian
+  { kode: '2310', nama: 'Industri Kaca dan Barang dari Kaca', golongan_kode: '231' },
+  { kode: '2391', nama: 'Industri Barang dari Tanah Liat/Keramik', golongan_kode: '239' },
+  { kode: '2395', nama: 'Industri Semen, Kapur dan Gips', golongan_kode: '239' },
+  { kode: '2399', nama: 'Industri Barang Galian Bukan Logam Lainnya YTDL', golongan_kode: '239' },
+  // Logam Dasar
+  { kode: '2410', nama: 'Industri Logam Dasar Besi dan Baja', golongan_kode: '241' },
+  { kode: '2420', nama: 'Industri Logam Dasar Mulia dan Logam Dasar Bukan Besi', golongan_kode: '242' },
+  { kode: '2431', nama: 'Industri Pengecoran Besi dan Baja', golongan_kode: '243' },
+  { kode: '2432', nama: 'Industri Pengecoran Logam Bukan Besi', golongan_kode: '243' },
+  // Barang Logam
+  { kode: '2511', nama: 'Industri Barang Logam Siap Pasang untuk Bangunan', golongan_kode: '251' },
+  { kode: '2591', nama: 'Industri Penempaan, Pengepresan dan Penggulungan Logam', golongan_kode: '259' },
+  { kode: '2599', nama: 'Industri Barang Logam Lainnya YTDL', golongan_kode: '259' },
+  // Komputer & Elektronik
+  { kode: '2610', nama: 'Industri Komponen dan Papan Elektronik', golongan_kode: '261' },
+  { kode: '2620', nama: 'Industri Komputer dan Perlengkapannya', golongan_kode: '262' },
+  { kode: '2630', nama: 'Industri Peralatan Komunikasi', golongan_kode: '263' },
+  { kode: '2640', nama: 'Industri Peralatan Audio dan Video Elektronik', golongan_kode: '264' },
+  // Peralatan Listrik
+  { kode: '2710', nama: 'Industri Motor Listrik, Generator dan Transformator', golongan_kode: '271' },
+  { kode: '2720', nama: 'Industri Batu Baterai dan Akumulator Listrik', golongan_kode: '272' },
+  { kode: '2740', nama: 'Industri Peralatan Penerangan Listrik', golongan_kode: '274' },
+  { kode: '2790', nama: 'Industri Peralatan Listrik Lainnya', golongan_kode: '279' },
+  // Mesin
+  { kode: '2811', nama: 'Industri Motor dan Turbin', golongan_kode: '281' },
+  { kode: '2819', nama: 'Industri Mesin untuk Keperluan Umum Lainnya', golongan_kode: '281' },
+  { kode: '2821', nama: 'Industri Mesin Pertanian dan Kehutanan', golongan_kode: '282' },
+  { kode: '2829', nama: 'Industri Mesin untuk Keperluan Khusus Lainnya', golongan_kode: '282' },
+  // Kendaraan Bermotor
+  { kode: '2910', nama: 'Industri Kendaraan Bermotor Roda Empat atau Lebih', golongan_kode: '291' },
+  { kode: '2920', nama: 'Industri Karoseri Kendaraan Bermotor', golongan_kode: '292' },
+  { kode: '2930', nama: 'Industri Suku Cadang dan Aksesori Kendaraan Bermotor', golongan_kode: '293' },
+  // Alat Angkutan Lainnya
+  { kode: '3011', nama: 'Industri Pembuatan Kapal', golongan_kode: '301' },
+  { kode: '3012', nama: 'Industri Pembuatan Perahu', golongan_kode: '301' },
+  { kode: '3030', nama: 'Industri Pesawat Terbang dan Perlengkapannya', golongan_kode: '303' },
+  { kode: '3091', nama: 'Industri Sepeda Motor', golongan_kode: '309' },
+  { kode: '3099', nama: 'Industri Alat Angkutan Lainnya YTDL', golongan_kode: '309' },
+  // Reparasi Mesin
+  { kode: '3311', nama: 'Reparasi Produk Logam Pabrikasi', golongan_kode: '331' },
+  { kode: '3312', nama: 'Reparasi Mesin', golongan_kode: '331' },
+  { kode: '3314', nama: 'Reparasi Peralatan Listrik', golongan_kode: '331' },
+  { kode: '3320', nama: 'Pemasangan Mesin dan Peralatan Industri', golongan_kode: '332' },
+  // Air Limbah
+  { kode: '3700', nama: 'Pengelolaan Air Limbah', golongan_kode: '370' },
+  // Remediasi
+  { kode: '3900', nama: 'Aktivitas Remediasi dan Pengelolaan Limbah Lainnya', golongan_kode: '390' },
+  // Angkutan Udara
+  { kode: '5110', nama: 'Angkutan Udara Penumpang', golongan_kode: '511' },
+  { kode: '5120', nama: 'Angkutan Udara Barang', golongan_kode: '512' },
+  // Asuransi
+  { kode: '6511', nama: 'Asuransi Jiwa', golongan_kode: '651' },
+  { kode: '6512', nama: 'Asuransi Bukan Jiwa', golongan_kode: '651' },
+  { kode: '6520', nama: 'Reasuransi', golongan_kode: '652' },
+  { kode: '6530', nama: 'Dana Pensiun', golongan_kode: '653' },
+  // Penelitian
+  { kode: '7210', nama: 'Penelitian dan Pengembangan Ilmu Pengetahuan Alam dan Teknologi', golongan_kode: '721' },
+  { kode: '7220', nama: 'Penelitian dan Pengembangan Ilmu Pengetahuan Sosial dan Humaniora', golongan_kode: '722' },
+  // Kesehatan Hewan
+  { kode: '7500', nama: 'Aktivitas Kesehatan Hewan', golongan_kode: '750' },
+  // Persewaan
+  { kode: '7710', nama: 'Persewaan dan Sewa Guna Usaha Kendaraan Bermotor', golongan_kode: '771' },
+  { kode: '7720', nama: 'Persewaan dan Sewa Guna Usaha Barang Pribadi dan Rumah Tangga', golongan_kode: '772' },
+  { kode: '7730', nama: 'Persewaan dan Sewa Guna Usaha Mesin dan Peralatan', golongan_kode: '773' },
+  // Ketenagakerjaan
+  { kode: '7810', nama: 'Aktivitas Agen Tenaga Kerja', golongan_kode: '781' },
+  { kode: '7820', nama: 'Aktivitas Penyedia Tenaga Kerja Sementara', golongan_kode: '782' },
+  // Keamanan
+  { kode: '8010', nama: 'Aktivitas Keamanan Swasta', golongan_kode: '801' },
+  { kode: '8020', nama: 'Aktivitas Jasa Sistem Keamanan', golongan_kode: '802' },
+  { kode: '8030', nama: 'Aktivitas Penyelidikan', golongan_kode: '803' },
+  // Perawatan Bangunan
+  { kode: '8110', nama: 'Aktivitas Penunjang Fasilitas', golongan_kode: '811' },
+  { kode: '8121', nama: 'Aktivitas Kebersihan Umum Bangunan', golongan_kode: '812' },
+  { kode: '8129', nama: 'Aktivitas Kebersihan Lainnya', golongan_kode: '812' },
+  { kode: '8130', nama: 'Aktivitas Perawatan Lansekap', golongan_kode: '813' },
+  // Perpustakaan Museum
+  { kode: '9101', nama: 'Aktivitas Perpustakaan dan Arsip', golongan_kode: '910' },
+  { kode: '9102', nama: 'Aktivitas Museum dan Operasional Bangunan Bersejarah', golongan_kode: '910' },
+  { kode: '9103', nama: 'Aktivitas Kebun Raya, Kebun Binatang dan Cagar Alam', golongan_kode: '910' },
+  // Perjudian
+  { kode: '9200', nama: 'Aktivitas Perjudian dan Pertaruhan', golongan_kode: '920' },
+  // Organisasi
+  { kode: '9411', nama: 'Aktivitas Organisasi Bisnis dan Pengusaha', golongan_kode: '941' },
+  { kode: '9412', nama: 'Aktivitas Organisasi Profesional', golongan_kode: '941' },
+  { kode: '9420', nama: 'Aktivitas Serikat Pekerja', golongan_kode: '942' },
+  { kode: '9491', nama: 'Aktivitas Organisasi Keagamaan', golongan_kode: '949' },
+  { kode: '9492', nama: 'Aktivitas Organisasi Politik', golongan_kode: '949' },
+  { kode: '9499', nama: 'Aktivitas Organisasi Keanggotaan Lainnya YTDL', golongan_kode: '949' },
 ]
 
 export const kbliKelompok: KBLIKelompok[] = [
@@ -573,6 +840,140 @@ export const kbliKelompok: KBLIKelompok[] = [
   { kode: '88100', nama: 'Aktivitas Sosial Tanpa Akomodasi', subgolongan_kode: '8810' },
   { kode: '97000', nama: 'Aktivitas Rumah Tangga sebagai Pemberi Kerja', subgolongan_kode: '9700' },
   { kode: '99000', nama: 'Aktivitas Badan Internasional', subgolongan_kode: '9900' },
+  // === Tambahan Kelompok untuk Subgolongan baru ===
+  // Kehutanan
+  { kode: '02100', nama: 'Silvikultur dan Kegiatan Kehutanan Lainnya', subgolongan_kode: '0210' },
+  { kode: '02200', nama: 'Penebangan Kayu', subgolongan_kode: '0220' },
+  { kode: '02300', nama: 'Pengumpulan Hasil Hutan Bukan Kayu', subgolongan_kode: '0230' },
+  { kode: '02400', nama: 'Jasa Penunjang Kehutanan', subgolongan_kode: '0240' },
+  // Pertambangan Migas
+  { kode: '06100', nama: 'Pertambangan Minyak Bumi', subgolongan_kode: '0610' },
+  { kode: '06200', nama: 'Pertambangan Gas Alam dan Panas Bumi', subgolongan_kode: '0620' },
+  // Bijih Logam
+  { kode: '07100', nama: 'Pertambangan Bijih Besi', subgolongan_kode: '0710' },
+  { kode: '07210', nama: 'Pertambangan Bijih Emas dan Perak', subgolongan_kode: '0721' },
+  { kode: '07290', nama: 'Pertambangan Bijih Logam Bukan Besi Lainnya', subgolongan_kode: '0729' },
+  // Jasa Pertambangan
+  { kode: '09100', nama: 'Aktivitas Penunjang Pertambangan Minyak Bumi dan Gas Alam', subgolongan_kode: '0910' },
+  { kode: '09900', nama: 'Aktivitas Penunjang Pertambangan dan Penggalian Lainnya', subgolongan_kode: '0990' },
+  // Tembakau
+  { kode: '12001', nama: 'Industri Rokok dan Cerutu', subgolongan_kode: '1200' },
+  { kode: '12009', nama: 'Industri Pengolahan Tembakau Lainnya', subgolongan_kode: '1200' },
+  // Batu Bara & Minyak
+  { kode: '19100', nama: 'Industri Produk dari Batu Bara', subgolongan_kode: '1910' },
+  { kode: '19200', nama: 'Industri Pengilangan Minyak Bumi', subgolongan_kode: '1920' },
+  // Bahan Kimia
+  { kode: '20111', nama: 'Industri Kimia Dasar Anorganik', subgolongan_kode: '2011' },
+  { kode: '20112', nama: 'Industri Kimia Dasar Organik', subgolongan_kode: '2011' },
+  { kode: '20121', nama: 'Industri Pupuk', subgolongan_kode: '2012' },
+  { kode: '20130', nama: 'Industri Plastik dan Karet Sintetis dalam Bentuk Dasar', subgolongan_kode: '2013' },
+  { kode: '20210', nama: 'Industri Pestisida dan Produk Agrokimia Lainnya', subgolongan_kode: '2021' },
+  { kode: '20220', nama: 'Industri Cat, Pernis dan Pelapisan Sejenis', subgolongan_kode: '2022' },
+  { kode: '20231', nama: 'Industri Sabun dan Deterjen', subgolongan_kode: '2023' },
+  { kode: '20232', nama: 'Industri Parfum dan Kosmetik', subgolongan_kode: '2023' },
+  { kode: '20290', nama: 'Industri Bahan Kimia Lainnya YTDL', subgolongan_kode: '2029' },
+  // Farmasi
+  { kode: '21001', nama: 'Industri Farmasi dan Produk Obat', subgolongan_kode: '2100' },
+  { kode: '21002', nama: 'Industri Obat Tradisional dan Herbal', subgolongan_kode: '2100' },
+  // Karet & Plastik
+  { kode: '22111', nama: 'Industri Ban Luar dan Ban Dalam', subgolongan_kode: '2211' },
+  { kode: '22190', nama: 'Industri Barang dari Karet Lainnya', subgolongan_kode: '2219' },
+  { kode: '22201', nama: 'Industri Barang dari Plastik untuk Bangunan', subgolongan_kode: '2220' },
+  { kode: '22202', nama: 'Industri Barang dari Plastik untuk Pengemasan', subgolongan_kode: '2220' },
+  { kode: '22209', nama: 'Industri Barang dari Plastik Lainnya', subgolongan_kode: '2220' },
+  // Barang Galian
+  { kode: '23100', nama: 'Industri Kaca dan Barang dari Kaca', subgolongan_kode: '2310' },
+  { kode: '23911', nama: 'Industri Batu Bata dan Genteng dari Tanah Liat', subgolongan_kode: '2391' },
+  { kode: '23912', nama: 'Industri Keramik', subgolongan_kode: '2391' },
+  { kode: '23950', nama: 'Industri Semen, Kapur dan Gips', subgolongan_kode: '2395' },
+  { kode: '23990', nama: 'Industri Barang Galian Bukan Logam Lainnya YTDL', subgolongan_kode: '2399' },
+  // Logam Dasar
+  { kode: '24100', nama: 'Industri Logam Dasar Besi dan Baja', subgolongan_kode: '2410' },
+  { kode: '24200', nama: 'Industri Logam Dasar Mulia dan Logam Dasar Bukan Besi', subgolongan_kode: '2420' },
+  { kode: '24310', nama: 'Industri Pengecoran Besi dan Baja', subgolongan_kode: '2431' },
+  { kode: '24320', nama: 'Industri Pengecoran Logam Bukan Besi', subgolongan_kode: '2432' },
+  // Barang Logam
+  { kode: '25110', nama: 'Industri Barang Logam Siap Pasang untuk Bangunan', subgolongan_kode: '2511' },
+  { kode: '25910', nama: 'Industri Penempaan, Pengepresan dan Penggulungan Logam', subgolongan_kode: '2591' },
+  { kode: '25990', nama: 'Industri Barang Logam Lainnya YTDL', subgolongan_kode: '2599' },
+  // Komputer & Elektronik
+  { kode: '26100', nama: 'Industri Komponen dan Papan Elektronik', subgolongan_kode: '2610' },
+  { kode: '26200', nama: 'Industri Komputer dan Perlengkapannya', subgolongan_kode: '2620' },
+  { kode: '26300', nama: 'Industri Peralatan Komunikasi', subgolongan_kode: '2630' },
+  { kode: '26400', nama: 'Industri Peralatan Audio dan Video Elektronik', subgolongan_kode: '2640' },
+  // Peralatan Listrik
+  { kode: '27100', nama: 'Industri Motor Listrik, Generator dan Transformator', subgolongan_kode: '2710' },
+  { kode: '27200', nama: 'Industri Batu Baterai dan Akumulator Listrik', subgolongan_kode: '2720' },
+  { kode: '27400', nama: 'Industri Peralatan Penerangan Listrik', subgolongan_kode: '2740' },
+  { kode: '27900', nama: 'Industri Peralatan Listrik Lainnya', subgolongan_kode: '2790' },
+  // Mesin
+  { kode: '28110', nama: 'Industri Motor dan Turbin', subgolongan_kode: '2811' },
+  { kode: '28190', nama: 'Industri Mesin untuk Keperluan Umum Lainnya', subgolongan_kode: '2819' },
+  { kode: '28210', nama: 'Industri Mesin Pertanian dan Kehutanan', subgolongan_kode: '2821' },
+  { kode: '28290', nama: 'Industri Mesin untuk Keperluan Khusus Lainnya', subgolongan_kode: '2829' },
+  // Kendaraan Bermotor
+  { kode: '29100', nama: 'Industri Kendaraan Bermotor Roda Empat atau Lebih', subgolongan_kode: '2910' },
+  { kode: '29200', nama: 'Industri Karoseri Kendaraan Bermotor', subgolongan_kode: '2920' },
+  { kode: '29300', nama: 'Industri Suku Cadang dan Aksesori Kendaraan Bermotor', subgolongan_kode: '2930' },
+  // Alat Angkutan Lainnya
+  { kode: '30110', nama: 'Industri Pembuatan Kapal', subgolongan_kode: '3011' },
+  { kode: '30120', nama: 'Industri Pembuatan Perahu', subgolongan_kode: '3012' },
+  { kode: '30300', nama: 'Industri Pesawat Terbang dan Perlengkapannya', subgolongan_kode: '3030' },
+  { kode: '30910', nama: 'Industri Sepeda Motor', subgolongan_kode: '3091' },
+  { kode: '30990', nama: 'Industri Alat Angkutan Lainnya YTDL', subgolongan_kode: '3099' },
+  // Reparasi Mesin
+  { kode: '33110', nama: 'Reparasi Produk Logam Pabrikasi', subgolongan_kode: '3311' },
+  { kode: '33120', nama: 'Reparasi Mesin', subgolongan_kode: '3312' },
+  { kode: '33140', nama: 'Reparasi Peralatan Listrik', subgolongan_kode: '3314' },
+  { kode: '33200', nama: 'Pemasangan Mesin dan Peralatan Industri', subgolongan_kode: '3320' },
+  // Air Limbah
+  { kode: '37000', nama: 'Pengelolaan Air Limbah', subgolongan_kode: '3700' },
+  // Remediasi
+  { kode: '39000', nama: 'Aktivitas Remediasi dan Pengelolaan Limbah Lainnya', subgolongan_kode: '3900' },
+  // Angkutan Udara
+  { kode: '51100', nama: 'Angkutan Udara Penumpang', subgolongan_kode: '5110' },
+  { kode: '51200', nama: 'Angkutan Udara Barang', subgolongan_kode: '5120' },
+  // Asuransi
+  { kode: '65111', nama: 'Asuransi Jiwa Konvensional', subgolongan_kode: '6511' },
+  { kode: '65112', nama: 'Asuransi Jiwa Syariah', subgolongan_kode: '6511' },
+  { kode: '65121', nama: 'Asuransi Bukan Jiwa Konvensional', subgolongan_kode: '6512' },
+  { kode: '65122', nama: 'Asuransi Bukan Jiwa Syariah', subgolongan_kode: '6512' },
+  { kode: '65200', nama: 'Reasuransi', subgolongan_kode: '6520' },
+  { kode: '65300', nama: 'Dana Pensiun', subgolongan_kode: '6530' },
+  // Penelitian
+  { kode: '72100', nama: 'Penelitian dan Pengembangan Ilmu Pengetahuan Alam dan Teknologi', subgolongan_kode: '7210' },
+  { kode: '72200', nama: 'Penelitian dan Pengembangan Ilmu Pengetahuan Sosial dan Humaniora', subgolongan_kode: '7220' },
+  // Kesehatan Hewan
+  { kode: '75000', nama: 'Aktivitas Kesehatan Hewan', subgolongan_kode: '7500' },
+  // Persewaan
+  { kode: '77100', nama: 'Persewaan dan Sewa Guna Usaha Kendaraan Bermotor', subgolongan_kode: '7710' },
+  { kode: '77200', nama: 'Persewaan dan Sewa Guna Usaha Barang Pribadi dan Rumah Tangga', subgolongan_kode: '7720' },
+  { kode: '77300', nama: 'Persewaan dan Sewa Guna Usaha Mesin dan Peralatan', subgolongan_kode: '7730' },
+  // Ketenagakerjaan
+  { kode: '78100', nama: 'Aktivitas Agen Tenaga Kerja', subgolongan_kode: '7810' },
+  { kode: '78200', nama: 'Aktivitas Penyedia Tenaga Kerja Sementara', subgolongan_kode: '7820' },
+  // Keamanan
+  { kode: '80100', nama: 'Aktivitas Keamanan Swasta', subgolongan_kode: '8010' },
+  { kode: '80200', nama: 'Aktivitas Jasa Sistem Keamanan', subgolongan_kode: '8020' },
+  { kode: '80300', nama: 'Aktivitas Penyelidikan', subgolongan_kode: '8030' },
+  // Perawatan Bangunan
+  { kode: '81100', nama: 'Aktivitas Penunjang Fasilitas', subgolongan_kode: '8110' },
+  { kode: '81210', nama: 'Aktivitas Kebersihan Umum Bangunan', subgolongan_kode: '8121' },
+  { kode: '81290', nama: 'Aktivitas Kebersihan Lainnya', subgolongan_kode: '8129' },
+  { kode: '81300', nama: 'Aktivitas Perawatan Lansekap', subgolongan_kode: '8130' },
+  // Perpustakaan Museum
+  { kode: '91010', nama: 'Aktivitas Perpustakaan dan Arsip', subgolongan_kode: '9101' },
+  { kode: '91020', nama: 'Aktivitas Museum dan Operasional Bangunan Bersejarah', subgolongan_kode: '9102' },
+  { kode: '91030', nama: 'Aktivitas Kebun Raya, Kebun Binatang dan Cagar Alam', subgolongan_kode: '9103' },
+  // Perjudian
+  { kode: '92000', nama: 'Aktivitas Perjudian dan Pertaruhan', subgolongan_kode: '9200' },
+  // Organisasi
+  { kode: '94110', nama: 'Aktivitas Organisasi Bisnis dan Pengusaha', subgolongan_kode: '9411' },
+  { kode: '94120', nama: 'Aktivitas Organisasi Profesional', subgolongan_kode: '9412' },
+  { kode: '94200', nama: 'Aktivitas Serikat Pekerja', subgolongan_kode: '9420' },
+  { kode: '94910', nama: 'Aktivitas Organisasi Keagamaan', subgolongan_kode: '9491' },
+  { kode: '94920', nama: 'Aktivitas Organisasi Politik', subgolongan_kode: '9492' },
+  { kode: '94990', nama: 'Aktivitas Organisasi Keanggotaan Lainnya YTDL', subgolongan_kode: '9499' },
 ]
 
 // Helper functions

@@ -2,12 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import {
-  NavLink,
   Text,
   ActionIcon,
-  Tooltip,
 } from '@mantine/core'
 import {
   IconChartBar,
@@ -18,6 +16,7 @@ import {
   IconActivity,
   IconChevronRight,
 } from '@tabler/icons-react'
+import useAuth from '@/hooks/useAuth'
 
 interface NavItem {
   href: string
@@ -41,18 +40,12 @@ const navItems: NavItem[] = [
   },
 ]
 
-export default function Sidebar({ userEmail }: { userEmail?: string }) {
+export default function Sidebar() {
   const pathname = usePathname()
-  const router = useRouter()
+  const { user, logout, isLoggingOut } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [loggingOut, setLoggingOut] = useState(false)
 
-  const handleLogout = async () => {
-    setLoggingOut(true)
-    // Clear local session
-    localStorage.removeItem('user_email')
-    router.push('/login')
-  }
+  const userEmail = user?.username
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -124,11 +117,11 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
           </div>
         </div>
         <button
-          onClick={handleLogout}
-          disabled={loggingOut}
+          onClick={logout}
+          disabled={isLoggingOut}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-all text-sm font-medium"
         >
-          {loggingOut ? (
+          {isLoggingOut ? (
             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <IconLogout size={18} />

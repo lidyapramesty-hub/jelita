@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import Sidebar from '@/components/Sidebar'
 import StatCards from '@/components/dashboard/StatCards'
@@ -8,34 +7,44 @@ import KelasUsahaChart from '@/components/dashboard/KelasUsahaChart'
 import CakupanPasarChart from '@/components/dashboard/CakupanPasarChart'
 import KecamatanBarChart from '@/components/dashboard/KecamatanBarChart'
 import KategoriKBLIChart from '@/components/dashboard/KategoriKBLIChart'
-import { staticUsahaData, computeStats } from '@/data/staticUsaha'
-import { Button, Group, Title, Text, Stack } from '@mantine/core'
+import { useGetUsahaStatsQuery, useGetUsahaListQuery } from '@/store/services/usahaApi'
+import { Button, Title, Text, Stack } from '@mantine/core'
 import { IconRefresh } from '@tabler/icons-react'
 
 const DashboardMap = dynamic(() => import('@/components/dashboard/DashboardMap'), { ssr: false })
 
 export default function DashboardPage() {
-  const [userEmail, setUserEmail] = useState<string>('pencacah01@bps.go.id')
-  const [loading, setLoading] = useState(true)
+  const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useGetUsahaStatsQuery()
+  const { data: usahaData, isLoading: usahaLoading, refetch: refetchUsaha } = useGetUsahaListQuery()
 
-  useEffect(() => {
-    // Simulate loading
-    const email = localStorage.getItem('user_email') || 'pencacah01@bps.go.id'
-    setUserEmail(email)
-    const timer = setTimeout(() => setLoading(false), 500)
-    return () => clearTimeout(timer)
-  }, [])
-
-  const stats = useMemo(() => computeStats(staticUsahaData), [])
+  const loading = statsLoading || usahaLoading
 
   const handleRefresh = () => {
-    setLoading(true)
-    setTimeout(() => setLoading(false), 500)
+    refetchStats()
+    refetchUsaha()
   }
+
+  const defaultStats = {
+    total: 0,
+    mikro: 0,
+    kecil: 0,
+    menengah: 0,
+    besar: 0,
+    lokal: 0,
+    regional: 0,
+    nasional: 0,
+    internasional: 0,
+    byKecamatan: {} as Record<string, number>,
+    byKategori: {} as Record<string, number>,
+    recentCount: 0,
+  }
+
+  const currentStats = stats || defaultStats
+  const usahaList = usahaData?.data || []
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <Sidebar userEmail={userEmail} />
+      <Sidebar />
 
       <main className="lg:ml-64 pt-14 lg:pt-0">
         {/* Header */}
@@ -67,20 +76,20 @@ export default function DashboardPage() {
           ) : (
             <Stack gap="lg">
               {/* Stat Cards */}
-              <StatCards stats={stats} />
+              <StatCards stats={currentStats} />
 
               {/* Map */}
-              <DashboardMap usahaList={staticUsahaData} />
+              <DashboardMap usahaList={usahaList} />
 
               {/* Charts Row */}
               <div className="grid lg:grid-cols-3 gap-6">
-                <KelasUsahaChart stats={stats} />
-                <CakupanPasarChart stats={stats} />
-                <KecamatanBarChart byKecamatan={stats.byKecamatan} />
+                <KelasUsahaChart stats={currentStats} />
+                <CakupanPasarChart stats={currentStats} />
+                <KecamatanBarChart byKecamatan={currentStats.byKecamatan} />
               </div>
 
               {/* KBLI Distribution */}
-              <KategoriKBLIChart byKategori={stats.byKategori} total={stats.total} />
+              <KategoriKBLIChart byKategori={currentStats.byKategori} total={currentStats.total} />
             </Stack>
           )}
         </div>

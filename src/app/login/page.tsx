@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   TextInput,
   PasswordInput,
@@ -30,12 +29,12 @@ import {
   IconChartPie,
   IconBrandTabler,
 } from '@tabler/icons-react'
+import useAuth from '@/hooks/useAuth'
 
 export default function LoginPage() {
-  const router = useRouter()
+  const { login, isLoggingIn } = useAuth()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [loginMethod, setLoginMethod] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
@@ -44,59 +43,24 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
     setError('')
 
+    if (!username || !password) {
+      setError('Username dan password wajib diisi.')
+      return
+    }
+
     try {
-      if (!username || !password) {
-        setError('Username dan password wajib diisi.')
-        setLoading(false)
-        return
-      }
-
-      if (loginMethod === 'pegawai') {
-        try {
-          const response = await fetch('https://docs.google.com/spreadsheets/d/1iwNuvYTqajsbROiMNDNgqL6Yjs2PLP3G/export?format=csv')
-          if (!response.ok) throw new Error('Network response was not ok')
-          const csvText = await response.text()
-
-          const rows = csvText.split('\n').map(row => row.split(','))
-
-          // Skip header row [0]
-          const match = rows.slice(1).some((row) => {
-            if (row.length >= 2) {
-              const sheetUser = row[0].trim()
-              const sheetPass = row[1].trim()
-              return sheetUser === username && sheetPass === password
-            }
-            return false
-          })
-
-          if (!match) {
-            setError('Username atau password salah.')
-            setLoading(false)
-            return
-          }
-        } catch (fetchErr) {
-          console.error('Fetch error:', fetchErr)
-          setError('Gagal terhubung ke server autentikasi.')
-          setLoading(false)
-          return
-        }
+      await login(username, password)
+    } catch (err: unknown) {
+      const apiError = err as { data?: { message?: string; errors?: Record<string, string[]> } }
+      if (apiError?.data?.errors?.username) {
+        setError(apiError.data.errors.username[0])
+      } else if (apiError?.data?.message) {
+        setError(apiError.data.message)
       } else {
-        // Mitra BPS mock login
-        // Add a small delay for UX
-        await new Promise(resolve => setTimeout(resolve, 800))
+        setError('Terjadi kesalahan sistem. Silakan coba lagi.')
       }
-
-      localStorage.setItem('user_email', username)
-      localStorage.setItem('login_method', loginMethod || 'pegawai')
-      router.push('/dashboard')
-
-    } catch (err) {
-      console.error(err)
-      setError('Terjadi kesalahan sistem. Silakan coba lagi.')
-      setLoading(false)
     }
   }
 
@@ -372,7 +336,7 @@ export default function LoginPage() {
 
                     <Button
                       type="submit"
-                      loading={loading}
+                      loading={isLoggingIn}
                       fullWidth
                       size="md"
                       mt="xs"

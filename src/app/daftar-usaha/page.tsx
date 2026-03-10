@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import Sidebar from '@/components/Sidebar'
 import UsahaTable from '@/components/daftar-usaha/UsahaTable'
 import UsahaDetailModal from '@/components/daftar-usaha/UsahaDetailModal'
 import DeleteConfirmModal from '@/components/daftar-usaha/DeleteConfirmModal'
-import { staticUsahaData } from '@/data/staticUsaha'
 import { Usaha } from '@/types/usaha'
 import {
   Button,
@@ -27,13 +26,11 @@ import {
   IconX,
   IconBuildingStore,
 } from '@tabler/icons-react'
+import { useGetUsahaListQuery, useDeleteUsahaMutation } from '@/store/services/usahaApi'
 
 const FormTambahUsaha = dynamic(() => import('@/components/FormTambahUsaha'), { ssr: false })
 
 export default function DaftarUsahaPage() {
-  const [userEmail, setUserEmail] = useState<string>('pencacah01@bps.go.id')
-  const [usahaList, setUsahaList] = useState<Usaha[]>([])
-  const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editUsaha, setEditUsaha] = useState<Usaha | null>(null)
   const [search, setSearch] = useState('')
@@ -42,17 +39,11 @@ export default function DaftarUsahaPage() {
   const [filterKecamatan, setFilterKecamatan] = useState<string | null>(null)
   const [selectedUsaha, setSelectedUsaha] = useState<Usaha | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
-  const [deleting, setDeleting] = useState(false)
 
-  useEffect(() => {
-    const email = localStorage.getItem('user_email') || 'pencacah01@bps.go.id'
-    setUserEmail(email)
-    const timer = setTimeout(() => {
-      setUsahaList(staticUsahaData)
-      setLoading(false)
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [])
+  const { data: usahaResponse, isLoading: loading, refetch } = useGetUsahaListQuery()
+  const [deleteUsaha, { isLoading: deleting }] = useDeleteUsahaMutation()
+
+  const usahaList = useMemo(() => usahaResponse?.data || [], [usahaResponse])
 
   const kecamatanOptions = useMemo(() => {
     const names = Array.from(new Set(usahaList.map((u) => u.kecamatan_nama).filter(Boolean))).sort()
@@ -74,19 +65,23 @@ export default function DaftarUsahaPage() {
     setShowForm(true)
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!deleteId) return
-    setDeleting(true)
-    setTimeout(() => {
-      setUsahaList((prev) => prev.filter((u) => u.id !== deleteId))
+    try {
+      await deleteUsaha(deleteId).unwrap()
       setDeleteId(null)
-      setDeleting(false)
       notifications.show({
         title: 'Dihapus',
         message: 'Data usaha berhasil dihapus.',
         color: 'red',
       })
-    }, 500)
+    } catch {
+      notifications.show({
+        title: 'Gagal',
+        message: 'Gagal menghapus data usaha.',
+        color: 'red',
+      })
+    }
   }
 
   const filtered = useMemo(() => {
@@ -106,18 +101,14 @@ export default function DaftarUsahaPage() {
   }, [usahaList, search, filterKelas, filterPasar, filterKecamatan])
 
   const handleRefresh = () => {
-    setLoading(true)
-    setTimeout(() => {
-      setUsahaList(staticUsahaData)
-      setLoading(false)
-    }, 500)
+    refetch()
   }
 
   const hasFilters = search || filterKelas || filterPasar || filterKecamatan
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <Sidebar userEmail={userEmail} />
+      <Sidebar />
 
       <main className="lg:ml-64 pt-14 lg:pt-0">
         {/* Header */}
