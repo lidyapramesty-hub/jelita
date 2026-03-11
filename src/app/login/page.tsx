@@ -13,23 +13,11 @@ import {
 } from '@mantine/core'
 import {
   IconLogin,
-  IconChartBar,
   IconUser,
-  IconBuildingStore,
-  IconShoppingCart,
-  IconDeviceMobile,
-  IconWifi,
-  IconGlobe,
-  IconCloud,
-  IconCreditCard,
   IconArrowLeft,
-  IconId,
-  IconShield,
-  IconDatabase,
-  IconChartPie,
-  IconBrandTabler,
 } from '@tabler/icons-react'
 import useAuth from '@/hooks/useAuth'
+import Image from 'next/image'
 
 export default function LoginPage() {
   const { login, isLoggingIn } = useAuth()
@@ -69,22 +57,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #003087 0%, #001a4d 50%, #0a1628 100%)' }}>
-      {/* Animated background particles */}
       <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.05; }
-          25% { transform: translateY(-20px) rotate(5deg); opacity: 0.08; }
-          50% { transform: translateY(-10px) rotate(-3deg); opacity: 0.04; }
-          75% { transform: translateY(-25px) rotate(2deg); opacity: 0.07; }
-        }
-        @keyframes orbit {
-          0% { transform: rotate(0deg) translateX(120px) rotate(0deg); }
-          100% { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
-        }
-        @keyframes glow {
-          0%, 100% { box-shadow: 0 0 20px rgba(255,184,28,0.2); }
-          50% { box-shadow: 0 0 40px rgba(255,184,28,0.4); }
-        }
         @keyframes slideUp {
           from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
@@ -92,11 +65,6 @@ export default function LoginPage() {
         @keyframes slideRight {
           from { opacity: 0; transform: translateX(-30px); }
           to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes pulse-ring {
-          0% { transform: scale(0.8); opacity: 0.5; }
-          50% { transform: scale(1.1); opacity: 0.2; }
-          100% { transform: scale(0.8); opacity: 0.5; }
         }
         .login-card {
           animation: slideUp 0.6s ease-out;
@@ -111,133 +79,129 @@ export default function LoginPage() {
         .role-btn:active {
           transform: translateY(0);
         }
-        .stat-card {
-          transition: all 0.3s ease;
-        }
-        .stat-card:hover {
-          transform: translateY(-4px);
-          background: rgba(255,255,255,0.15) !important;
-        }
-        .floating-icon {
-          animation: float 6s ease-in-out infinite;
+        .jelita-title {
+          font-family: 'Madimi One', sans-serif;
+          background: linear-gradient(to bottom right, #FFD83D, #FFA600);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
       `}</style>
 
-      {/* Animated grid background */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
+      {/* Asset2: full-screen background overlay at 20% opacity */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/assets/asset2.png"
+          alt=""
+          fill
+          style={{ objectFit: 'cover', opacity: 0.2 }}
+          priority
+        />
+      </div>
+
+      {/* Grid overlay */}
+      <div className="absolute inset-0 z-0 opacity-[0.03]" style={{
         backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
         backgroundSize: '60px 60px',
       }} />
 
-      {/* Orbiting ring */}
-      <div className="absolute top-1/2 left-1/4 hidden lg:block" style={{ animation: 'pulse-ring 4s ease-in-out infinite' }}>
-        <div className="w-64 h-64 rounded-full border border-white/5" />
-      </div>
-
       {/* Left Panel - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden">
-        {/* Decorative gradients */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full opacity-[0.07] bg-gradient-to-br from-[#FFB81C] to-transparent transform translate-x-1/3 -translate-y-1/3" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full opacity-[0.05] bg-gradient-to-tr from-blue-400 to-transparent transform -translate-x-1/3 translate-y-1/3" />
-        <div className="absolute top-1/2 right-1/4 w-56 h-56 rounded-full opacity-[0.06] bg-[#FFB81C] transform -translate-y-1/2 blur-3xl" />
+      <div className="hidden lg:flex lg:w-1/2 flex-col p-12 relative overflow-hidden z-10 min-h-screen">
 
-        {/* Floating icons */}
-        {[
-          { Icon: IconShoppingCart, top: '12%', right: '15%', size: 48, delay: '0s', duration: '7s' },
-          { Icon: IconDeviceMobile, top: '35%', right: '8%', size: 36, delay: '1.2s', duration: '8s' },
-          { Icon: IconGlobe, top: '55%', right: '20%', size: 44, delay: '2.4s', duration: '6s' },
-          { Icon: IconCloud, top: '25%', right: '30%', size: 40, delay: '0.8s', duration: '9s' },
-          { Icon: IconWifi, top: '70%', right: '12%', size: 32, delay: '1.8s', duration: '7.5s' },
-          { Icon: IconCreditCard, top: '48%', right: '32%', size: 38, delay: '3s', duration: '6.5s' },
-          { Icon: IconDatabase, top: '80%', right: '25%', size: 34, delay: '0.5s', duration: '8.5s' },
-          { Icon: IconChartPie, top: '15%', right: '38%', size: 30, delay: '2s', duration: '7.2s' },
-        ].map(({ Icon, top, right, size, delay, duration }, i) => (
-          <div
-            key={i}
-            className="absolute floating-icon text-white/[0.06]"
-            style={{ top, right, animationDelay: delay, animationDuration: duration }}
-          >
-            <Icon size={size} />
-          </div>
-        ))}
-
-        {/* Header */}
-        <div className="relative z-10" style={mounted ? { animation: 'slideRight 0.8s ease-out' } : { opacity: 0 }}>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-black/20" style={{ animation: 'glow 3s ease-in-out infinite' }}>
-              <IconChartBar className="w-8 h-8 text-[#003087]" />
-            </div>
-            <div>
-              <p className="text-white/60 text-xs font-medium tracking-[3px] uppercase">Badan Pusat Statistik</p>
-              <p className="text-white font-bold text-base">Kabupaten Tabanan</p>
-            </div>
-          </div>
+        {/* BPS Logo */}
+        <div
+          className="flex-shrink-0"
+          style={mounted ? { animation: 'slideRight 0.8s ease-out' } : { opacity: 0 }}
+        >
+          <Image
+            src="/assets/asset4.png"
+            alt="BPS Kabupaten Tabanan"
+            width={340}
+            height={92}
+            style={{ objectFit: 'contain', objectPosition: 'left' }}
+          />
         </div>
 
-        {/* Main Title */}
-        <div className="relative z-10" style={mounted ? { animation: 'slideUp 0.8s ease-out 0.2s both' } : { opacity: 0 }}>
-          <div className="inline-block bg-[#FFB81C]/10 border border-[#FFB81C]/20 rounded-full px-4 py-1 mb-6">
-            <Text size="xs" c="white" fw={600}>🌐 Sistem Monitoring Digital</Text>
-          </div>
-          <h1 className="text-5xl font-bold text-white leading-tight mb-4" style={{ fontFamily: 'DM Sans' }}>
-            JELITA<br />
-            <span className="text-2xl text-[#FFB81C] block mt-2">Jendela Ekonomi Digital<br />Kabupaten Tabanan</span>
+        {/* Main Title — sits just below logo */}
+        <div
+          className="flex-shrink-0 mt-10"
+          style={mounted ? { animation: 'slideUp 0.8s ease-out 0.2s both' } : { opacity: 0 }}
+        >
+          <h1 className="jelita-title leading-none mb-5" style={{ fontSize: '6.5rem' }}>
+            JELITA
           </h1>
-          <p className="text-white/80 text-base leading-relaxed max-w-sm">
+          <p style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '1.65rem', color: '#FFBB00', lineHeight: 1.3, marginBottom: '0.25rem' }}>
+            Jendela Ekonomi Digital
+          </p>
+          <p style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '1.65rem', color: '#FFFFFF', lineHeight: 1.3, marginBottom: '1.5rem' }}>
+            Kabupaten Tabanan
+          </p>
+          <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '1.05rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, maxWidth: '30rem' }}>
             Sistem pendataan dan monitoring ekonomi digital untuk mendukung pembangunan ekonomi daerah
           </p>
-
-          <div className="mt-10 grid grid-cols-3 gap-4">
-            {[
-              { label: 'Kecamatan', value: '10', icon: <IconGlobe size={18} className="text-[#FFB81C]" /> },
-              { label: 'Desa/Kelurahan', value: '133', icon: <IconBuildingStore size={18} className="text-[#FFB81C]" /> },
-              { label: 'Usaha Digital', value: '18', icon: <IconShoppingCart size={18} className="text-[#FFB81C]" /> },
-            ].map((stat, i) => (
-              <div
-                key={stat.label}
-                className="stat-card bg-white/[0.08] backdrop-blur-sm rounded-2xl p-5 border border-white/[0.08] cursor-default"
-                style={mounted ? { animation: `slideUp 0.5s ease-out ${0.4 + i * 0.15}s both` } : { opacity: 0 }}
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  {stat.icon}
-                  <p className="text-white/50 text-xs font-medium">{stat.label}</p>
-                </div>
-                <p className="text-3xl font-bold text-white">{stat.value}</p>
-              </div>
-            ))}
-          </div>
         </div>
 
-        <div className="relative z-10">
-          <p className="text-white/20 text-xs">
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* Copyright — absolute bottom-right of the whole page */}
+        <div className="absolute bottom-5 right-6 z-20">
+          <p className="text-white/20 text-xs" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             © 2025 BPS Kabupaten Tabanan · Hak Cipta Dilindungi
           </p>
+        </div>
+
+        {/* Asset1: bottom-left illustration (bigger) */}
+        <div className="absolute bottom-0 left-[-2%] z-10 pointer-events-none" style={{ width: '72%' }}>
+          <Image
+            src="/assets/asset1.png"
+            alt=""
+            width={560}
+            height={400}
+            style={{ objectFit: 'contain', objectPosition: 'bottom left' }}
+          />
         </div>
       </div>
 
       {/* Right Panel - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
-        <div className="w-full max-w-md">
-          {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-3 mb-8 justify-center" style={mounted ? { animation: 'slideUp 0.5s ease-out' } : { opacity: 0 }}>
-            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg">
-              <IconChartBar className="w-7 h-7 text-[#003087]" />
-            </div>
-            <div>
-              <p className="text-white/60 text-xs font-medium">BPS Kabupaten Tabanan</p>
-              <p className="text-white font-bold text-lg">JELITA</p>
-            </div>
+      <div className="flex-1 flex flex-col lg:items-center lg:justify-center relative z-10">
+        {/* Mobile/Tablet Branding */}
+        <div className="lg:hidden px-6 pt-10 pb-4">
+          <div className="mb-6" style={mounted ? { animation: 'slideRight 0.6s ease-out' } : { opacity: 0 }}>
+            <Image
+              src="/assets/asset4.png"
+              alt="BPS Kabupaten Tabanan"
+              width={220}
+              height={60}
+              style={{ objectFit: 'contain', objectPosition: 'left' }}
+            />
           </div>
+          <div style={mounted ? { animation: 'slideUp 0.6s ease-out 0.1s both' } : { opacity: 0 }}>
+            <h1 className="jelita-title leading-none mb-3" style={{ fontSize: '3.5rem' }}>
+              JELITA
+            </h1>
+            <p style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '1.1rem', color: '#FFBB00', lineHeight: 1.3, marginBottom: '0.15rem' }}>
+              Jendela Ekonomi Digital
+            </p>
+            <p style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '1.1rem', color: '#FFFFFF', lineHeight: 1.3, marginBottom: '0.8rem' }}>
+              Kabupaten Tabanan
+            </p>
+            <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
+              Sistem pendataan dan monitoring ekonomi digital untuk mendukung pembangunan ekonomi daerah
+            </p>
+          </div>
+        </div>
 
-          <Paper radius="xl" shadow="xl" p="xl" className="login-card" style={{ backdropFilter: 'blur(10px)' }}>
+        <div className="w-full max-w-md mx-auto px-6 pb-8 lg:px-0 lg:pb-0">
+          <Paper radius="xl" shadow="xl" p={{ base: 'md', sm: 'xl' }} className="login-card" style={{ backdropFilter: 'blur(10px)' }}>
             {loginMethod === null ? (
               /* Step 1: Role Selection */
               <>
                 <div className="text-center mb-8">
-                  <div className="w-16 h-16 bg-gradient-to-br from-[#003087] to-[#001a4d] rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
-                    <IconBrandTabler className="w-8 h-8 text-white" />
+                  <div className="mx-auto mb-4 flex items-center justify-center" style={{ width: 72, height: 72 }}>
+                    <Image src="/assets/asset5.png" alt="JELITA" width={72} height={72} style={{ objectFit: 'contain' }} />
                   </div>
-                  <Title order={2} style={{ fontFamily: 'DM Sans' }}>Selamat Datang</Title>
+                  <Title order={2} style={{ fontFamily: 'Montserrat, sans-serif' }}>Selamat Datang</Title>
                   <Text size="sm" c="dimmed" mt={4}>Pilih peran Anda untuk masuk ke sistem</Text>
                 </div>
 
@@ -248,14 +212,16 @@ export default function LoginPage() {
                     className="role-btn w-full text-left p-5 rounded-2xl border-2 border-gray-200 hover:border-[#003087] hover:bg-blue-50/50 cursor-pointer"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#003087]/20 to-[#003087]/5">
-                        <IconShield size={28} className="text-[#003087]" />
+                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#003087]/10 to-[#003087]/5 flex-shrink-0">
+                        <Image src="/assets/asset7.png" alt="Pegawai" width={44} height={44} style={{ objectFit: 'contain' }} />
                       </div>
                       <div className="flex-1">
                         <Text fw={700} size="md">Pegawai BPS</Text>
-                        <Text size="xs" c="dimmed">Masuk sebagai pegawai Badan Pusat Statistik</Text>
+                        <Text size="xs" c="dimmed">
+                          Masuk sebagai pegawai<br />Badan Pusat Statistik
+                        </Text>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
                         <IconArrowLeft size={16} className="text-gray-400 rotate-180" />
                       </div>
                     </div>
@@ -267,14 +233,14 @@ export default function LoginPage() {
                     className="role-btn w-full text-left p-5 rounded-2xl border-2 border-gray-200 hover:border-[#FFB81C] hover:bg-amber-50/50 cursor-pointer"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#FFB81C]/20 to-[#FFB81C]/5">
-                        <IconId size={28} className="text-[#d97706]" />
+                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#FFB81C]/20 to-[#FFB81C]/5 flex-shrink-0">
+                        <Image src="/assets/asset6.png" alt="Mitra" width={44} height={44} style={{ objectFit: 'contain' }} />
                       </div>
                       <div className="flex-1">
                         <Text fw={700} size="md">Mitra BPS</Text>
                         <Text size="xs" c="dimmed">Masuk sebagai mitra statistik</Text>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
                         <IconArrowLeft size={16} className="text-gray-400 rotate-180" />
                       </div>
                     </div>
@@ -294,14 +260,24 @@ export default function LoginPage() {
                     Kembali
                   </button>
                   <div className="flex items-center gap-3 mb-2">
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${loginMethod === 'mitra' ? 'bg-gradient-to-br from-[#FFB81C]/20 to-[#FFB81C]/5' : 'bg-gradient-to-br from-[#003087]/20 to-[#003087]/5'}`}>
-                      {loginMethod === 'mitra' ? <IconId size={24} className="text-[#d97706]" /> : <IconShield size={24} className="text-[#003087]" />}
+                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gray-50 flex-shrink-0">
+                      <Image
+                        src={loginMethod === 'mitra' ? '/assets/asset6.png' : '/assets/asset7.png'}
+                        alt=""
+                        width={40}
+                        height={40}
+                        style={{ objectFit: 'contain' }}
+                      />
                     </div>
                     <div>
-                      <Title order={3} style={{ fontFamily: 'DM Sans' }}>
+                      <Title order={3} style={{ fontFamily: 'Montserrat, sans-serif' }}>
                         {loginMethod === 'mitra' ? 'Masuk sebagai Mitra' : 'Masuk sebagai Pegawai'}
                       </Title>
-                      <Text size="xs" c="dimmed">Masukkan kredensial Anda</Text>
+                      <Text size="xs" c="dimmed">
+                        {loginMethod === 'mitra'
+                          ? 'Masukkan nomor telepon dan password Anda'
+                          : 'Masukkan username dan password Anda'}
+                      </Text>
                     </div>
                   </div>
                 </div>
@@ -317,7 +293,7 @@ export default function LoginPage() {
                     {loginMethod === 'mitra' ? (
                       <TextInput
                         label="Nomor Telepon"
-                        placeholder="812xxxxxxxx"
+                        placeholder="xxxxx"
                         value={username}
                         onChange={(e) => setUsername(e.currentTarget.value)}
                         required
@@ -375,7 +351,7 @@ export default function LoginPage() {
             </Text>
           </Paper>
 
-          <Text size="xs" c="white" ta="center" mt="lg" opacity={0.25}>
+          <Text size="xs" c="white" ta="center" mt="lg" opacity={0.25} style={{ fontFamily: 'Montserrat, sans-serif' }}>
             Sistem Informasi Ekonomi Digital — BPS Tabanan 2025
           </Text>
         </div>

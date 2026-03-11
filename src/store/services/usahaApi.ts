@@ -4,6 +4,9 @@ import type { Usaha, StatsData, Platform } from '@/types/usaha'
 interface UsahaListResponse {
   data: Usaha[]
   total: number
+  current_page: number
+  last_page: number
+  per_page: number
 }
 
 interface UsahaDetailResponse {
@@ -27,6 +30,8 @@ interface UsahaListParams {
   kbli_kategori_kode?: string
   sort_by?: string
   sort_dir?: string
+  page?: number
+  per_page?: number
 }
 
 export interface UsahaCreateInput {

@@ -494,7 +494,7 @@
                     },
                     {
                       "kode": "01495",
-                      "nama": "Budi Daya dan Pembibitan Kelinc"
+                      "nama": "Budi Daya dan Pembibitan Kelinci"
                     },
                     {
                       "kode": "01496",
@@ -712,21 +712,21 @@
               "subgolongan": [
                 {
                   "kode": "0311",
-                  "nama": "Penangkapan Ikan dan Biota Air Lainnya Di Laut",
+                  "nama": "Penangkapan Ikan dan Biota Air Lainnya di Laut",
                   "kelompok": [
                     {
                       "kode": "03110",
-                      "nama": "Penangkapan Ikan dan Biota Air Lainnya Di Laut"
+                      "nama": "Penangkapan Ikan dan Biota Air Lainnya di Laut"
                     }
                   ]
                 },
                 {
                   "kode": "0312",
-                  "nama": "Penangkapan Ikan dan Biota Air Lainnya Di Perairan Air Tawar",
+                  "nama": "Penangkapan Ikan dan Biota Air Lainnya di Perairan Air Tawar",
                   "kelompok": [
                     {
                       "kode": "03120",
-                      "nama": "Penangkapan Ikan dan Biota Air Lainnya Di Perairan Air Tawar"
+                      "nama": "Penangkapan Ikan dan Biota Air Lainnya di Perairan Air Tawar"
                     }
                   ]
                 }
@@ -814,7 +814,7 @@
                   "kelompok": [
                     {
                       "kode": "03300",
-                      "nama": "Jasa Penunjang Kegiatan Penangkapan dan Pembudidayaan Ika"
+                      "nama": "Jasa Penunjang Kegiatan Penangkapan dan Pembudidayaan Ikan"
                     }
                   ]
                 }
@@ -1242,31 +1242,31 @@
                   "kelompok": [
                     {
                       "kode": "10211",
-                      "nama": "Pengolahan dan Pengawetan Ikan Dengan Penggaraman atau Pengeringan"
+                      "nama": "Pengolahan dan Pengawetan Ikan dengan Penggaraman atau Pengeringan"
                     },
                     {
                       "kode": "10212",
-                      "nama": "Pengolahan dan Pengawetan Ikan Dengan Pengasapan atau Pemanggangan"
+                      "nama": "Pengolahan dan Pengawetan Ikan dengan Pengasapan atau Pemanggangan"
                     },
                     {
                       "kode": "10213",
-                      "nama": "Pengolahan dan Pengawetan Ikan Dengan Pembekuan"
+                      "nama": "Pengolahan dan Pengawetan Ikan dengan Pembekuan"
                     },
                     {
                       "kode": "10214",
-                      "nama": "Pengolahan dan Pengawetan Ikan Dengan Pemindangan"
+                      "nama": "Pengolahan dan Pengawetan Ikan dengan Pemindangan"
                     },
                     {
                       "kode": "10215",
-                      "nama": "Pengolahan dan Pengawetan Ikan Dengan Fermentasi"
+                      "nama": "Pengolahan dan Pengawetan Ikan dengan Fermentasi"
                     },
                     {
                       "kode": "10216",
-                      "nama": "Pengolahan dan Pengawetan Ikan Dengan Pelumatan"
+                      "nama": "Pengolahan dan Pengawetan Ikan dengan Pelumatan"
                     },
                     {
                       "kode": "10217",
-                      "nama": "Pengolahan dan Pengawetan Ikan Dengan Pengalengan"
+                      "nama": "Pengolahan dan Pengawetan Ikan dengan Pengalengan"
                     },
                     {
                       "kode": "10218",
@@ -1274,7 +1274,7 @@
                     },
                     {
                       "kode": "10219",
-                      "nama": "Pengolahan dan Pengawetan Ikan Dengan Metode Lainnya"
+                      "nama": "Pengolahan dan Pengawetan Ikan dengan Metode Lainnya"
                     }
                   ]
                 },
@@ -1284,31 +1284,31 @@
                   "kelompok": [
                     {
                       "kode": "10291",
-                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya Dengan Penggaraman atau Pengeringan"
+                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya dengan Penggaraman atau Pengeringan"
                     },
                     {
                       "kode": "10292",
-                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya Dengan Pengasapan atau Pemanggangan"
+                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya dengan Pengasapan atau Pemanggangan"
                     },
                     {
                       "kode": "10293",
-                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya Dengan Pembekuan"
+                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya dengan Pembekuan"
                     },
                     {
                       "kode": "10294",
-                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya Dengan Pemindangan"
+                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya dengan Pemindangan"
                     },
                     {
                       "kode": "10295",
-                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya Dengan Fermentasi"
+                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya dengan Fermentasi"
                     },
                     {
                       "kode": "10296",
-                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya Dengan Pelumatan"
+                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya dengan Pelumatan"
                     },
                     {
                       "kode": "10297",
-                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya Dengan Pengalengan"
+                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya dengan Pengalengan"
                     },
                     {
                       "kode": "10298",
@@ -1316,7 +1316,7 @@
                     },
                     {
                       "kode": "10299",
-                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya Dengan Metode Lainnya"
+                      "nama": "Pengolahan dan Pengawetan Biota Air Lainnya dengan Metode Lainnya"
                     }
                   ]
                 }
@@ -1548,7 +1548,7 @@
                 },
                 {
                   "kode": "1063",
-                  "nama": "Industri Produk Gilingan Serta Pati dan Produk Pati dari Beras dan Jagung",
+                  "nama": "Industri Produk Gilingan serta Pati dan Produk Pati dari Beras dan Jagung",
                   "kelompok": [
                     {
                       "kode": "10631",
@@ -1906,11 +1906,11 @@
                   "kelompok": [
                     {
                       "kode": "13121",
-                      "nama": "Pertenunan Tekstil Dengan Mesin"
+                      "nama": "Pertenunan Tekstil dengan Mesin"
                     },
                     {
                       "kode": "13122",
-                      "nama": "Pertenunan Tekstil Bukan Dengan Mesin"
+                      "nama": "Pertenunan Tekstil Bukan dengan Mesin"
                     }
                   ]
                 },
@@ -1970,7 +1970,7 @@
                     },
                     {
                       "kode": "13922",
-                      "nama": "Industri Barang Tekstil Dengan Bahan Pengisi"
+                      "nama": "Industri Barang Tekstil dengan Bahan Pengisi"
                     },
                     {
                       "kode": "13923",
@@ -2370,7 +2370,7 @@
                 },
                 {
                   "kode": "1702",
-                  "nama": "Industri Kertas dan Papan Kertas Bergelombang Serta Wadah dari Kertas dan Papan Kertas",
+                  "nama": "Industri Kertas dan Papan Kertas Bergelombang serta Wadah dari Kertas dan Papan Kertas",
                   "kelompok": [
                     {
                       "kode": "17021",
@@ -2510,7 +2510,7 @@
                     },
                     {
                       "kode": "19206",
-                      "nama": "Industri Produk dari Pencampuran Hasil Kilang Minyak Bumi Dengan Biofuel"
+                      "nama": "Industri Produk dari Pencampuran Hasil Kilang Minyak Bumi dengan Biofuel"
                     },
                     {
                       "kode": "19209",
@@ -2630,7 +2630,7 @@
                 },
                 {
                   "kode": "2022",
-                  "nama": "Industri Cat, Tinta Cetak, Pernis dan Pelapis Sejenisnya, Serta Mastik",
+                  "nama": "Industri Cat, Tinta Cetak, Pernis dan Pelapis Sejenisnya, serta Mastik",
                   "kelompok": [
                     {
                       "kode": "20221",
@@ -3626,7 +3626,7 @@
           "golongan": [
             {
               "kode": "271",
-              "nama": "Industri Motor Listrik, Generator, Transformator, Serta Peralatan Pengontrol dan Pendistribusian Listrik",
+              "nama": "Industri Motor Listrik, Generator, Transformator, serta Peralatan Pengontrol dan Pendistribusian Listrik",
               "subgolongan": [
                 {
                   "kode": "2711",
@@ -4376,11 +4376,11 @@
             },
             {
               "kode": "325",
-              "nama": "Industri Peralatan Kedokteran dan Kedokteran Gigi, Serta Perlengkapannya",
+              "nama": "Industri Peralatan Kedokteran dan Kedokteran Gigi, serta Perlengkapannya",
               "subgolongan": [
                 {
                   "kode": "3250",
-                  "nama": "Industri Peralatan Kedokteran dan Kedokteran Gigi Serta Perlengkapannya",
+                  "nama": "Industri Peralatan Kedokteran dan Kedokteran Gigi serta Perlengkapannya",
                   "kelompok": [
                     {
                       "kode": "32501",
@@ -4388,7 +4388,7 @@
                     },
                     {
                       "kode": "32502",
-                      "nama": "Industri Peralatan Kedokteran dan Kedokteran Gigi, Serta Perlengkapan Ortopedi dan Prostetik"
+                      "nama": "Industri Peralatan Kedokteran dan Kedokteran Gigi, serta Perlengkapan Ortopedi dan Prostetik"
                     },
                     {
                       "kode": "32503",
@@ -4396,7 +4396,7 @@
                     },
                     {
                       "kode": "32509",
-                      "nama": "Industri Peralatan Kedokteran dan Kedokteran Gigi, Serta Perlengkapan Lainnya"
+                      "nama": "Industri Peralatan Kedokteran dan Kedokteran Gigi, serta Perlengkapan Lainnya"
                     }
                   ]
                 }
@@ -4498,7 +4498,7 @@
                   "kelompok": [
                     {
                       "kode": "33131",
-                      "nama": "Reparasi dan Pemeliharaan Alat Ukur, Alat Uji, Serta Peralatan Navigasi dan Pengontrol"
+                      "nama": "Reparasi dan Pemeliharaan Alat Ukur, Alat Uji, serta Peralatan Navigasi dan Pengontrol"
                     },
                     {
                       "kode": "33132",
@@ -4800,7 +4800,7 @@
         },
         {
           "kode": "38",
-          "nama": "Pengumpulan, Pengolahan dan Pembuangan Limbah atau Sampah; Serta Aktivitas Pemulihan",
+          "nama": "Pengumpulan, Pengolahan dan Pembuangan Limbah atau Sampah; serta Aktivitas Pemulihan",
           "golongan": [
             {
               "kode": "381",
@@ -5324,7 +5324,7 @@
                     },
                     {
                       "kode": "43905",
-                      "nama": "Penyewaan Alat Konstruksi Dengan Operator"
+                      "nama": "Penyewaan Alat Konstruksi dengan Operator"
                     },
                     {
                       "kode": "43909",
@@ -5656,7 +5656,7 @@
                     },
                     {
                       "kode": "46522",
-                      "nama": "Perdagangan Besar Disket, Flash Drive, Pita Audio dan Video, Serta Cd dan Dvd Kosong"
+                      "nama": "Perdagangan Besar Disket, Flash Drive, Pita Audio dan Video, serta CD dan DVD Kosong"
                     },
                     {
                       "kode": "46523",
@@ -5902,11 +5902,11 @@
                   "kelompok": [
                     {
                       "kode": "46901",
-                      "nama": "Perdagangan Besar Berbagai Macam Barang Di Grosir/Perkulakan Swalayan"
+                      "nama": "Perdagangan Besar Berbagai Macam Barang di Grosir/Perkulakan Swalayan"
                     },
                     {
                       "kode": "46902",
-                      "nama": "Perdagangan Besar Berbagai Macam Barang Selain Di Grosir/Perkulakan Swalayan"
+                      "nama": "Perdagangan Besar Berbagai Macam Barang Selain di Grosir/Perkulakan Swalayan"
                     }
                   ]
                 }
@@ -5928,11 +5928,11 @@
                   "kelompok": [
                     {
                       "kode": "47111",
-                      "nama": "Perdagangan Eceran Berbagai Macam Barang yang Utamanya Makanan, Minuman, atau Tembakau Dengan Sistem Swalayan"
+                      "nama": "Perdagangan Eceran Berbagai Macam Barang yang Utamanya Makanan, Minuman, atau Tembakau dengan Sistem Swalayan"
                     },
                     {
                       "kode": "47112",
-                      "nama": "Perdagangan Eceran Berbagai Macam Barang yang Utamanya Makanan, Minuman, atau Tembakau Selain Dengan Sistem Swalayan"
+                      "nama": "Perdagangan Eceran Berbagai Macam Barang yang Utamanya Makanan, Minuman, atau Tembakau Selain dengan Sistem Swalayan"
                     }
                   ]
                 },
@@ -5942,11 +5942,11 @@
                   "kelompok": [
                     {
                       "kode": "47191",
-                      "nama": "Perdagangan Eceran Berbagai Macam Barang yang Utamanya Bukan Makanan, Minuman, atau Tembakau Dengan Sistem Swalayan"
+                      "nama": "Perdagangan Eceran Berbagai Macam Barang yang Utamanya Bukan Makanan, Minuman, atau Tembakau dengan Sistem Swalayan"
                     },
                     {
                       "kode": "47192",
-                      "nama": "Perdagangan Eceran Berbagai Macam Barang yang Utamanya Bukan Makanan, Minuman, atau Tembakau Selain Dengan Sistem Swalayan"
+                      "nama": "Perdagangan Eceran Berbagai Macam Barang yang Utamanya Bukan Makanan, Minuman, atau Tembakau Selain dengan Sistem Swalayan"
                     }
                   ]
                 }
@@ -6024,7 +6024,7 @@
                     },
                     {
                       "kode": "47242",
-                      "nama": "Perdagangan Eceran Roti, Kue Kering, Serta Kue Basah dan Sejenisnya"
+                      "nama": "Perdagangan Eceran Roti, Kue Kering, serta Kue Basah dan Sejenisnya"
                     },
                     {
                       "kode": "47243",
@@ -6060,11 +6060,11 @@
                   "kelompok": [
                     {
                       "kode": "47301",
-                      "nama": "Perdagangan Eceran Bahan Bakar Di Sarana Pengisian Bahan Bakar"
+                      "nama": "Perdagangan Eceran Bahan Bakar di Sarana Pengisian Bahan Bakar"
                     },
                     {
                       "kode": "47302",
-                      "nama": "Perdagangan Eceran Bahan Bakar Selain Di Sarana Pengisian Bahan Bakar"
+                      "nama": "Perdagangan Eceran Bahan Bakar Selain di Sarana Pengisian Bahan Bakar"
                     },
                     {
                       "kode": "47303",
@@ -6088,7 +6088,7 @@
                     },
                     {
                       "kode": "47402",
-                      "nama": "Perdagangan Eceran Peralatan dan Produk Gim Video Serta Sejenisnya"
+                      "nama": "Perdagangan Eceran Peralatan dan Produk Gim Video serta Sejenisnya"
                     },
                     {
                       "kode": "47403",
@@ -6164,11 +6164,11 @@
                 },
                 {
                   "kode": "4753",
-                  "nama": "Perdagangan Eceran Karpet, Permadani, Serta Penutup Dinding dan Lantai",
+                  "nama": "Perdagangan Eceran Karpet, Permadani, serta Penutup Dinding dan Lantai",
                   "kelompok": [
                     {
                       "kode": "47530",
-                      "nama": "Perdagangan Eceran Karpet, Permadani, Serta Penutup Dinding dan Lantai"
+                      "nama": "Perdagangan Eceran Karpet, Permadani, serta Penutup Dinding dan Lantai"
                     }
                   ]
                 },
@@ -6256,7 +6256,7 @@
             },
             {
               "kode": "477",
-              "nama": "Perdagangan Eceran Barang Lainnya, Kecuali Mobil dan Sepeda Motor",
+              "nama": "Perdagangan Eceran Barang Lainnya, kecuali Mobil dan Sepeda Motor",
               "subgolongan": [
                 {
                   "kode": "4771",
@@ -6286,11 +6286,11 @@
                   "kelompok": [
                     {
                       "kode": "47721",
-                      "nama": "Perdagangan Eceran Sediaan Farmasi untuk Manusia Di Apotek"
+                      "nama": "Perdagangan Eceran Sediaan Farmasi untuk Manusia di Apotek"
                     },
                     {
                       "kode": "47722",
-                      "nama": "Perdagangan Eceran Sediaan Farmasi untuk Manusia Selain Di Apotek"
+                      "nama": "Perdagangan Eceran Sediaan Farmasi untuk Manusia Selain di Apotek"
                     },
                     {
                       "kode": "47723",
@@ -6884,15 +6884,15 @@
                   "kelompok": [
                     {
                       "kode": "50211",
-                      "nama": "Angkutan Sungai dan danau Liner (Trayek Tetap dan Teratur) untuk Penumpang"
+                      "nama": "Angkutan Sungai dan Danau Liner (Trayek Tetap dan Teratur) untuk Penumpang"
                     },
                     {
                       "kode": "50212",
-                      "nama": "Angkutan Sungai dan danau Tramper (Trayek Tidak Tetap dan Tidak Teratur) untuk Penumpang"
+                      "nama": "Angkutan Sungai dan Danau Tramper (Trayek Tidak Tetap dan Tidak Teratur) untuk Penumpang"
                     },
                     {
                       "kode": "50213",
-                      "nama": "Angkutan Sungai dan danau untuk Wisata"
+                      "nama": "Angkutan Sungai dan Danau untuk Wisata"
                     }
                   ]
                 },
@@ -6902,15 +6902,15 @@
                   "kelompok": [
                     {
                       "kode": "50221",
-                      "nama": "Angkutan Sungai dan danau untuk Barang Umum"
+                      "nama": "Angkutan Sungai dan Danau untuk Barang Umum"
                     },
                     {
                       "kode": "50222",
-                      "nama": "Angkutan Sungai dan danau untuk Barang Khusus"
+                      "nama": "Angkutan Sungai dan Danau untuk Barang Khusus"
                     },
                     {
                       "kode": "50223",
-                      "nama": "Angkutan Sungai dan danau untuk Barang Berbahaya"
+                      "nama": "Angkutan Sungai dan Danau untuk Barang Berbahaya"
                     }
                   ]
                 }
@@ -7042,11 +7042,11 @@
                     },
                     {
                       "kode": "52214",
-                      "nama": "Aktivitas Perparkiran Di Badan Jalan (On Street Parking)"
+                      "nama": "Aktivitas Perparkiran di Badan Jalan (On Street Parking)"
                     },
                     {
                       "kode": "52215",
-                      "nama": "Aktivitas Perparkiran Di Luar Badan Jalan (Off Street Parking)"
+                      "nama": "Aktivitas Perparkiran di Luar Badan Jalan (Off Street Parking)"
                     },
                     {
                       "kode": "52219",
@@ -7064,7 +7064,7 @@
                     },
                     {
                       "kode": "52222",
-                      "nama": "Aktivitas Pelayanan Kepelabuhanan Sungai dan danau"
+                      "nama": "Aktivitas Pelayanan Kepelabuhanan Sungai dan Danau"
                     },
                     {
                       "kode": "52223",
@@ -7106,7 +7106,7 @@
                     },
                     {
                       "kode": "52233",
-                      "nama": "Pelayanan Penumpang, Bagasi, Kargo, Pos, dan Teknis Penanganan Udara Di Darat"
+                      "nama": "Pelayanan Penumpang, Bagasi, Kargo, Pos, dan Teknis Penanganan Udara di Darat"
                     },
                     {
                       "kode": "52234",
@@ -7404,11 +7404,11 @@
                   "kelompok": [
                     {
                       "kode": "56101",
-                      "nama": "Aktivitas Penyediaan Makanan Di Bangunan Tetap"
+                      "nama": "Aktivitas Penyediaan Makanan di Bangunan Tetap"
                     },
                     {
                       "kode": "56102",
-                      "nama": "Aktivitas Penyediaan Makanan Di Bangunan Tidak Tetap"
+                      "nama": "Aktivitas Penyediaan Makanan di Bangunan Tidak Tetap"
                     }
                   ]
                 }
@@ -7498,7 +7498,7 @@
     },
     {
       "kode": "J",
-      "nama": "Aktivitas Penerbitan, Penyiaran, Serta Produksi dan Distribusi Konten",
+      "nama": "Aktivitas Penerbitan, Penyiaran, serta Produksi dan Distribusi Konten",
       "golongan_pokok": [
         {
           "kode": "58",
@@ -7584,7 +7584,7 @@
         },
         {
           "kode": "59",
-          "nama": "Aktivitas Produksi Film, Video, dan Program Televisi, Serta Perekaman Suara dan Penerbitan Musik",
+          "nama": "Aktivitas Produksi Film, Video, dan Program Televisi, serta Perekaman Suara dan Penerbitan Musik",
           "golongan": [
             {
               "kode": "591",
@@ -7596,11 +7596,11 @@
                   "kelompok": [
                     {
                       "kode": "59111",
-                      "nama": "Aktivitas Produksi Film, Video, dan Program Televisi Oleh Pemerintah"
+                      "nama": "Aktivitas Produksi Film, Video, dan Program Televisi oleh Pemerintah"
                     },
                     {
                       "kode": "59112",
-                      "nama": "Aktivitas Produksi Film, Video, dan Program Televisi Oleh Swasta"
+                      "nama": "Aktivitas Produksi Film, Video, dan Program Televisi oleh Swasta"
                     }
                   ]
                 },
@@ -7610,11 +7610,11 @@
                   "kelompok": [
                     {
                       "kode": "59121",
-                      "nama": "Aktivitas Pascaproduksi Film, Video, dan Program Televisi Oleh Pemerintah"
+                      "nama": "Aktivitas Pascaproduksi Film, Video, dan Program Televisi oleh Pemerintah"
                     },
                     {
                       "kode": "59122",
-                      "nama": "Aktivitas Pascaproduksi Film, Video, dan Program Televisi Oleh Swasta"
+                      "nama": "Aktivitas Pascaproduksi Film, Video, dan Program Televisi oleh Swasta"
                     }
                   ]
                 },
@@ -7624,11 +7624,11 @@
                   "kelompok": [
                     {
                       "kode": "59131",
-                      "nama": "Aktivitas Distribusi Film, Video, dan Program Televisi Oleh Pemerintah"
+                      "nama": "Aktivitas Distribusi Film, Video, dan Program Televisi oleh Pemerintah"
                     },
                     {
                       "kode": "59132",
-                      "nama": "Aktivitas Distribusi Film, Video. dan Program Televisi Oleh Swasta"
+                      "nama": "Aktivitas Distribusi Film, Video. dan Program Televisi oleh Swasta"
                     }
                   ]
                 },
@@ -7728,11 +7728,11 @@
                   "kelompok": [
                     {
                       "kode": "60311",
-                      "nama": "Aktivitas Kantor Berita Oleh Pemerintah"
+                      "nama": "Aktivitas Kantor Berita oleh Pemerintah"
                     },
                     {
                       "kode": "60312",
-                      "nama": "Aktivitas Kantor Berita Oleh Swasta"
+                      "nama": "Aktivitas Kantor Berita oleh Swasta"
                     }
                   ]
                 },
@@ -7762,23 +7762,23 @@
           "golongan": [
             {
               "kode": "611",
-              "nama": "Aktivitas Telekomunikasi Dengan Kabel, Nirkabel, dan Satelit",
+              "nama": "Aktivitas Telekomunikasi dengan Kabel, Nirkabel, dan Satelit",
               "subgolongan": [
                 {
                   "kode": "6110",
-                  "nama": "Aktivitas Telekomunikasi Dengan Kabel, Nirkabel, dan Sateli",
+                  "nama": "Aktivitas Telekomunikasi dengan Kabel, Nirkabel, dan Sateli",
                   "kelompok": [
                     {
                       "kode": "61101",
-                      "nama": "Aktivitas Telekomunikasi Dengan Kabel"
+                      "nama": "Aktivitas Telekomunikasi dengan Kabel"
                     },
                     {
                       "kode": "61102",
-                      "nama": "Aktivitas Telekomunikasi Dengan Nirkabel"
+                      "nama": "Aktivitas Telekomunikasi dengan Nirkabel"
                     },
                     {
                       "kode": "61103",
-                      "nama": "Aktivitas Telekomunikasi Dengan Satelit"
+                      "nama": "Aktivitas Telekomunikasi dengan Satelit"
                     },
                     {
                       "kode": "61104",
@@ -8008,7 +8008,7 @@
       "golongan_pokok": [
         {
           "kode": "64",
-          "nama": "Aktivitas Jasa Keuangan, Kecuali Asuransi dan dana Pensiun",
+          "nama": "Aktivitas Jasa Keuangan, kecuali Asuransi dan Dana Pensiun",
           "golongan": [
             {
               "kode": "641",
@@ -8052,11 +8052,11 @@
                   "kelompok": [
                     {
                       "kode": "64191",
-                      "nama": "Aktivitas Pemberian Kredit Oleh Koperasi Konvensional"
+                      "nama": "Aktivitas Pemberian Kredit oleh Koperasi Konvensional"
                     },
                     {
                       "kode": "64192",
-                      "nama": "Aktivitas Pemberian Kredit Oleh Koperasi Syariah"
+                      "nama": "Aktivitas Pemberian Kredit oleh Koperasi Syariah"
                     },
                     {
                       "kode": "64193",
@@ -8106,21 +8106,21 @@
               "subgolongan": [
                 {
                   "kode": "6431",
-                  "nama": "Aktivitas dana Investasi Pasar Uang",
+                  "nama": "Aktivitas Dana Investasi Pasar Uang",
                   "kelompok": [
                     {
                       "kode": "64310",
-                      "nama": "Aktivitas dana Pasar Uang"
+                      "nama": "Aktivitas Dana Pasar Uang"
                     }
                   ]
                 },
                 {
                   "kode": "6432",
-                  "nama": "Aktivitas dana Investasi Bukan Pasar Uang",
+                  "nama": "Aktivitas Dana Investasi Bukan Pasar Uang",
                   "kelompok": [
                     {
                       "kode": "64320",
-                      "nama": "Aktivitas dana Investasi Bukan Pasar Uang"
+                      "nama": "Aktivitas Dana Investasi Bukan Pasar Uang"
                     }
                   ]
                 },
@@ -8138,7 +8138,7 @@
             },
             {
               "kode": "649",
-              "nama": "Aktivitas Jasa Keuangan Lainnya, Bukan Asuransi, Penjaminan, dan dana Pensiun",
+              "nama": "Aktivitas Jasa Keuangan Lainnya, Bukan Asuransi, Penjaminan, dan Dana Pensiun",
               "subgolongan": [
                 {
                   "kode": "6491",
@@ -8212,7 +8212,7 @@
                 },
                 {
                   "kode": "6499",
-                  "nama": "Aktivitas Jasa Keuangan Lainnya, Kecuali Asuransi dan dana Pensiun",
+                  "nama": "Aktivitas Jasa Keuangan Lainnya, kecuali Asuransi dan Dana Pensiun",
                   "kelompok": [
                     {
                       "kode": "64991",
@@ -8228,7 +8228,7 @@
                     },
                     {
                       "kode": "64994",
-                      "nama": "Perdagangan Di Pasar Keuangan Atas Nama Sendiri"
+                      "nama": "Perdagangan di Pasar Keuangan Atas Nama Sendiri"
                     },
                     {
                       "kode": "64995",
@@ -8244,7 +8244,7 @@
                     },
                     {
                       "kode": "64999",
-                      "nama": "Aktivitas Jasa Keuangan Lainnya YTDL, Bukan Asuransi dan dana Pensiun"
+                      "nama": "Aktivitas Jasa Keuangan Lainnya YTDL, Bukan Asuransi dan Dana Pensiun"
                     }
                   ]
                 }
@@ -8254,7 +8254,7 @@
         },
         {
           "kode": "65",
-          "nama": "Asuransi, Penjaminan, Reasuransi, dan dana Pensiun, Kecuali Jaminan Sosial Wajib",
+          "nama": "Asuransi, Penjaminan, Reasuransi, dan Dana Pensiun, kecuali Jaminan Sosial Wajib",
           "golongan": [
             {
               "kode": "651",
@@ -8346,19 +8346,19 @@
                   "kelompok": [
                     {
                       "kode": "65301",
-                      "nama": "Aktivitas dana Pensiun Pemberi Kerja Konvensional"
+                      "nama": "Aktivitas Dana Pensiun Pemberi Kerja Konvensional"
                     },
                     {
                       "kode": "65302",
-                      "nama": "Aktivitas dana Pensiun Pemberi Kerja Syariah"
+                      "nama": "Aktivitas Dana Pensiun Pemberi Kerja Syariah"
                     },
                     {
                       "kode": "65303",
-                      "nama": "Aktivitas dana Pensiun Lembaga Keuangan Konvensional"
+                      "nama": "Aktivitas Dana Pensiun Lembaga Keuangan Konvensional"
                     },
                     {
                       "kode": "65304",
-                      "nama": "Aktivitas dana Pensiun Lembaga Keuangan Syariah"
+                      "nama": "Aktivitas Dana Pensiun Lembaga Keuangan Syariah"
                     }
                   ]
                 }
@@ -8368,11 +8368,11 @@
         },
         {
           "kode": "66",
-          "nama": "Aktivitas Penunjang Jasa Keuangan, Asuransi, Penjaminan dan dana Pensiun",
+          "nama": "Aktivitas Penunjang Jasa Keuangan, Asuransi, Penjaminan dan Dana Pensiun",
           "golongan": [
             {
               "kode": "661",
-              "nama": "Aktivitas Penunjang Jasa Keuangan, Kecuali Asuransi, Penjaminan, dan dana Pensiun",
+              "nama": "Aktivitas Penunjang Jasa Keuangan, kecuali Asuransi, Penjaminan, dan Dana Pensiun",
               "subgolongan": [
                 {
                   "kode": "6611",
@@ -8392,15 +8392,15 @@
                     },
                     {
                       "kode": "66114",
-                      "nama": "Penyelenggaraan Perdagangan Kontrak Derivatif Di Pasar Alternatif"
+                      "nama": "Penyelenggaraan Perdagangan Kontrak Derivatif di Pasar Alternatif"
                     },
                     {
                       "kode": "66115",
-                      "nama": "Penyelenggaraan Sarana Transaksi Di Pasar Uang dan Pasar Valuta Asing"
+                      "nama": "Penyelenggaraan Sarana Transaksi di Pasar Uang dan Pasar Valuta Asing"
                     },
                     {
                       "kode": "66116",
-                      "nama": "Aktivitas Pengawasan Jasa Keuangan Selain Asuransi dan dana Pensiun"
+                      "nama": "Aktivitas Pengawasan Jasa Keuangan Selain Asuransi dan Dana Pensiun"
                     },
                     {
                       "kode": "66117",
@@ -8438,7 +8438,7 @@
                     },
                     {
                       "kode": "66126",
-                      "nama": "Penawaran Efek Melalui Layanan Urun dana Berbasis Teknologi Informasi (Securities Crowdfunding)"
+                      "nama": "Penawaran Efek Melalui Layanan Urun Dana Berbasis Teknologi Informasi (Securities Crowdfunding)"
                     },
                     {
                       "kode": "66127",
@@ -8452,11 +8452,11 @@
                 },
                 {
                   "kode": "6613",
-                  "nama": "Aktivitas yang Terkait Dengan Kliring, Penyimpanan, dan Setelmen Transaksi Di Pasar Keuangan dan Pasar Berjangka Komoditas",
+                  "nama": "Aktivitas yang Terkait dengan Kliring, Penyimpanan, dan Setelmen Transaksi di Pasar Keuangan dan Pasar Berjangka Komoditas",
                   "kelompok": [
                     {
                       "kode": "66131",
-                      "nama": "Kliring dan Setelmen Transaksi Di Pasar Keuangan"
+                      "nama": "Kliring dan Setelmen Transaksi di Pasar Keuangan"
                     },
                     {
                       "kode": "66132",
@@ -8532,7 +8532,7 @@
                 },
                 {
                   "kode": "6619",
-                  "nama": "Aktivitas Penunjang Jasa Keuangan Lainnya, Kecuali Asuransi dan dana Pensiun",
+                  "nama": "Aktivitas Penunjang Jasa Keuangan Lainnya, kecuali Asuransi dan Dana Pensiun",
                   "kelompok": [
                     {
                       "kode": "66191",
@@ -8552,7 +8552,7 @@
                     },
                     {
                       "kode": "66195",
-                      "nama": "Penyelenggaraan dana Perlindungan Pemodal"
+                      "nama": "Penyelenggaraan Dana Perlindungan Pemodal"
                     },
                     {
                       "kode": "66196",
@@ -8560,7 +8560,7 @@
                     },
                     {
                       "kode": "66197",
-                      "nama": "Aktivitas Pendukung Di Pasar Uang dan Pasar Valuta Asing"
+                      "nama": "Aktivitas Pendukung di Pasar Uang dan Pasar Valuta Asing"
                     },
                     {
                       "kode": "66198",
@@ -8568,7 +8568,7 @@
                     },
                     {
                       "kode": "66199",
-                      "nama": "Aktivitas Penunjang Jasa Keuangan Lainnya YTDL, Kecuali Asuransi dan dana Pensiun"
+                      "nama": "Aktivitas Penunjang Jasa Keuangan Lainnya YTDL, kecuali Asuransi dan Dana Pensiun"
                     }
                   ]
                 }
@@ -8576,7 +8576,7 @@
             },
             {
               "kode": "662",
-              "nama": "Aktivitas Penunjang Asuransi, Penjaminan, dan dana Pensiun",
+              "nama": "Aktivitas Penunjang Asuransi, Penjaminan, dan Dana Pensiun",
               "subgolongan": [
                 {
                   "kode": "6621",
@@ -8624,7 +8624,7 @@
                 },
                 {
                   "kode": "6629",
-                  "nama": "Aktivitas Penunjang Lainnya untuk Asuransi, Penjaminan, dan dana Pensiun",
+                  "nama": "Aktivitas Penunjang Lainnya untuk Asuransi, Penjaminan, dan Dana Pensiun",
                   "kelompok": [
                     {
                       "kode": "66291",
@@ -8632,11 +8632,11 @@
                     },
                     {
                       "kode": "66292",
-                      "nama": "Aktivitas Pengawasan Jasa Keuangan Asuransi dan dana Pensiun"
+                      "nama": "Aktivitas Pengawasan Jasa Keuangan Asuransi dan Dana Pensiun"
                     },
                     {
                       "kode": "66299",
-                      "nama": "Aktivitas Penunjang Lainnya untuk Asuransi, Penjamian, dan dana Pensiun YTDL"
+                      "nama": "Aktivitas Penunjang Lainnya untuk Asuransi, Penjamian, dan Dana Pensiun YTDL"
                     }
                   ]
                 }
@@ -8644,27 +8644,27 @@
             },
             {
               "kode": "663",
-              "nama": "Aktivitas Manajemen dana",
+              "nama": "Aktivitas Manajemen Dana",
               "subgolongan": [
                 {
                   "kode": "6630",
-                  "nama": "Aktivitas Manajemen dana",
+                  "nama": "Aktivitas Manajemen Dana",
                   "kelompok": [
                     {
                       "kode": "66301",
-                      "nama": "Manajemen Investasi Konvensional Di Pasar Keuangan"
+                      "nama": "Manajemen Investasi Konvensional di Pasar Keuangan"
                     },
                     {
                       "kode": "66302",
-                      "nama": "Manajemen Investasi Syariah Di Pasar Keuangan"
+                      "nama": "Manajemen Investasi Syariah di Pasar Keuangan"
                     },
                     {
                       "kode": "66303",
-                      "nama": "Manajemen Investasi Di Perdagangan Berjangka Komoditas"
+                      "nama": "Manajemen Investasi di Perdagangan Berjangka Komoditas"
                     },
                     {
                       "kode": "66309",
-                      "nama": "Aktivitas Manajemen dana Lainnya"
+                      "nama": "Aktivitas Manajemen Dana Lainnya"
                     }
                   ]
                 }
@@ -8684,7 +8684,7 @@
           "golongan": [
             {
               "kode": "681",
-              "nama": "Aktivitas Real Estat Dengan Properti Milik Sendiri atau Sewa",
+              "nama": "Aktivitas Real Estat dengan Properti Milik Sendiri atau Sewa",
               "subgolongan": [
                 {
                   "kode": "6811",
@@ -8718,7 +8718,7 @@
                     },
                     {
                       "kode": "68124",
-                      "nama": "Penyewaan Tempat Penyelenggaraan Aktivitas Pertemuan, Perjalanan Insentif, Konvensi, dan Pameran, Serta Acara Khusus"
+                      "nama": "Penyewaan Tempat Penyelenggaraan Aktivitas Pertemuan, Perjalanan Insentif, Konvensi, dan Pameran, serta Acara Khusus"
                     },
                     {
                       "kode": "68125",
@@ -8892,11 +8892,11 @@
           "golongan": [
             {
               "kode": "711",
-              "nama": "Aktivitas Arsitektur dan Enjinering, Serta Konsultansi Teknis Terkait",
+              "nama": "Aktivitas Arsitektur dan Enjinering, serta Konsultansi Teknis Terkait",
               "subgolongan": [
                 {
                   "kode": "7110",
-                  "nama": "Aktivitas Arsitektural dan Enjinering, Serta Konsultansi Teknis Terkait",
+                  "nama": "Aktivitas Arsitektural dan Enjinering, serta Konsultansi Teknis Terkait",
                   "kelompok": [
                     {
                       "kode": "71101",
@@ -9436,7 +9436,7 @@
                   "kelompok": [
                     {
                       "kode": "78101",
-                      "nama": "Aktivitas Penempatan Tenaga Kerja untuk Usaha Di Dalam Negeri"
+                      "nama": "Aktivitas Penempatan Tenaga Kerja untuk Usaha di Dalam Negeri"
                     },
                     {
                       "kode": "78102",
@@ -9444,7 +9444,7 @@
                     },
                     {
                       "kode": "78103",
-                      "nama": "Aktivitas Penempatan Tenaga Kerja untuk Rumah Tangga Sebagai Pemberi Kerja Di Dalam Negeri"
+                      "nama": "Aktivitas Penempatan Tenaga Kerja untuk Rumah Tangga sebagai Pemberi Kerja di Dalam Negeri"
                     },
                     {
                       "kode": "78104",
@@ -9778,11 +9778,11 @@
     },
     {
       "kode": "P",
-      "nama": "Administrasi Pemerintahan dan Pertahanan, Serta Jaminan Sosial Wajib",
+      "nama": "Administrasi Pemerintahan dan Pertahanan, serta Jaminan Sosial Wajib",
       "golongan_pokok": [
         {
           "kode": "84",
-          "nama": "Administrasi Pemerintahan dan Pertahanan, Serta Jaminan Sosial Wajib",
+          "nama": "Administrasi Pemerintahan dan Pertahanan, serta Jaminan Sosial Wajib",
           "golongan": [
             {
               "kode": "841",
@@ -9810,7 +9810,7 @@
                     },
                     {
                       "kode": "84115",
-                      "nama": "Lembaga Pemerintah Nonkementerian Dengan Tugas Khusus"
+                      "nama": "Lembaga Pemerintah Nonkementerian dengan Tugas Khusus"
                     },
                     {
                       "kode": "84119",
@@ -10374,7 +10374,7 @@
                     },
                     {
                       "kode": "85693",
-                      "nama": "Aktivitas Sertifikasi Profesi Oleh Asosiasi"
+                      "nama": "Aktivitas Sertifikasi Profesi oleh Asosiasi"
                     },
                     {
                       "kode": "85694",
@@ -10480,7 +10480,7 @@
                   "kelompok": [
                     {
                       "kode": "86991",
-                      "nama": "Aktivitas Pelayanan Kesehatan yang Dilakukan Oleh Tenaga Kesehatan Selain Dokter dan Dokter Gigi"
+                      "nama": "Aktivitas Pelayanan Kesehatan yang Dilakukan oleh Tenaga Kesehatan Selain Dokter dan Dokter Gigi"
                     },
                     {
                       "kode": "86992",
@@ -10518,11 +10518,11 @@
                   "kelompok": [
                     {
                       "kode": "87101",
-                      "nama": "Aktivitas Perawatan dan Pemulihan Kesehatan Berbasis Residensial Oleh Pemerintah"
+                      "nama": "Aktivitas Perawatan dan Pemulihan Kesehatan Berbasis Residensial oleh Pemerintah"
                     },
                     {
                       "kode": "87102",
-                      "nama": "Aktivitas Perawatan dan Pemulihan Kesehatan Berbasis Residensial Oleh Lembaga Kesejahteraan Sosial"
+                      "nama": "Aktivitas Perawatan dan Pemulihan Kesehatan Berbasis Residensial oleh Lembaga Kesejahteraan Sosial"
                     }
                   ]
                 }
@@ -10530,19 +10530,19 @@
             },
             {
               "kode": "872",
-              "nama": "Aktivitas Perawatan untuk Orang yang Hidup Dengan atau Memiliki Diagnosis Penyakit Mental atau Penyalahgunaan Obat Terlarang Berbasis Residensial",
+              "nama": "Aktivitas Perawatan untuk Orang yang Hidup dengan atau Memiliki Diagnosis Penyakit Mental atau Penyalahgunaan Obat Terlarang Berbasis Residensial",
               "subgolongan": [
                 {
                   "kode": "8720",
-                  "nama": "Aktivitas Perawatan untuk Orang yang Hidup Dengan atau Memiliki Diagnosis Penyandang Disabilitas Mental atau Korban Penyalahgunaan Obat Terlarang Berbasis Residensial",
+                  "nama": "Aktivitas Perawatan untuk Orang yang Hidup dengan atau Memiliki Diagnosis Penyandang Disabilitas Mental atau Korban Penyalahgunaan Obat Terlarang Berbasis Residensial",
                   "kelompok": [
                     {
                       "kode": "87201",
-                      "nama": "Aktivitas Perawatanuntuk Orang yang Hidup Dengan atau Memiliki Diagnosis Penyandang Disabilitas Mental atau Penyalahgunaan Obat Terlarang Berbasis Residensial Oleh Pemerintah"
+                      "nama": "Aktivitas Perawatanuntuk Orang yang Hidup dengan atau Memiliki Diagnosis Penyandang Disabilitas Mental atau Penyalahgunaan Obat Terlarang Berbasis Residensial oleh Pemerintah"
                     },
                     {
                       "kode": "87202",
-                      "nama": "Aktivitas Perawatan untuk Orang yang Hidup Dengan atau Memiliki Diagnosis Penyandang Disabilitas Mental atau Penyalahgunaan Obat Terlarang Berbasis Residensial Oleh Lembaga Kesejahteraan Sosial (LKS)"
+                      "nama": "Aktivitas Perawatan untuk Orang yang Hidup dengan atau Memiliki Diagnosis Penyandang Disabilitas Mental atau Penyalahgunaan Obat Terlarang Berbasis Residensial oleh Lembaga Kesejahteraan Sosial (LKS)"
                     }
                   ]
                 }
@@ -10558,11 +10558,11 @@
                   "kelompok": [
                     {
                       "kode": "87301",
-                      "nama": "Aktivitas Perawatan untuk Lanjut Usia atau Penyandang Disabilitas Fisik Berbasis Residensial Oleh Pemerintah"
+                      "nama": "Aktivitas Perawatan untuk Lanjut Usia atau Penyandang Disabilitas Fisik Berbasis Residensial oleh Pemerintah"
                     },
                     {
                       "kode": "87302",
-                      "nama": "Aktivitas Sosial untuk Lanjut Usia atau Penyandang Disabilitas Fisik Oleh Lembaga Kesejahteraan Sosial (LKS)"
+                      "nama": "Aktivitas Sosial untuk Lanjut Usia atau Penyandang Disabilitas Fisik oleh Lembaga Kesejahteraan Sosial (LKS)"
                     },
                     {
                       "kode": "87303",
@@ -10596,7 +10596,7 @@
                     },
                     {
                       "kode": "87992",
-                      "nama": "Aktivitas Perawatan untuk Anak yang Berhadapan Dengan Hukum Berbasis Residensial"
+                      "nama": "Aktivitas Perawatan untuk Anak yang Berhadapan dengan Hukum Berbasis Residensial"
                     },
                     {
                       "kode": "87993",
@@ -10650,15 +10650,15 @@
                     },
                     {
                       "kode": "88903",
-                      "nama": "Aktivitas Sosial Pengumpulan dana Keislaman"
+                      "nama": "Aktivitas Sosial Pengumpulan Dana Keislaman"
                     },
                     {
                       "kode": "88904",
-                      "nama": "Aktivitas Sosial Pengumpulan dana Nonislam"
+                      "nama": "Aktivitas Sosial Pengumpulan Dana Nonislam"
                     },
                     {
                       "kode": "88905",
-                      "nama": "Aktivitas Sosial Pengumpulan dana Lainnya"
+                      "nama": "Aktivitas Sosial Pengumpulan Dana Lainnya"
                     },
                     {
                       "kode": "88906",
@@ -11024,7 +11024,7 @@
                 },
                 {
                   "kode": "9319",
-                  "nama": "Aktivitas Lainnya yang Berkaitan Dengan Olahraga",
+                  "nama": "Aktivitas Lainnya yang Berkaitan dengan Olahraga",
                   "kelompok": [
                     {
                       "kode": "93191",
@@ -11036,7 +11036,7 @@
                     },
                     {
                       "kode": "93193",
-                      "nama": "Aktivitas Perburuan Di Kawasan Buru"
+                      "nama": "Aktivitas Perburuan di Kawasan Buru"
                     },
                     {
                       "kode": "93194",
@@ -11056,7 +11056,7 @@
                     },
                     {
                       "kode": "93199",
-                      "nama": "Aktivitas Lainnya yang Berkaitan Dengan Olahraga YTDL"
+                      "nama": "Aktivitas Lainnya yang Berkaitan dengan Olahraga YTDL"
                     }
                   ]
                 }
@@ -11214,7 +11214,7 @@
         },
         {
           "kode": "95",
-          "nama": "Reparasi dan Pemeliharaan Komputer, Barang Keperluan Pribadi dan Perlengkapan Rumah Tangga, Serta Kendaraan Bermotor dan Sepeda Motor",
+          "nama": "Reparasi dan Pemeliharaan Komputer, Barang Keperluan Pribadi dan Perlengkapan Rumah Tangga, serta Kendaraan Bermotor dan Sepeda Motor",
           "golongan": [
             {
               "kode": "951",
@@ -11298,7 +11298,7 @@
             },
             {
               "kode": "953",
-              "nama": "Reparasi Serta Perawatan Mobil dan Sepeda Motor",
+              "nama": "Reparasi serta Perawatan Mobil dan Sepeda Motor",
               "subgolongan": [
                 {
                   "kode": "9531",
@@ -11328,15 +11328,15 @@
             },
             {
               "kode": "954",
-              "nama": "Jasa Intermediasi Reparasi dan Perawatan Komputer, Barang Pribadi dan Rumah Tangga, Mobil, Serta Sepeda Motor",
+              "nama": "Jasa Intermediasi Reparasi dan Perawatan Komputer, Barang Pribadi dan Rumah Tangga, Mobil, serta Sepeda Motor",
               "subgolongan": [
                 {
                   "kode": "9540",
-                  "nama": "Jasa Intermediasi Reparasi dan Perawatan Komputer, Barang Pribadi dan Rumah Tangga, Mobil, Serta Sepeda Motor",
+                  "nama": "Jasa Intermediasi Reparasi dan Perawatan Komputer, Barang Pribadi dan Rumah Tangga, Mobil, serta Sepeda Motor",
                   "kelompok": [
                     {
                       "kode": "95400",
-                      "nama": "Jasa Intermediasi Reparasi dan Perawatan Komputer, Barang Pribadi dan Rumah Tangga, Mobil, Serta Sepeda Motor"
+                      "nama": "Jasa Intermediasi Reparasi dan Perawatan Komputer, Barang Pribadi dan Rumah Tangga, Mobil, serta Sepeda Motor"
                     }
                   ]
                 }
@@ -11454,23 +11454,23 @@
     },
     {
       "kode": "U",
-      "nama": "Aktivitas Rumah Tangga Sebagai Pemberi Kerja dan Aktivitas Produksi Barang dan Jasa Oleh Rumah Tangga untuk Keperluan Sendiri yang Tidak Terdiferensiasi",
+      "nama": "Aktivitas Rumah Tangga sebagai Pemberi Kerja dan Aktivitas Produksi Barang dan Jasa oleh Rumah Tangga untuk Keperluan Sendiri yang Tidak Terdiferensiasi",
       "golongan_pokok": [
         {
           "kode": "97",
-          "nama": "Aktivitas Rumah Tangga Sebagai Pemberi Kerja Bagi Pekerja Rumah Tangga (PRT)",
+          "nama": "Aktivitas Rumah Tangga sebagai Pemberi Kerja bagi Pekerja Rumah Tangga (PRT)",
           "golongan": [
             {
               "kode": "970",
-              "nama": "Aktivitas Rumah Tangga Sebagai Pemberi Kerja Bagi Pekerja Rumah Tangga (PRT)",
+              "nama": "Aktivitas Rumah Tangga sebagai Pemberi Kerja bagi Pekerja Rumah Tangga (PRT)",
               "subgolongan": [
                 {
                   "kode": "9700",
-                  "nama": "Aktivitas Rumah Tangga Sebagai Pemberi Kerja Bagi Pekerja Rumah Tangga (PRT)",
+                  "nama": "Aktivitas Rumah Tangga sebagai Pemberi Kerja bagi Pekerja Rumah Tangga (PRT)",
                   "kelompok": [
                     {
                       "kode": "97000",
-                      "nama": "Aktivitas Rumah Tangga Sebagai Pemberi Kerja Bagi Pekerja Rumah Tangga (PRT)"
+                      "nama": "Aktivitas Rumah Tangga sebagai Pemberi Kerja bagi Pekerja Rumah Tangga (PRT)"
                     }
                   ]
                 }
@@ -11480,19 +11480,19 @@
         },
         {
           "kode": "98",
-          "nama": "Aktivitas Produksi Beragam Barang dan Jasa Oleh Rumah Tangga untuk Keperluan Sendiri",
+          "nama": "Aktivitas Produksi Beragam Barang dan Jasa oleh Rumah Tangga untuk Keperluan Sendiri",
           "golongan": [
             {
               "kode": "981",
-              "nama": "Aktivitas Produksi Beragam Barang Oleh Rumah Tangga untuk Keperluan Sendiri",
+              "nama": "Aktivitas Produksi Beragam Barang oleh Rumah Tangga untuk Keperluan Sendiri",
               "subgolongan": [
                 {
                   "kode": "9810",
-                  "nama": "Aktivitas Produksi Beragam Barang Oleh Rumah Tangga untuk Keperluan Sendiri",
+                  "nama": "Aktivitas Produksi Beragam Barang oleh Rumah Tangga untuk Keperluan Sendiri",
                   "kelompok": [
                     {
                       "kode": "98100",
-                      "nama": "Aktivitas Produksi Barang Oleh Rumah Tangga untuk Keperluan Sendiri"
+                      "nama": "Aktivitas Produksi Barang oleh Rumah Tangga untuk Keperluan Sendiri"
                     }
                   ]
                 }
@@ -11500,15 +11500,15 @@
             },
             {
               "kode": "982",
-              "nama": "Aktivitas Produksi Beragam Jasa Oleh Rumah Tangga untuk Keperluan Sendiri",
+              "nama": "Aktivitas Produksi Beragam Jasa oleh Rumah Tangga untuk Keperluan Sendiri",
               "subgolongan": [
                 {
                   "kode": "9820",
-                  "nama": "Aktivitas Produksi Beragam Jasa Oleh Rumah Tangga untuk Keperluan Sendiri",
+                  "nama": "Aktivitas Produksi Beragam Jasa oleh Rumah Tangga untuk Keperluan Sendiri",
                   "kelompok": [
                     {
                       "kode": "98200",
-                      "nama": "Aktivitas Produksi Beragam Jasa Oleh Rumah Tangga untuk Keperluan Sendiri"
+                      "nama": "Aktivitas Produksi Beragam Jasa oleh Rumah Tangga untuk Keperluan Sendiri"
                     }
                   ]
                 }

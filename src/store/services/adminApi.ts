@@ -3,7 +3,8 @@ import { baseApi } from '../baseApi'
 interface UserData {
   id: number
   name: string
-  username: string
+  username: string | null
+  phone: string | null
   role: 'pegawai' | 'mitra' | 'admin'
   created_at: string
   updated_at: string
@@ -28,7 +29,8 @@ interface UserListParams {
 
 interface CreateUserInput {
   name: string
-  username: string
+  username?: string
+  phone?: string
   password: string
   role: 'pegawai' | 'mitra'
 }
@@ -36,6 +38,7 @@ interface CreateUserInput {
 interface UpdateUserInput {
   name?: string
   username?: string
+  phone?: string
   password?: string
   role?: 'pegawai' | 'mitra'
 }

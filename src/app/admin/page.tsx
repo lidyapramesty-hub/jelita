@@ -31,11 +31,14 @@ export default function AdminPage() {
   const [filterRole, setFilterRole] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [showCreate, setShowCreate] = useState(false)
-  const [editUser, setEditUser] = useState<{ id: number; name: string; username: string; role: string } | null>(null)
+  const [editUser, setEditUser] = useState<{ id: number; name: string; username: string | null; phone: string | null; role: string } | null>(null)
   const [deleteId, setDeleteId] = useState<number | null>(null)
+  const [sortCol, setSortCol] = useState<string>('role')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
   const [formName, setFormName] = useState('')
   const [formUsername, setFormUsername] = useState('')
+  const [formPhone, setFormPhone] = useState('')
   const [formPassword, setFormPassword] = useState('')
   const [formRole, setFormRole] = useState<string | null>('pegawai')
 
@@ -44,6 +47,8 @@ export default function AdminPage() {
     role: filterRole || undefined,
     per_page: 20,
     page,
+    sort_by: sortCol,
+    sort_dir: sortDir,
   })
   const [createUser, { isLoading: creating }] = useCreateAdminUserMutation()
   const [updateUser, { isLoading: updating }] = useUpdateAdminUserMutation()
@@ -66,14 +71,20 @@ export default function AdminPage() {
   const resetForm = () => {
     setFormName('')
     setFormUsername('')
+    setFormPhone('')
     setFormPassword('')
     setFormRole('pegawai')
   }
 
   const handleCreate = async () => {
-    if (!formName || !formUsername || !formPassword || !formRole) return
+    if (!formName || !formPassword || !formRole) return
+    if (formRole === 'mitra' && !formPhone) return
+    if (formRole !== 'mitra' && !formUsername) return
     try {
-      await createUser({ name: formName, username: formUsername, password: formPassword, role: formRole as 'pegawai' | 'mitra' }).unwrap()
+      const payload = formRole === 'mitra'
+        ? { name: formName, phone: formPhone, password: formPassword, role: formRole as 'pegawai' | 'mitra' }
+        : { name: formName, username: formUsername, password: formPassword, role: formRole as 'pegawai' | 'mitra' }
+      await createUser(payload).unwrap()
       notifications.show({ title: 'Berhasil', message: 'User berhasil dibuat.', color: 'green' })
       setShowCreate(false)
       resetForm()
@@ -87,9 +98,13 @@ export default function AdminPage() {
     try {
       const data: Record<string, string> = {}
       if (formName) data.name = formName
-      if (formUsername) data.username = formUsername
+      if (editUser.role === 'mitra') {
+        if (formPhone) data.phone = formPhone
+      } else {
+        if (formUsername) data.username = formUsername
+      }
       if (formPassword) data.password = formPassword
-      if (formRole) data.role = formRole
+      if (formRole && editUser.role !== 'admin') data.role = formRole
       await updateUser({ id: editUser.id, data }).unwrap()
       notifications.show({ title: 'Berhasil', message: 'User berhasil diperbarui.', color: 'green' })
       setEditUser(null)
@@ -110,16 +125,32 @@ export default function AdminPage() {
     }
   }
 
-  const openEdit = (u: { id: number; name: string; username: string; role: string }) => {
+  const openEdit = (u: { id: number; name: string; username: string | null; phone: string | null; role: string }) => {
     setEditUser(u)
     setFormName(u.name)
-    setFormUsername(u.username)
+    setFormUsername(u.username || '')
+    setFormPhone(u.phone || '')
     setFormPassword('')
     setFormRole(u.role)
   }
 
   const users = usersData?.data || []
   const totalPages = usersData?.last_page || 1
+
+  const handleSort = (col: string) => {
+    if (sortCol === col) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortCol(col)
+      setSortDir('asc')
+    }
+    setPage(1)
+  }
+
+  const SortIcon = ({ col }: { col: string }) => {
+    if (sortCol !== col) return <span className="text-gray-300 ml-1">↕</span>
+    return <span className="text-[#003087] ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -190,9 +221,15 @@ export default function AdminPage() {
                     <thead>
                       <tr className="border-b border-gray-200 bg-gray-50">
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">No</th>
-                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Nama</th>
-                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Username</th>
-                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Role</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600 cursor-pointer select-none" onClick={() => handleSort('name')}>
+                          Nama <SortIcon col="name" />
+                        </th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600 cursor-pointer select-none" onClick={() => handleSort('username')}>
+                          Username / No. Telp <SortIcon col="username" />
+                        </th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600 cursor-pointer select-none" onClick={() => handleSort('role')}>
+                          Role <SortIcon col="role" />
+                        </th>
                         <th className="text-right px-4 py-3 font-semibold text-gray-600">Aksi</th>
                       </tr>
                     </thead>
@@ -201,7 +238,9 @@ export default function AdminPage() {
                         <tr key={u.id} className="border-b border-gray-100 hover:bg-gray-50">
                           <td className="px-4 py-3 text-gray-400">{(page - 1) * 20 + idx + 1}</td>
                           <td className="px-4 py-3 font-medium">{u.name}</td>
-                          <td className="px-4 py-3 text-gray-600">{u.username}</td>
+                          <td className="px-4 py-3 text-gray-600">
+                            {u.role === 'mitra' ? (u.phone ? `+62${u.phone}` : '-') : (u.username || '-')}
+                          </td>
                           <td className="px-4 py-3">
                             <Badge size="sm" variant="light" color={ROLE_COLORS[u.role] || 'gray'} tt="capitalize">
                               {u.role}
@@ -210,7 +249,7 @@ export default function AdminPage() {
                           <td className="px-4 py-3">
                             <Group gap={4} justify="flex-end" wrap="nowrap">
                               <Tooltip label="Edit">
-                                <ActionIcon variant="subtle" color="yellow" onClick={() => openEdit(u)}>
+                                <ActionIcon variant="subtle" color="yellow" onClick={() => openEdit({ id: u.id, name: u.name, username: u.username, phone: u.phone, role: u.role })}>
                                   <IconPencil size={16} />
                                 </ActionIcon>
                               </Tooltip>
@@ -253,10 +292,28 @@ export default function AdminPage() {
       {/* Create User Modal */}
       <Modal opened={showCreate} onClose={() => setShowCreate(false)} title="Tambah User Baru" radius="lg" centered>
         <Stack gap="md">
+          <Select
+            label="Role"
+            data={[{ value: 'pegawai', label: 'Pegawai BPS' }, { value: 'mitra', label: 'Mitra BPS' }]}
+            value={formRole}
+            onChange={(v) => { setFormRole(v); setFormUsername(''); setFormPhone('') }}
+            required
+          />
           <TextInput label="Nama Lengkap" placeholder="Nama lengkap" value={formName} onChange={(e) => setFormName(e.currentTarget.value)} required />
-          <TextInput label="Username" placeholder="Username untuk login" value={formUsername} onChange={(e) => setFormUsername(e.currentTarget.value)} required />
+          {formRole === 'mitra' ? (
+            <TextInput
+              label="Nomor Telepon"
+              placeholder="812xxxxxxxx"
+              value={formPhone}
+              onChange={(e) => setFormPhone(e.currentTarget.value)}
+              required
+              leftSection={<Text size="sm" fw={600} c="dimmed" style={{ whiteSpace: 'nowrap', paddingLeft: 4 }}>+62</Text>}
+              leftSectionWidth={48}
+            />
+          ) : (
+            <TextInput label="Username" placeholder="Username untuk login" value={formUsername} onChange={(e) => setFormUsername(e.currentTarget.value)} required />
+          )}
           <PasswordInput label="Password" placeholder="Minimal 6 karakter" value={formPassword} onChange={(e) => setFormPassword(e.currentTarget.value)} required />
-          <Select label="Role" data={[{ value: 'pegawai', label: 'Pegawai BPS' }, { value: 'mitra', label: 'Mitra BPS' }]} value={formRole} onChange={setFormRole} required />
           <Group justify="flex-end" mt="sm">
             <Button variant="default" onClick={() => setShowCreate(false)}>Batal</Button>
             <Button onClick={handleCreate} loading={creating} style={{ backgroundColor: '#003087' }}>Simpan</Button>
@@ -268,7 +325,18 @@ export default function AdminPage() {
       <Modal opened={!!editUser} onClose={() => { setEditUser(null); resetForm() }} title="Edit User" radius="lg" centered>
         <Stack gap="md">
           <TextInput label="Nama Lengkap" placeholder="Nama lengkap" value={formName} onChange={(e) => setFormName(e.currentTarget.value)} />
-          <TextInput label="Username" placeholder="Username" value={formUsername} onChange={(e) => setFormUsername(e.currentTarget.value)} />
+          {editUser?.role === 'mitra' ? (
+            <TextInput
+              label="Nomor Telepon"
+              placeholder="812xxxxxxxx"
+              value={formPhone}
+              onChange={(e) => setFormPhone(e.currentTarget.value)}
+              leftSection={<Text size="sm" fw={600} c="dimmed" style={{ whiteSpace: 'nowrap', paddingLeft: 4 }}>+62</Text>}
+              leftSectionWidth={48}
+            />
+          ) : (
+            <TextInput label="Username" placeholder="Username" value={formUsername} onChange={(e) => setFormUsername(e.currentTarget.value)} />
+          )}
           <PasswordInput label="Password Baru" placeholder="Kosongkan jika tidak diubah" value={formPassword} onChange={(e) => setFormPassword(e.currentTarget.value)} />
           {editUser?.role !== 'admin' && (
             <Select label="Role" data={[{ value: 'pegawai', label: 'Pegawai BPS' }, { value: 'mitra', label: 'Mitra BPS' }]} value={formRole} onChange={setFormRole} />

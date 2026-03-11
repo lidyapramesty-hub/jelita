@@ -59,6 +59,7 @@ export default function DashboardPage() {
               size="sm"
               leftSection={<IconRefresh size={15} className={loading ? 'animate-spin' : ''} />}
               onClick={handleRefresh}
+              visibleFrom="sm"
             >
               Perbarui
             </Button>

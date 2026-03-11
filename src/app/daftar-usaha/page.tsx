@@ -25,11 +25,15 @@ import {
   IconRefresh,
   IconX,
   IconBuildingStore,
+  IconChevronLeft,
+  IconChevronRight,
 } from '@tabler/icons-react'
 import { useGetUsahaListQuery, useDeleteUsahaMutation } from '@/store/services/usahaApi'
 import useAuth from '@/hooks/useAuth'
 
 const FormTambahUsaha = dynamic(() => import('@/components/FormTambahUsaha'), { ssr: false })
+
+const PER_PAGE = 10
 
 export default function DaftarUsahaPage() {
   const { user } = useAuth()
@@ -42,16 +46,32 @@ export default function DaftarUsahaPage() {
   const [filterKecamatan, setFilterKecamatan] = useState<string | null>(null)
   const [selectedUsaha, setSelectedUsaha] = useState<Usaha | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
 
-  const { data: usahaResponse, isLoading: loading, refetch } = useGetUsahaListQuery()
+  const queryParams = useMemo(() => ({
+    search: search || undefined,
+    kelas_usaha: filterKelas || undefined,
+    cakupan_pasar: filterPasar || undefined,
+    kecamatan_nama: filterKecamatan || undefined,
+    page,
+    per_page: PER_PAGE,
+  }), [search, filterKelas, filterPasar, filterKecamatan, page])
+
+  const { data: usahaResponse, isLoading: loading, refetch } = useGetUsahaListQuery(queryParams)
   const [deleteUsaha, { isLoading: deleting }] = useDeleteUsahaMutation()
 
-  const usahaList = useMemo(() => usahaResponse?.data || [], [usahaResponse])
+  const usahaList = usahaResponse?.data || []
+  const totalPages = usahaResponse?.last_page || 1
+  const totalItems = usahaResponse?.total || 0
 
-  const kecamatanOptions = useMemo(() => {
-    const names = Array.from(new Set(usahaList.map((u) => u.kecamatan_nama).filter(Boolean))).sort()
-    return names.map((name) => ({ value: name, label: name }))
-  }, [usahaList])
+  const resetPage = () => setPage(1)
+
+  const pageNumbers = useMemo(() => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1)
+    if (page <= 4) return [1, 2, 3, 4, 5, 6, 7]
+    if (page >= totalPages - 3) return Array.from({ length: 7 }, (_, i) => totalPages - 6 + i)
+    return Array.from({ length: 7 }, (_, i) => page - 3 + i)
+  }, [totalPages, page])
 
   const handleSuccess = () => {
     setShowForm(false)
@@ -73,38 +93,10 @@ export default function DaftarUsahaPage() {
     try {
       await deleteUsaha(deleteId).unwrap()
       setDeleteId(null)
-      notifications.show({
-        title: 'Dihapus',
-        message: 'Data usaha berhasil dihapus.',
-        color: 'red',
-      })
+      notifications.show({ title: 'Dihapus', message: 'Data usaha berhasil dihapus.', color: 'red' })
     } catch {
-      notifications.show({
-        title: 'Gagal',
-        message: 'Gagal menghapus data usaha.',
-        color: 'red',
-      })
+      notifications.show({ title: 'Gagal', message: 'Gagal menghapus data usaha.', color: 'red' })
     }
-  }
-
-  const filtered = useMemo(() => {
-    return usahaList.filter((u) => {
-      const q = search.toLowerCase()
-      const matchSearch =
-        !q ||
-        u.nama_usaha?.toLowerCase().includes(q) ||
-        u.nama_pemilik?.toLowerCase().includes(q) ||
-        u.kbli_kategori_kode?.toLowerCase().includes(q) ||
-        u.kecamatan_nama?.toLowerCase().includes(q)
-      const matchKelas = !filterKelas || u.kelas_usaha === filterKelas
-      const matchPasar = !filterPasar || u.cakupan_pasar === filterPasar
-      const matchKecamatan = !filterKecamatan || u.kecamatan_nama === filterKecamatan
-      return matchSearch && matchKelas && matchPasar && matchKecamatan
-    })
-  }, [usahaList, search, filterKelas, filterPasar, filterKecamatan])
-
-  const handleRefresh = () => {
-    refetch()
   }
 
   const hasFilters = search || filterKelas || filterPasar || filterKecamatan
@@ -120,8 +112,7 @@ export default function DaftarUsahaPage() {
             <div>
               <Title order={3} style={{ fontFamily: 'DM Sans' }}>Daftar Usaha</Title>
               <Text size="sm" c="dimmed" mt={2}>
-                {filtered.length} usaha ditemukan
-                {usahaList.length !== filtered.length && ` dari ${usahaList.length} total`}
+                {loading ? 'Memuat...' : `${totalItems} usaha ditemukan`}
               </Text>
             </div>
             <Group gap="xs">
@@ -129,7 +120,7 @@ export default function DaftarUsahaPage() {
                 variant="default"
                 size="sm"
                 leftSection={<IconRefresh size={15} className={loading ? 'animate-spin' : ''} />}
-                onClick={handleRefresh}
+                onClick={() => refetch()}
                 visibleFrom="sm"
               >
                 Perbarui
@@ -154,15 +145,18 @@ export default function DaftarUsahaPage() {
                 placeholder="Cari nama usaha, pemilik, kecamatan..."
                 leftSection={<IconSearch size={16} />}
                 value={search}
-                onChange={(e) => setSearch(e.currentTarget.value)}
+                onChange={(e) => { setSearch(e.currentTarget.value); resetPage() }}
                 style={{ flex: 1, minWidth: 200 }}
                 size="sm"
               />
               <Select
                 placeholder="Semua Kecamatan"
-                data={kecamatanOptions}
+                data={[
+                  'Selemadeg', 'Selemadeg Barat', 'Selemadeg Timur', 'Kerambitan',
+                  'Tabanan', 'Kediri', 'Marga', 'Penebel', 'Baturiti', 'Pupuan',
+                ].map((v) => ({ value: v, label: v }))}
                 value={filterKecamatan}
-                onChange={setFilterKecamatan}
+                onChange={(v) => { setFilterKecamatan(v); resetPage() }}
                 clearable
                 searchable
                 size="sm"
@@ -177,7 +171,7 @@ export default function DaftarUsahaPage() {
                   { value: 'besar', label: 'Besar' },
                 ]}
                 value={filterKelas}
-                onChange={setFilterKelas}
+                onChange={(v) => { setFilterKelas(v); resetPage() }}
                 clearable
                 size="sm"
                 style={{ minWidth: 140 }}
@@ -191,7 +185,7 @@ export default function DaftarUsahaPage() {
                   { value: 'internasional', label: 'Internasional' },
                 ]}
                 value={filterPasar}
-                onChange={setFilterPasar}
+                onChange={(v) => { setFilterPasar(v); resetPage() }}
                 clearable
                 size="sm"
                 style={{ minWidth: 150 }}
@@ -207,6 +201,7 @@ export default function DaftarUsahaPage() {
                     setFilterKelas(null)
                     setFilterPasar(null)
                     setFilterKecamatan(null)
+                    setPage(1)
                   }}
                 >
                   Reset
@@ -223,39 +218,56 @@ export default function DaftarUsahaPage() {
                 <Text size="sm" c="dimmed">Memuat data...</Text>
               </div>
             </div>
-          ) : filtered.length === 0 ? (
+          ) : usahaList.length === 0 ? (
             <Paper radius="lg" shadow="xs" withBorder py={60} ta="center">
               <Stack align="center" gap="sm">
                 <ThemeIcon size={48} variant="light" color="gray" radius="xl">
                   <IconBuildingStore size={24} />
                 </ThemeIcon>
                 <Text c="dimmed" fw={500}>
-                  {usahaList.length === 0 ? 'Belum ada data usaha' : 'Tidak ada usaha yang sesuai filter'}
+                  {totalItems === 0 ? 'Belum ada data usaha' : 'Tidak ada usaha yang sesuai filter'}
                 </Text>
                 <Text size="sm" c="dimmed">
-                  {usahaList.length === 0 ? 'Klik "Tambah Usaha" untuk menambahkan data baru' : 'Coba ubah kata kunci pencarian'}
+                  {totalItems === 0 ? 'Klik "Tambah Usaha" untuk menambahkan data baru' : 'Coba ubah kata kunci pencarian'}
                 </Text>
-                {usahaList.length === 0 && (
-                  <Button
-                    size="sm"
-                    leftSection={<IconPlus size={16} />}
-                    onClick={() => setShowForm(true)}
-                    mt="sm"
-                    style={{ backgroundColor: '#003087' }}
-                  >
+                {totalItems === 0 && (
+                  <Button size="sm" leftSection={<IconPlus size={16} />} onClick={() => setShowForm(true)} mt="sm" style={{ backgroundColor: '#003087' }}>
                     Tambah Usaha Pertama
                   </Button>
                 )}
               </Stack>
             </Paper>
           ) : (
-            <UsahaTable
-              data={filtered}
-              onView={(usaha) => setSelectedUsaha(usaha)}
-              onEdit={handleEdit}
-              onDelete={(id) => setDeleteId(id)}
-              isAdmin={isAdmin}
-            />
+            <>
+              <UsahaTable
+                data={usahaList}
+                onView={(usaha) => setSelectedUsaha(usaha)}
+                onEdit={handleEdit}
+                onDelete={(id) => setDeleteId(id)}
+                isAdmin={isAdmin}
+              />
+
+              {totalPages > 1 && (
+                <Group justify="space-between" mt="md" align="center">
+                  <Text size="sm" c="dimmed">
+                    Halaman {page} dari {totalPages} · {totalItems} data
+                  </Text>
+                  <Group gap="xs">
+                    <Button variant="default" size="sm" leftSection={<IconChevronLeft size={14} />} disabled={page <= 1} onClick={() => setPage(page - 1)}>
+                      Prev
+                    </Button>
+                    {pageNumbers.map((p) => (
+                      <Button key={p} variant={p === page ? 'filled' : 'default'} size="sm" style={p === page ? { backgroundColor: '#003087' } : {}} onClick={() => setPage(p)}>
+                        {p}
+                      </Button>
+                    ))}
+                    <Button variant="default" size="sm" rightSection={<IconChevronRight size={14} />} disabled={page >= totalPages} onClick={() => setPage(page + 1)}>
+                      Next
+                    </Button>
+                  </Group>
+                </Group>
+              )}
+            </>
           )}
         </div>
       </main>
