@@ -46,7 +46,7 @@ export default function LoginPage() {
     setError('')
 
     if (!username || !password) {
-      setError('Username dan password wajib diisi.')
+      setError(loginMethod === 'mitra' ? 'Nomor telepon dan password wajib diisi.' : 'Username dan password wajib diisi.')
       return
     }
 
@@ -55,7 +55,9 @@ export default function LoginPage() {
       await login(username, password, role)
     } catch (err: unknown) {
       const apiError = err as { data?: { message?: string; errors?: Record<string, string[]> } }
-      if (apiError?.data?.errors?.username) {
+      if (apiError?.data?.errors?.phone) {
+        setError(apiError.data.errors.phone[0])
+      } else if (apiError?.data?.errors?.username) {
         setError(apiError.data.errors.username[0])
       } else if (apiError?.data?.message) {
         setError(apiError.data.message)
@@ -312,17 +314,32 @@ export default function LoginPage() {
 
                 <form onSubmit={handleLogin}>
                   <Stack gap="md">
-                    <TextInput
-                      label="Username"
-                      placeholder={loginMethod === 'mitra' ? 'Masukkan username mitra' : 'Masukkan username pegawai'}
-                      value={username}
-                      onChange={(e) => setUsername(e.currentTarget.value)}
-                      required
-                      autoComplete="username"
-                      size="md"
-                      leftSection={<IconUser size={16} />}
-                      radius="md"
-                    />
+                    {loginMethod === 'mitra' ? (
+                      <TextInput
+                        label="Nomor Telepon"
+                        placeholder="812xxxxxxxx"
+                        value={username}
+                        onChange={(e) => setUsername(e.currentTarget.value)}
+                        required
+                        autoComplete="tel"
+                        size="md"
+                        leftSection={<Text size="sm" fw={600} c="dimmed" style={{ whiteSpace: 'nowrap', paddingLeft: 4 }}>+62</Text>}
+                        leftSectionWidth={48}
+                        radius="md"
+                      />
+                    ) : (
+                      <TextInput
+                        label="Username"
+                        placeholder="Masukkan username pegawai"
+                        value={username}
+                        onChange={(e) => setUsername(e.currentTarget.value)}
+                        required
+                        autoComplete="username"
+                        size="md"
+                        leftSection={<IconUser size={16} />}
+                        radius="md"
+                      />
+                    )}
 
                     <PasswordInput
                       label="Password"

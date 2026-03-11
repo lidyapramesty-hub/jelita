@@ -5,6 +5,9 @@ import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
 import { Badge, Text, Group, ActionIcon, Tooltip } from '@mantine/core'
 import { IconEye, IconExternalLink, IconTrash, IconPencil } from '@tabler/icons-react'
 import { Usaha } from '@/types/usaha'
+import { kbliKategori } from '@/data/kbli2025'
+
+const kategoriNamaMap: Record<string, string> = Object.fromEntries(kbliKategori.map(k => [k.kode, k.nama]))
 
 interface UsahaTableProps {
     data: Usaha[]
@@ -87,7 +90,11 @@ export default function UsahaTable({ data, onView, onEdit, onDelete, isAdmin }: 
                     render: (record) => (
                         <div>
                             <Text size="xs" fw={500}>{record.kbli_kelompok_kode || '—'}</Text>
-                            <Text size="xs" c="dimmed" lineClamp={1} style={{ maxWidth: 160 }}>{record.kbli_kategori_kode || '—'}</Text>
+                            <Text size="xs" c="dimmed" lineClamp={1} style={{ maxWidth: 180 }}>
+                                {record.kbli_kategori_kode
+                                    ? `${record.kbli_kategori_kode} — ${kategoriNamaMap[record.kbli_kategori_kode] || ''}`
+                                    : '—'}
+                            </Text>
                         </div>
                     ),
                 },

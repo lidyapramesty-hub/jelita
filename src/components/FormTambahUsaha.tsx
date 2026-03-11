@@ -72,6 +72,17 @@ const initialForm: FormData = {
   kelas_usaha: '', cakupan_pasar: '',
 }
 
+interface SLSItem { kode: string; nama: string }
+interface DesaItem { kode: string; nama: string; sls: SLSItem[] }
+interface KecamatanItem { kode: string; nama: string; desa: DesaItem[] }
+
+function parseKodeName(s: string): { kode: string; nama: string } {
+  const trimmed = s.replace(/\r/g, '').trim()
+  const dotIdx = trimmed.indexOf('. ')
+  if (dotIdx === -1) return { kode: '', nama: trimmed }
+  return { kode: trimmed.slice(0, dotIdx).trim(), nama: trimmed.slice(dotIdx + 2).trim() }
+}
+
 interface Props {
   onClose: () => void
   onSuccess: () => void
@@ -84,44 +95,54 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [activeStep, setActiveStep] = useState(0)
   const [visitedSteps, setVisitedSteps] = useState<Set<number>>(new Set([0]))
-  const [kecamatanMap, setKecamatanMap] = useState<Record<string, string[]>>({})
+  const [locationData, setLocationData] = useState<KecamatanItem[]>([])
 
   const [createUsaha, { isLoading: isCreating }] = useCreateUsahaMutation()
   const [updateUsaha, { isLoading: isUpdating }] = useUpdateUsahaMutation()
   const submitting = isCreating || isUpdating
 
   useEffect(() => {
-    const fetchKecamatanData = async () => {
+    const fetchLocationData = async () => {
       try {
-        const response = await fetch('https://docs.google.com/spreadsheets/d/17lGIDL91TvOwwgNRGukq_pDgonUHw_LXhUUchpZcfac/export?format=csv')
+        const response = await fetch('https://docs.google.com/spreadsheets/d/1cJnkUdkM5zjtu6c5GHdaCAYXjjhZrC6f/export?format=csv')
         if (!response.ok) throw new Error('Network response not ok')
         const text = await response.text()
-        const rows = text.split('\n').map(row => row.split(','))
+        const rows = text.split('\n')
 
-        const map: Record<string, string[]> = {}
-        let currentKecamatan = ''
+        const kecMap = new Map<string, { kode: string; nama: string; desaMap: Map<string, { kode: string; nama: string; sls: SLSItem[] }> }>()
 
-        // Skip header
         rows.slice(1).forEach(row => {
-          if (row.length >= 2) {
-            const kec = row[0].replace(/\r/g, '').trim()
-            const desa = row[1].replace(/\r/g, '').trim()
+          const cols = row.split(',')
+          if (cols.length < 5) return
+          const kec = parseKodeName(cols[2])
+          const desa = parseKodeName(cols[3])
+          const sls = parseKodeName(cols[4])
+          if (!kec.nama || !desa.nama || !sls.nama) return
 
-            if (kec) {
-              currentKecamatan = kec
-              map[currentKecamatan] = []
-            }
-            if (currentKecamatan && desa) {
-              map[currentKecamatan].push(desa)
-            }
+          if (!kecMap.has(kec.nama)) {
+            kecMap.set(kec.nama, { kode: kec.kode, nama: kec.nama, desaMap: new Map() })
+          }
+          const kecEntry = kecMap.get(kec.nama)!
+          if (!kecEntry.desaMap.has(desa.nama)) {
+            kecEntry.desaMap.set(desa.nama, { kode: desa.kode, nama: desa.nama, sls: [] })
+          }
+          const desaEntry = kecEntry.desaMap.get(desa.nama)!
+          if (!desaEntry.sls.find(s => s.nama === sls.nama)) {
+            desaEntry.sls.push({ kode: sls.kode, nama: sls.nama })
           }
         })
-        setKecamatanMap(map)
+
+        const data: KecamatanItem[] = Array.from(kecMap.values()).map(k => ({
+          kode: k.kode,
+          nama: k.nama,
+          desa: Array.from(k.desaMap.values()),
+        }))
+        setLocationData(data)
       } catch (err) {
-        console.error('Failed to fetch kecamatan data:', err)
+        console.error('Failed to fetch location data:', err)
       }
     }
-    fetchKecamatanData()
+    fetchLocationData()
   }, [])
 
   // Pre-fill form if editing
@@ -196,7 +217,7 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
     if (!form.kbli_kelompok_kode) e.kbli_k = 'Kelompok KBLI wajib dipilih'
     if (!form.kecamatan_nama) e.kecamatan = 'Kecamatan wajib dipilih'
     if (!form.desa_nama) e.desa = 'Desa/Kelurahan wajib dipilih'
-    if (!form.sls_nama.trim()) e.sls_nama = 'Nama SLS wajib diisi'
+    if (!form.sls_nama.trim()) e.sls_nama = 'SLS wajib dipilih'
     if (!form.kelas_usaha) e.kelas_usaha = 'Skala usaha wajib dipilih'
     if (!form.cakupan_pasar) e.cakupan_pasar = 'Cakupan pasar wajib dipilih'
     const validPlatforms = form.platforms.filter((p) => p.platform && p.nama_akun)
@@ -219,14 +240,24 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
       return
     }
     try {
+      const selectedKec = locationData.find(k => k.nama === form.kecamatan_nama)
+      const selectedDesa = selectedKec?.desa.find(d => d.nama === form.desa_nama)
+      const selectedSls = selectedDesa?.sls.find(s => s.nama === form.sls_nama)
       const payload = {
         nama_pemilik: form.nama_pemilik,
         nama_usaha: form.nama_usaha,
         deskripsi_kegiatan: form.deskripsi_kegiatan || undefined,
         kbli_kategori_kode: form.kbli_kategori_kode,
         kbli_kelompok_kode: form.kbli_kelompok_kode,
+        provinsi_kode: '51',
+        provinsi_nama: 'Bali',
+        kabkot_kode: '5102',
+        kabkot_nama: 'Tabanan',
+        kecamatan_kode: selectedKec?.kode || '',
         kecamatan_nama: form.kecamatan_nama,
+        desa_kode: selectedDesa?.kode || '',
         desa_nama: form.desa_nama,
+        sls_kode: selectedSls?.kode || '',
         sls_nama: form.sls_nama,
         sub_sls: form.sub_sls,
         latitude: form.latitude,
@@ -467,78 +498,82 @@ export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props)
           )}
 
           {/* Step 2: Lokasi */}
-          {activeStep === 2 && (
-            <Stack gap="md">
-              <Group gap="xs" mb="sm">
-                <div className="w-7 h-7 rounded-full bg-[#003087] text-white text-xs font-bold flex items-center justify-center">3</div>
-                <Text fw={700}>Lokasi Usaha</Text>
-              </Group>
-              <Select
-                label="Provinsi"
-                placeholder="Pilih Provinsi"
-                data={[{ value: '51', label: 'Bali' }]}
-                value="51"
-                disabled
-                required
-              />
-              <Select
-                label="Kabupaten / Kota"
-                placeholder="Pilih Kab/Kota"
-                data={[{ value: '5102', label: 'Tabanan' }]}
-                value="5102"
-                disabled
-                required
-              />
-              <Select
-                label="Kecamatan"
-                placeholder="Pilih Kecamatan"
-                data={Object.keys(kecamatanMap).map((k) => ({ value: k, label: k }))}
-                value={form.kecamatan_nama || null}
-                onChange={(val) => {
-                  setForm((prev) => ({
-                    ...prev,
-                    kecamatan_nama: val || '',
-                    desa_nama: '',
-                    sls_nama: '',
-                  }))
-                }}
-                searchable
-                error={errors.kecamatan}
-                required
-              />
-              <Select
-                label="Desa / Kelurahan"
-                placeholder={form.kecamatan_nama ? 'Pilih Desa/Kelurahan' : 'Pilih Kecamatan dahulu'}
-                data={(kecamatanMap[form.kecamatan_nama] || []).map((d) => ({ value: d, label: d }))}
-                value={form.desa_nama || null}
-                onChange={(val) => {
-                  setForm((prev) => ({
-                    ...prev,
-                    desa_nama: val || '',
-                    sls_nama: '',
-                  }))
-                }}
-                disabled={!form.kecamatan_nama}
-                searchable
-                error={errors.desa}
-                required
-              />
-              <TextInput
-                label="Nama SLS"
-                placeholder="Cth: Banjar Dauh Pala"
-                value={form.sls_nama}
-                onChange={(e) => setField('sls_nama', e.currentTarget.value)}
-                error={errors.sls_nama}
-                required
-              />
-              <TextInput
-                label="Sub SLS"
-                placeholder="Cth: Jl. Pulau Nias, Gang XI, No. 14"
-                value={form.sub_sls}
-                onChange={(e) => setField('sub_sls', e.currentTarget.value)}
-              />
-            </Stack>
-          )}
+          {activeStep === 2 && (() => {
+            const selectedKec = locationData.find(k => k.nama === form.kecamatan_nama)
+            const selectedDesa = selectedKec?.desa.find(d => d.nama === form.desa_nama)
+            const kecOptions = locationData.map(k => ({ value: k.nama, label: `${k.kode} — ${k.nama}` }))
+            const desaOptions = selectedKec?.desa.map(d => ({ value: d.nama, label: `${d.kode} — ${d.nama}` })) || []
+            const slsOptions = selectedDesa?.sls.map(s => ({ value: s.nama, label: `${s.kode} — ${s.nama}` })) || []
+            return (
+              <Stack gap="md">
+                <Group gap="xs" mb="sm">
+                  <div className="w-7 h-7 rounded-full bg-[#003087] text-white text-xs font-bold flex items-center justify-center">3</div>
+                  <Text fw={700}>Lokasi Usaha</Text>
+                </Group>
+                <Select
+                  label="Provinsi"
+                  data={[{ value: '51', label: '51 — Bali' }]}
+                  value="51"
+                  disabled
+                  required
+                />
+                <Select
+                  label="Kabupaten / Kota"
+                  data={[{ value: '02', label: '02 — Tabanan' }]}
+                  value="02"
+                  disabled
+                  required
+                />
+                <Select
+                  label="Kecamatan"
+                  placeholder={locationData.length === 0 ? 'Memuat data...' : 'Pilih Kecamatan'}
+                  data={kecOptions}
+                  value={form.kecamatan_nama || null}
+                  onChange={(val) => {
+                    setForm((prev) => ({ ...prev, kecamatan_nama: val || '', desa_nama: '', sls_nama: '' }))
+                    setErrors((prev) => { const e = { ...prev }; delete e.kecamatan; return e })
+                  }}
+                  searchable
+                  error={errors.kecamatan}
+                  required
+                />
+                <Select
+                  label="Desa / Kelurahan"
+                  placeholder={form.kecamatan_nama ? 'Pilih Desa/Kelurahan' : 'Pilih Kecamatan dahulu'}
+                  data={desaOptions}
+                  value={form.desa_nama || null}
+                  onChange={(val) => {
+                    setForm((prev) => ({ ...prev, desa_nama: val || '', sls_nama: '' }))
+                    setErrors((prev) => { const e = { ...prev }; delete e.desa; return e })
+                  }}
+                  disabled={!form.kecamatan_nama}
+                  searchable
+                  error={errors.desa}
+                  required
+                />
+                <Select
+                  label="SLS (Satuan Lingkungan Setempat)"
+                  placeholder={form.desa_nama ? 'Pilih SLS' : 'Pilih Desa/Kelurahan dahulu'}
+                  data={slsOptions}
+                  value={form.sls_nama || null}
+                  onChange={(val) => {
+                    setForm((prev) => ({ ...prev, sls_nama: val || '' }))
+                    setErrors((prev) => { const e = { ...prev }; delete e.sls_nama; return e })
+                  }}
+                  disabled={!form.desa_nama}
+                  searchable
+                  error={errors.sls_nama}
+                  required
+                />
+                <TextInput
+                  label="Sub SLS"
+                  placeholder="Cth: Jl. Pulau Nias, Gang XI, No. 14"
+                  value={form.sub_sls}
+                  onChange={(e) => setField('sub_sls', e.currentTarget.value)}
+                />
+              </Stack>
+            )
+          })()}
 
           {/* Step 3: Geotagging */}
           {activeStep === 3 && (

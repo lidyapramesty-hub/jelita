@@ -35,8 +35,15 @@ export interface UsahaCreateInput {
   deskripsi_kegiatan?: string
   kbli_kategori_kode?: string
   kbli_kelompok_kode?: string
+  provinsi_kode?: string
+  provinsi_nama?: string
+  kabkot_kode?: string
+  kabkot_nama?: string
+  kecamatan_kode?: string
   kecamatan_nama?: string
+  desa_kode?: string
   desa_nama?: string
+  sls_kode?: string
   sls_nama?: string
   sub_sls?: string
   latitude?: number | null

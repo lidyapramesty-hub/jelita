@@ -9,8 +9,6 @@ interface KelasUsahaChartProps {
     stats: StatsData
 }
 
-const COLORS = ['#003087', '#FFB81C', '#059669', '#7c3aed']
-
 export default function KelasUsahaChart({ stats }: KelasUsahaChartProps) {
     const total = stats.total || 1
 
@@ -20,6 +18,14 @@ export default function KelasUsahaChart({ stats }: KelasUsahaChartProps) {
         { name: 'Menengah', value: stats.menengah },
         { name: 'Besar', value: stats.besar },
     ].filter(i => i.value > 0)
+        .sort((a, b) => b.value - a.value)
+
+    const getColor = (index: number) => {
+        if (index === 0 && items.length > 0) return '#FFB81C' // Kuning untuk mayoritas
+        // Biru gradasi: semakin kecil semakin muda
+        const shades = ['#003087', '#336AB5', '#6694D0', '#99BEEB']
+        return shades[index - 1] || shades[shades.length - 1]
+    }
 
     return (
         <Paper radius="lg" p="lg" shadow="xs" withBorder>
@@ -43,8 +49,8 @@ export default function KelasUsahaChart({ stats }: KelasUsahaChartProps) {
                                 dataKey="value"
                                 strokeWidth={0}
                             >
-                                {items.map((_, idx) => (
-                                    <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
+                                {items.map((item, idx) => (
+                                    <Cell key={item.name} fill={getColor(idx)} />
                                 ))}
                             </Pie>
                             <Tooltip
@@ -56,7 +62,7 @@ export default function KelasUsahaChart({ stats }: KelasUsahaChartProps) {
                     <div className="flex flex-wrap justify-center gap-3 mt-2">
                         {items.map((item, idx) => (
                             <div key={item.name} className="flex items-center gap-1.5 text-xs">
-                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
+                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: getColor(idx) }} />
                                 <span className="text-gray-600">{item.name}</span>
                                 <span className="text-gray-400 font-medium">{item.value}</span>
                             </div>

@@ -127,7 +127,7 @@ export default function UsahaDetailModal({ usaha, onClose }: UsahaDetailModalPro
                             {usaha.creator && (
                                 <Group gap="xs">
                                     <IconUser size={14} className="text-gray-400" />
-                                    <Text size="xs" c="dimmed">Pelapor: {usaha.creator.name} ({usaha.creator.role})</Text>
+                                    <Text size="xs" c="dimmed">Pelapor: {usaha.creator.role === 'mitra' ? usaha.creator.name : usaha.creator.username} ({usaha.creator.role})</Text>
                                 </Group>
                             )}
                         </Group>
@@ -141,7 +141,7 @@ export default function UsahaDetailModal({ usaha, onClose }: UsahaDetailModalPro
                                 </Group>
                                 <Group gap="xs">
                                     <IconUser size={14} className="text-orange-400" />
-                                    <Text size="xs" c="orange.7">Editor: {usaha.updater.name} ({usaha.updater.role})</Text>
+                                    <Text size="xs" c="orange.7">Editor: {usaha.updater.role === 'mitra' ? usaha.updater.name : usaha.updater.username} ({usaha.updater.role})</Text>
                                 </Group>
                             </Group>
                         )}

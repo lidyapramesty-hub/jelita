@@ -15,7 +15,10 @@ const kategoriNamaMap: Record<string, string> = Object.fromEntries(
 
 export default function KategoriKBLIChart({ byKategori, total }: KategoriKBLIChartProps) {
     const sorted = Object.entries(byKategori)
-        .map(([kode, count]) => [kategoriNamaMap[kode] || kode, count] as [string, number])
+        .map(([kode, count]) => [
+            kategoriNamaMap[kode] ? `${kode} — ${kategoriNamaMap[kode]}` : kode,
+            count,
+        ] as [string, number])
         .sort((a, b) => b[1] - a[1])
     const denominator = total || 1
     const maxVal = sorted.length > 0 ? sorted[0][1] : 0

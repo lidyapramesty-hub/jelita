@@ -25,7 +25,7 @@ export default function StatCards({ stats }: StatCardsProps) {
         const kategoriMap: Record<string, string> = Object.fromEntries(kbliKategori.map(k => [k.kode, k.nama]))
         const sorted = Object.entries(stats.byKategori).sort((a, b) => b[1] - a[1])
         const top = sorted[0]
-        return top ? { name: kategoriMap[top[0]] || top[0], count: top[1], pct: ((top[1] / (stats.total || 1)) * 100).toFixed(1) } : null
+        return top ? { name: kategoriMap[top[0]] ? `${top[0]} — ${kategoriMap[top[0]]}` : top[0], count: top[1], pct: ((top[1] / (stats.total || 1)) * 100).toFixed(1) } : null
     })()
 
     const dominantCakupan = (() => {
