@@ -28,10 +28,20 @@ interface UsahaListParams {
   cakupan_pasar?: string
   kecamatan_nama?: string
   kbli_kategori_kode?: string
+  status?: string
+  created_by?: number
   sort_by?: string
   sort_dir?: string
   page?: number
   per_page?: number
+}
+
+interface CreatorUser {
+  id: number
+  name: string
+  username: string | null
+  role: string
+  phone: string | null
 }
 
 export interface UsahaCreateInput {
@@ -114,14 +124,32 @@ export const usahaApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'Usaha', id: 'LIST' }, 'UsahaStats'],
     }),
+    verifyUsaha: builder.mutation<UsahaMutationResponse, { id: string; status: 'pending' | 'approved' | 'declined' }>({
+      query: ({ id, status }) => ({
+        url: `/usaha/${id}/verify`,
+        method: 'PUT',
+        body: { status },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Usaha', id },
+        { type: 'Usaha', id: 'LIST' },
+        'UsahaStats',
+      ],
+    }),
+    getUsahaCreators: builder.query<CreatorUser[], void>({
+      query: () => '/usaha-creators',
+    }),
   }),
 })
 
 export const {
   useGetUsahaListQuery,
+  useLazyGetUsahaListQuery,
   useGetUsahaByIdQuery,
   useGetUsahaStatsQuery,
   useCreateUsahaMutation,
   useUpdateUsahaMutation,
   useDeleteUsahaMutation,
+  useVerifyUsahaMutation,
+  useGetUsahaCreatorsQuery,
 } = usahaApi

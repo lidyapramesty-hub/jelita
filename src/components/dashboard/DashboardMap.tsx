@@ -5,6 +5,7 @@ import { Paper, Text, Group, Select, Badge, LoadingOverlay } from '@mantine/core
 import { IconMap } from '@tabler/icons-react'
 import 'leaflet/dist/leaflet.css'
 import { Usaha } from '@/types/usaha'
+import { kbliKategori } from '@/data/kbli2025'
 
 interface DashboardMapProps {
     usahaList: Usaha[]
@@ -19,30 +20,10 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
     const [filterKelas, setFilterKelas] = useState<string | null>(null)
     const [filterKBLI, setFilterKBLI] = useState<string | null>(null)
 
-    const kbliKategoriOptions = [
-        { value: 'A', label: 'A - Pertanian, Kehutanan, dan Perikanan' },
-        { value: 'B', label: 'B - Pertambangan dan Penggalian' },
-        { value: 'C', label: 'C - Industri' },
-        { value: 'D', label: 'D - Penyediaan Listrik, Gas, Uap/Air Panas, dan Udara Dingin' },
-        { value: 'E', label: 'E - Penyediaan Air, Pengelolaan Air Limbah, Penanganan Limbah, dan Remediasi' },
-        { value: 'F', label: 'F - Konstruksi' },
-        { value: 'G', label: 'G - Perdagangan Besar dan Eceran' },
-        { value: 'H', label: 'H - Transportasi dan Penyimpanan' },
-        { value: 'I', label: 'I - Aktivitas Penyediaan Akomodasi dan Makan Minum' },
-        { value: 'J', label: 'J - Aktivitas Penerbitan, Penyiaran, serta Produksi dan Distribusi Konten' },
-        { value: 'K', label: 'K - Aktivitas Telekomunikasi, Pemrograman Komputer, Konsultansi, Infrastruktur Komputasi, dan Jasa Informasi Lainnya' },
-        { value: 'L', label: 'L - Aktivitas Keuangan dan Asuransi' },
-        { value: 'M', label: 'M - Aktivitas Real Estat' },
-        { value: 'N', label: 'N - Aktivitas Profesional, Ilmiah, dan Teknis' },
-        { value: 'O', label: 'O - Aktivitas Administratif dan Penunjang Usaha' },
-        { value: 'P', label: 'P - Administrasi Pemerintahan dan Pertahanan, serta Jaminan Sosial Wajib' },
-        { value: 'Q', label: 'Q - Pendidikan' },
-        { value: 'R', label: 'R - Aktivitas Kesehatan Manusia dan Aktivitas Sosial' },
-        { value: 'S', label: 'S - Kesenian, Olahraga, dan Rekreasi' },
-        { value: 'T', label: 'T - Aktivitas Jasa Lainnya' },
-        { value: 'U', label: 'U - Aktivitas Rumah Tangga sebagai Pemberi Kerja' },
-        { value: 'V', label: 'V - Aktivitas Badan Internasional dan Badan Ekstra Internasional Lainnya' },
-    ]
+    const kbliKategoriOptions = kbliKategori.map(k => ({
+        value: k.kode,
+        label: `${k.kode} — ${k.nama}`,
+    }))
 
     const kecamatanOptions = Array.from(new Set(usahaList.map((u) => u.kecamatan_nama).filter(Boolean))).map((k) => ({
         value: k,

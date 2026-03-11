@@ -144,15 +144,8 @@ export default function LoginPage() {
         {/* Spacer */}
         <div className="flex-1" />
 
-        {/* Copyright — absolute bottom-right of the whole page */}
-        <div className="absolute bottom-5 right-6 z-20">
-          <p className="text-white/20 text-xs" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-            © 2025 BPS Kabupaten Tabanan · Hak Cipta Dilindungi
-          </p>
-        </div>
-
         {/* Asset1: bottom-left illustration (bigger) */}
-        <div className="absolute bottom-0 left-[-2%] z-10 pointer-events-none" style={{ width: '72%' }}>
+        <div className="absolute bottom-0 left-[8%] z-10 pointer-events-none" style={{ width: '68%' }}>
           <Image
             src="/assets/asset1.png"
             alt=""
@@ -355,6 +348,13 @@ export default function LoginPage() {
             Sistem Informasi Ekonomi Digital — BPS Tabanan 2025
           </Text>
         </div>
+      </div>
+
+      {/* Copyright — absolute bottom-right of the whole page */}
+      <div className="absolute bottom-5 right-6 z-20">
+        <p className="text-white/20 text-xs" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          © 2025 BPS Kabupaten Tabanan · Hak Cipta Dilindungi
+        </p>
       </div>
     </div>
   )

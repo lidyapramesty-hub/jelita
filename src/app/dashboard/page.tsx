@@ -15,7 +15,7 @@ const DashboardMap = dynamic(() => import('@/components/dashboard/DashboardMap')
 
 export default function DashboardPage() {
   const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useGetUsahaStatsQuery()
-  const { data: usahaData, isLoading: usahaLoading, refetch: refetchUsaha } = useGetUsahaListQuery()
+  const { data: usahaData, isLoading: usahaLoading, refetch: refetchUsaha } = useGetUsahaListQuery({ per_page: 2000, status: 'approved' })
 
   const loading = statsLoading || usahaLoading
 

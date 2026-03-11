@@ -2,10 +2,12 @@
 
 import { useMemo, useState } from 'react'
 import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
-import { Badge, Text, Group, ActionIcon, Tooltip } from '@mantine/core'
-import { IconEye, IconExternalLink, IconTrash, IconPencil } from '@tabler/icons-react'
+import { Badge, Text, Group, ActionIcon, Tooltip, Menu } from '@mantine/core'
+import { IconEye, IconExternalLink, IconTrash, IconPencil, IconCheck, IconX, IconClock } from '@tabler/icons-react'
 import { Usaha } from '@/types/usaha'
 import { kbliKategori } from '@/data/kbli2025'
+import { useVerifyUsahaMutation } from '@/store/services/usahaApi'
+import { notifications } from '@mantine/notifications'
 
 const kategoriNamaMap: Record<string, string> = Object.fromEntries(kbliKategori.map(k => [k.kode, k.nama]))
 
@@ -31,11 +33,18 @@ const BADGE_PASAR: Record<string, { color: string }> = {
     internasional: { color: 'violet' },
 }
 
+const BADGE_STATUS: Record<string, { color: string; label: string }> = {
+    pending: { color: 'yellow', label: 'Pending' },
+    approved: { color: 'green', label: 'Disetujui' },
+    declined: { color: 'red', label: 'Ditolak' },
+}
+
 export default function UsahaTable({ data, onView, onEdit, onDelete, isAdmin }: UsahaTableProps) {
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus<Usaha>>({
         columnAccessor: 'nama_usaha',
         direction: 'asc',
     })
+    const [verifyUsaha] = useVerifyUsahaMutation()
 
     const sortedData = useMemo(() => {
         const sorted = [...data].sort((a, b) => {
@@ -51,6 +60,15 @@ export default function UsahaTable({ data, onView, onEdit, onDelete, isAdmin }: 
         })
         return sorted
     }, [data, sortStatus])
+
+    const handleVerify = async (id: string, status: 'approved' | 'declined' | 'pending') => {
+        try {
+            await verifyUsaha({ id, status }).unwrap()
+            notifications.show({ title: 'Berhasil', message: `Status usaha diperbarui ke ${status}.`, color: 'green' })
+        } catch {
+            notifications.show({ title: 'Gagal', message: 'Gagal memperbarui status.', color: 'red' })
+        }
+    }
 
     return (
         <DataTable
@@ -104,12 +122,7 @@ export default function UsahaTable({ data, onView, onEdit, onDelete, isAdmin }: 
                     sortable: true,
                     textAlign: 'center',
                     render: (record) => (
-                        <Badge
-                            size="sm"
-                            variant="light"
-                            color={BADGE_KELAS[record.kelas_usaha]?.color || 'gray'}
-                            tt="capitalize"
-                        >
+                        <Badge size="sm" variant="light" color={BADGE_KELAS[record.kelas_usaha]?.color || 'gray'} tt="capitalize">
                             {record.kelas_usaha || '—'}
                         </Badge>
                     ),
@@ -120,12 +133,7 @@ export default function UsahaTable({ data, onView, onEdit, onDelete, isAdmin }: 
                     sortable: true,
                     textAlign: 'center',
                     render: (record) => (
-                        <Badge
-                            size="sm"
-                            variant="light"
-                            color={BADGE_PASAR[record.cakupan_pasar]?.color || 'gray'}
-                            tt="capitalize"
-                        >
+                        <Badge size="sm" variant="light" color={BADGE_PASAR[record.cakupan_pasar]?.color || 'gray'} tt="capitalize">
                             {record.cakupan_pasar || '—'}
                         </Badge>
                     ),
@@ -134,38 +142,32 @@ export default function UsahaTable({ data, onView, onEdit, onDelete, isAdmin }: 
                     accessor: 'kecamatan_nama',
                     title: 'Kecamatan',
                     sortable: true,
-                    render: (record) => (
-                        <Text size="xs">{record.kecamatan_nama || '—'}</Text>
-                    ),
+                    render: (record) => <Text size="xs">{record.kecamatan_nama || '—'}</Text>,
+                },
+                {
+                    accessor: 'status',
+                    title: 'Status',
+                    sortable: true,
+                    textAlign: 'center',
+                    render: (record) => {
+                        const s = BADGE_STATUS[record.status] || { color: 'gray', label: record.status }
+                        return <Badge size="sm" variant="light" color={s.color}>{s.label}</Badge>
+                    },
                 },
                 {
                     accessor: 'actions',
                     title: 'Aksi',
                     textAlign: 'right',
-                    width: 150,
+                    width: isAdmin ? 190 : 150,
                     render: (record) => (
                         <Group gap={4} justify="flex-end" wrap="nowrap">
                             <Tooltip label="Lihat Detail">
-                                <ActionIcon
-                                    variant="subtle"
-                                    color="blue"
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        onView(record)
-                                    }}
-                                >
+                                <ActionIcon variant="subtle" color="blue" onClick={(e) => { e.stopPropagation(); onView(record) }}>
                                     <IconEye size={16} />
                                 </ActionIcon>
                             </Tooltip>
                             <Tooltip label="Edit">
-                                <ActionIcon
-                                    variant="subtle"
-                                    color="yellow"
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        onEdit(record)
-                                    }}
-                                >
+                                <ActionIcon variant="subtle" color="yellow" onClick={(e) => { e.stopPropagation(); onEdit(record) }}>
                                     <IconPencil size={16} />
                                 </ActionIcon>
                             </Tooltip>
@@ -185,15 +187,28 @@ export default function UsahaTable({ data, onView, onEdit, onDelete, isAdmin }: 
                                 </Tooltip>
                             )}
                             {isAdmin && (
+                                <Menu shadow="md" width={160} position="bottom-end" withinPortal>
+                                    <Menu.Target>
+                                        <ActionIcon
+                                            variant="subtle"
+                                            color="violet"
+                                            title="Verifikasi"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <IconCheck size={16} />
+                                        </ActionIcon>
+                                    </Menu.Target>
+                                    <Menu.Dropdown>
+                                        <Menu.Label>Ubah Status</Menu.Label>
+                                        <Menu.Item leftSection={<IconCheck size={14} />} color="green" onClick={(e) => { e.stopPropagation(); handleVerify(record.id, 'approved') }}>Setujui</Menu.Item>
+                                        <Menu.Item leftSection={<IconClock size={14} />} color="yellow" onClick={(e) => { e.stopPropagation(); handleVerify(record.id, 'pending') }}>Pending</Menu.Item>
+                                        <Menu.Item leftSection={<IconX size={14} />} color="red" onClick={(e) => { e.stopPropagation(); handleVerify(record.id, 'declined') }}>Tolak</Menu.Item>
+                                    </Menu.Dropdown>
+                                </Menu>
+                            )}
+                            {isAdmin && (
                                 <Tooltip label="Hapus">
-                                    <ActionIcon
-                                        variant="subtle"
-                                        color="red"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            onDelete(record.id)
-                                        }}
-                                    >
+                                    <ActionIcon variant="subtle" color="red" onClick={(e) => { e.stopPropagation(); onDelete(record.id) }}>
                                         <IconTrash size={16} />
                                     </ActionIcon>
                                 </Tooltip>

@@ -128,11 +128,11 @@ export default function Sidebar() {
 
       {/* Mobile Header */}
       <div
-        className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-2 shadow-md"
+        className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-1.5 shadow-md"
         style={{ background: '#003087' }}
       >
         <div className="flex items-center">
-          <Image src="/assets/asset3.png" alt="BPS Kabupaten Tabanan" width={110} height={28} style={{ objectFit: 'contain' }} />
+          <Image src="/assets/asset3.png" alt="BPS Kabupaten Tabanan" width={95} height={22} style={{ objectFit: 'contain' }} />
         </div>
         <ActionIcon variant="transparent" color="white" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <IconX size={24} /> : <IconMenu2 size={24} />}

@@ -17,6 +17,7 @@ import {
   Stack,
   Paper,
   ThemeIcon,
+  Autocomplete,
 } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import {
@@ -27,9 +28,16 @@ import {
   IconBuildingStore,
   IconChevronLeft,
   IconChevronRight,
+  IconUser,
+  IconDownload,
+  IconFileSpreadsheet,
 } from '@tabler/icons-react'
-import { useGetUsahaListQuery, useDeleteUsahaMutation } from '@/store/services/usahaApi'
+import { useGetUsahaListQuery, useLazyGetUsahaListQuery, useDeleteUsahaMutation, useGetUsahaCreatorsQuery } from '@/store/services/usahaApi'
 import useAuth from '@/hooks/useAuth'
+import { kbliKategori, kbliKelompok } from '@/data/kbli2025'
+
+const kbliKategoriMap: Record<string, string> = Object.fromEntries(kbliKategori.map(k => [k.kode, k.nama]))
+const kbliKelompokMap: Record<string, string> = Object.fromEntries(kbliKelompok.map(k => [k.kode, k.nama]))
 
 const FormTambahUsaha = dynamic(() => import('@/components/FormTambahUsaha'), { ssr: false })
 
@@ -47,18 +55,26 @@ export default function DaftarUsahaPage() {
   const [selectedUsaha, setSelectedUsaha] = useState<Usaha | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [page, setPage] = useState(1)
+  const [filterStatus, setFilterStatus] = useState<string | null>(null)
+  const [filterCreatedBy, setFilterCreatedBy] = useState<number | null>(null)
+  const [pelaporSearch, setPelaporSearch] = useState('')
+  const [showMineOnly, setShowMineOnly] = useState(false)
 
   const queryParams = useMemo(() => ({
     search: search || undefined,
     kelas_usaha: filterKelas || undefined,
     cakupan_pasar: filterPasar || undefined,
     kecamatan_nama: filterKecamatan || undefined,
+    status: filterStatus || undefined,
+    created_by: showMineOnly ? (user?.id ?? undefined) : (filterCreatedBy ?? undefined),
     page,
     per_page: PER_PAGE,
-  }), [search, filterKelas, filterPasar, filterKecamatan, page])
+  }), [search, filterKelas, filterPasar, filterKecamatan, filterStatus, filterCreatedBy, showMineOnly, user?.id, page])
 
   const { data: usahaResponse, isLoading: loading, refetch } = useGetUsahaListQuery(queryParams)
   const [deleteUsaha, { isLoading: deleting }] = useDeleteUsahaMutation()
+  const { data: creators = [] } = useGetUsahaCreatorsQuery()
+  const [fetchAllForExport] = useLazyGetUsahaListQuery()
 
   const usahaList = usahaResponse?.data || []
   const totalPages = usahaResponse?.last_page || 1
@@ -99,7 +115,88 @@ export default function DaftarUsahaPage() {
     }
   }
 
-  const hasFilters = search || filterKelas || filterPasar || filterKecamatan
+  const hasFilters = search || filterKelas || filterPasar || filterKecamatan || filterStatus || filterCreatedBy || showMineOnly
+
+  const handleExportXlsx = async () => {
+    try {
+      notifications.show({ id: 'export-xlsx', title: 'Mengambil data...', message: 'Harap tunggu.', color: 'blue', loading: true, autoClose: false })
+      const result = await fetchAllForExport({ ...queryParams, page: 1, per_page: 10000 }).unwrap()
+      const allData = result.data
+      const XLSX = await import('xlsx')
+      const exportData = allData.map((u, i) => ({
+        No: i + 1,
+        'Nama Usaha': u.nama_usaha,
+        'Nama Pemilik': u.nama_pemilik,
+        'Deskripsi': u.deskripsi_kegiatan || '',
+        'KBLI Kategori Kode': u.kbli_kategori_kode || '',
+        'KBLI Kategori Nama': u.kbli_kategori_kode ? (kbliKategoriMap[u.kbli_kategori_kode] || '') : '',
+        'KBLI Kelompok Kode': u.kbli_kelompok_kode || '',
+        'KBLI Kelompok Nama': u.kbli_kelompok_kode ? (kbliKelompokMap[u.kbli_kelompok_kode] || '') : '',
+        'Platform Digital': u.platforms?.length ? u.platforms.map(p => `${p.platform}: ${p.nama_akun}`).join('; ') : '',
+        'Kecamatan': u.kecamatan_nama || '',
+        'Desa': u.desa_nama || '',
+        'SLS': u.sls_nama || '',
+        'Sub SLS': u.sub_sls || '',
+        'Latitude': u.latitude || '',
+        'Longitude': u.longitude || '',
+        'Skala Usaha': u.kelas_usaha || '',
+        'Cakupan Pasar': u.cakupan_pasar || '',
+        'Status': u.status || '',
+        'Pelapor': u.creator ? (u.creator.role === 'mitra' ? u.creator.name : u.creator.username) : '',
+        'Waktu Ditambahkan': u.created_at ? new Date(u.created_at).toLocaleString('id-ID') : '',
+        'Editor': u.updater ? (u.updater.role === 'mitra' ? u.updater.name : u.updater.username) : '',
+        'Waktu Diedit': u.updated_at ? new Date(u.updated_at).toLocaleString('id-ID') : '',
+      }))
+      const ws = XLSX.utils.json_to_sheet(exportData)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, 'Daftar Usaha')
+      XLSX.writeFile(wb, 'daftar-usaha.xlsx')
+      notifications.hide('export-xlsx')
+      notifications.show({ title: 'Berhasil', message: `${allData.length} data diekspor ke XLSX.`, color: 'green' })
+    } catch {
+      notifications.hide('export-xlsx')
+      notifications.show({ title: 'Error', message: 'Gagal mengekspor ke XLSX.', color: 'red' })
+    }
+  }
+
+  const handleExportPdf = async () => {
+    try {
+      notifications.show({ id: 'export-pdf', title: 'Mengambil data...', message: 'Harap tunggu.', color: 'blue', loading: true, autoClose: false })
+      const result = await fetchAllForExport({ ...queryParams, page: 1, per_page: 10000 }).unwrap()
+      const allData = result.data
+      const { default: jsPDF } = await import('jspdf')
+      const { default: autoTable } = await import('jspdf-autotable')
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+      doc.setFontSize(14)
+      doc.text('Daftar Usaha Digital - BPS Kabupaten Tabanan', 14, 15)
+      autoTable(doc, {
+        startY: 22,
+        head: [['No', 'Nama Usaha', 'Pemilik', 'Kategori KBLI', 'Kelompok KBLI', 'Platform', 'Kecamatan', 'Skala', 'Pasar', 'Status', 'Pelapor', 'Tgl Ditambah']],
+        body: allData.map((u, i) => [
+          i + 1,
+          u.nama_usaha,
+          u.nama_pemilik,
+          u.kbli_kategori_kode ? `${u.kbli_kategori_kode} — ${kbliKategoriMap[u.kbli_kategori_kode] || ''}` : '—',
+          u.kbli_kelompok_kode ? `${u.kbli_kelompok_kode} — ${kbliKelompokMap[u.kbli_kelompok_kode] || ''}` : '—',
+          u.platforms?.length ? u.platforms.map(p => `${p.platform}: ${p.nama_akun}`).join('\n') : '—',
+          u.kecamatan_nama || '—',
+          u.kelas_usaha || '—',
+          u.cakupan_pasar || '—',
+          u.status || '—',
+          u.creator ? (u.creator.role === 'mitra' ? u.creator.name : u.creator.username) : '—',
+          u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : '—',
+        ]),
+        styles: { fontSize: 6.5, cellPadding: 2 },
+        headStyles: { fillColor: [0, 48, 135] },
+      })
+      doc.save('daftar-usaha.pdf')
+      notifications.hide('export-pdf')
+      notifications.show({ title: 'Berhasil', message: `${allData.length} data diekspor ke PDF.`, color: 'green' })
+    } catch {
+      notifications.hide('export-pdf')
+      notifications.show({ title: 'Error', message: 'Gagal mengekspor ke PDF.', color: 'red' })
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -132,6 +229,24 @@ export default function DaftarUsahaPage() {
                 style={{ backgroundColor: '#003087' }}
               >
                 Tambah Usaha
+              </Button>
+              <Button
+                size="sm"
+                variant="default"
+                leftSection={<IconFileSpreadsheet size={16} />}
+                onClick={handleExportXlsx}
+                visibleFrom="sm"
+              >
+                XLSX
+              </Button>
+              <Button
+                size="sm"
+                variant="default"
+                leftSection={<IconDownload size={16} />}
+                onClick={handleExportPdf}
+                visibleFrom="sm"
+              >
+                PDF
               </Button>
             </Group>
           </div>
@@ -190,6 +305,44 @@ export default function DaftarUsahaPage() {
                 size="sm"
                 style={{ minWidth: 150 }}
               />
+              <Select
+                placeholder="Semua Status"
+                data={[
+                  { value: 'pending', label: 'Pending' },
+                  { value: 'approved', label: 'Disetujui' },
+                  { value: 'declined', label: 'Ditolak' },
+                ]}
+                value={filterStatus}
+                onChange={(v) => { setFilterStatus(v); resetPage() }}
+                clearable
+                size="sm"
+                style={{ minWidth: 140 }}
+              />
+              <Button
+                size="sm"
+                variant={showMineOnly ? 'filled' : 'default'}
+                leftSection={<IconUser size={14} />}
+                onClick={() => { setShowMineOnly(!showMineOnly); setFilterCreatedBy(null); setPelaporSearch(''); resetPage() }}
+                style={showMineOnly ? { backgroundColor: '#003087' } : {}}
+              >
+                Daftar Saya
+              </Button>
+              {isAdmin && !showMineOnly && (
+                <Autocomplete
+                  placeholder="Filter pelapor..."
+                  data={creators.map(c => ({ value: String(c.id), label: (c.role === 'mitra' ? c.name : c.username) || c.name || String(c.id) }))}
+                  value={pelaporSearch}
+                  onChange={(val) => {
+                    setPelaporSearch(val)
+                    const found = creators.find(c => ((c.role === 'mitra' ? c.name : c.username) || c.name) === val)
+                    setFilterCreatedBy(found ? found.id : null)
+                    resetPage()
+                  }}
+                  size="sm"
+                  style={{ minWidth: 180 }}
+                  clearable
+                />
+              )}
               {hasFilters && (
                 <Button
                   variant="subtle"
@@ -201,6 +354,10 @@ export default function DaftarUsahaPage() {
                     setFilterKelas(null)
                     setFilterPasar(null)
                     setFilterKecamatan(null)
+                    setFilterStatus(null)
+                    setFilterCreatedBy(null)
+                    setPelaporSearch('')
+                    setShowMineOnly(false)
                     setPage(1)
                   }}
                 >

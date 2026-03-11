@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Sidebar from '@/components/Sidebar'
 import {
   Button, Title, Text, TextInput, Select, Group, Stack, Paper,
@@ -10,6 +10,7 @@ import { notifications } from '@mantine/notifications'
 import {
   IconPlus, IconSearch, IconTrash, IconPencil,
   IconUsers, IconShieldCheck, IconRefresh, IconX,
+  IconChevronLeft, IconChevronRight,
 } from '@tabler/icons-react'
 import {
   useGetAdminUsersQuery,
@@ -137,6 +138,13 @@ export default function AdminPage() {
   const users = usersData?.data || []
   const totalPages = usersData?.last_page || 1
 
+  const pageNumbers = useMemo(() => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1)
+    if (page <= 4) return [1, 2, 3, 4, 5, 6, 7]
+    if (page >= totalPages - 3) return Array.from({ length: 7 }, (_, i) => totalPages - 6 + i)
+    return Array.from({ length: 7 }, (_, i) => page - 3 + i)
+  }, [totalPages, page])
+
   const handleSort = (col: string) => {
     if (sortCol === col) {
       setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
@@ -217,7 +225,7 @@ export default function AdminPage() {
             <>
               <Paper radius="lg" shadow="xs" withBorder>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-sm" style={{ minWidth: 500 }}>
                     <thead>
                       <tr className="border-b border-gray-200 bg-gray-50">
                         <th className="text-left px-4 py-3 font-semibold text-gray-600">No</th>
@@ -241,8 +249,8 @@ export default function AdminPage() {
                           <td className="px-4 py-3 text-gray-600">
                             {u.role === 'mitra' ? (u.phone ? `+62${u.phone}` : '-') : (u.username || '-')}
                           </td>
-                          <td className="px-4 py-3">
-                            <Badge size="sm" variant="light" color={ROLE_COLORS[u.role] || 'gray'} tt="capitalize">
+                          <td className="px-4 py-3" style={{ minWidth: 90 }}>
+                            <Badge size="sm" variant="light" color={ROLE_COLORS[u.role] || 'gray'} tt="capitalize" style={{ whiteSpace: 'nowrap' }}>
                               {u.role}
                             </Badge>
                           </td>
@@ -278,10 +286,23 @@ export default function AdminPage() {
               </Paper>
 
               {totalPages > 1 && (
-                <Group justify="center" mt="md" gap="xs">
-                  <Button variant="default" size="xs" disabled={page <= 1} onClick={() => setPage(page - 1)}>Prev</Button>
-                  <Text size="sm" c="dimmed">Halaman {page} dari {totalPages}</Text>
-                  <Button variant="default" size="xs" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+                <Group justify="space-between" mt="md" align="center">
+                  <Text size="sm" c="dimmed">
+                    Halaman {page} dari {totalPages}
+                  </Text>
+                  <Group gap="xs">
+                    <Button variant="default" size="sm" leftSection={<IconChevronLeft size={14} />} disabled={page <= 1} onClick={() => setPage(page - 1)}>
+                      Prev
+                    </Button>
+                    {pageNumbers.map((p) => (
+                      <Button key={p} variant={p === page ? 'filled' : 'default'} size="sm" style={p === page ? { backgroundColor: '#003087' } : {}} onClick={() => setPage(p)}>
+                        {p}
+                      </Button>
+                    ))}
+                    <Button variant="default" size="sm" rightSection={<IconChevronRight size={14} />} disabled={page >= totalPages} onClick={() => setPage(page + 1)}>
+                      Next
+                    </Button>
+                  </Group>
                 </Group>
               )}
             </>

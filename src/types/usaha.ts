@@ -39,6 +39,8 @@ export interface Usaha {
     updated_by: number | null;
     creator?: UserInfo | null;
     updater?: UserInfo | null;
+    // Verifikasi
+    status: 'pending' | 'approved' | 'declined';
     // Meta
     created_at: string;
     updated_at?: string;
