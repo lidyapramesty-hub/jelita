@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Paper, Text, Group, Select, Badge, LoadingOverlay } from '@mantine/core'
 import { IconMap } from '@tabler/icons-react'
+import 'leaflet/dist/leaflet.css'
 import { Usaha } from '@/types/usaha'
+import { kbliKategori } from '@/data/kbli2025'
 
 interface DashboardMapProps {
     usahaList: Usaha[]
@@ -16,6 +18,12 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
     const [mapReady, setMapReady] = useState(false)
     const [filterKecamatan, setFilterKecamatan] = useState<string | null>(null)
     const [filterKelas, setFilterKelas] = useState<string | null>(null)
+    const [filterKBLI, setFilterKBLI] = useState<string | null>(null)
+
+    const kbliKategoriOptions = kbliKategori.map(k => ({
+        value: k.kode,
+        label: `${k.kode} — ${k.nama}`,
+    }))
 
     const kecamatanOptions = Array.from(new Set(usahaList.map((u) => u.kecamatan_nama).filter(Boolean))).map((k) => ({
         value: k,
@@ -26,6 +34,7 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
         if (!u.latitude || !u.longitude) return false
         if (filterKecamatan && u.kecamatan_nama !== filterKecamatan) return false
         if (filterKelas && u.kelas_usaha !== filterKelas) return false
+        if (filterKBLI && u.kbli_kategori_kode !== filterKBLI) return false
         return true
     })
 
@@ -33,33 +42,56 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
         let isMounted = true
 
         const initMap = async () => {
-            if (!mapRef.current || mapInstanceRef.current) return
+            if (!mapRef.current) return
 
             try {
                 const L = (await import('leaflet')).default
-                // @ts-ignore - CSS import for leaflet
-                await import('leaflet/dist/leaflet.css')
 
-                const map = L.map(mapRef.current!, { zoomControl: true }).setView([-8.5, 115.13], 11)
+                // Clean up any leftover Leaflet container state (React Strict Mode fix)
+                const container = mapRef.current as HTMLDivElement & { _leaflet_id?: number }
+                if (container._leaflet_id) {
+                    container.innerHTML = ''
+                    delete container._leaflet_id
+                }
+
+                // Remove previous map instance if it exists
+                if (mapInstanceRef.current) {
+                    try { (mapInstanceRef.current as any).remove() } catch (_) { /* ignore */ }
+                    mapInstanceRef.current = null
+                }
+
+                const map = L.map(container, { zoomControl: true }).setView([-8.4418, 115.0294], 12)
 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
+                    attribution: '&copy; OpenStreetMap contributors',
                     maxZoom: 19,
                 }).addTo(map)
 
                 mapInstanceRef.current = map
+
+                // Force proper sizing after initialization
+                setTimeout(() => {
+                    if (isMounted && map) {
+                        map.invalidateSize()
+                    }
+                }, 200)
+
                 if (isMounted) setMapReady(true)
             } catch (err) {
                 console.error('Map init error:', err)
+                // Still set mapReady to remove loading overlay even on error
+                if (isMounted) setMapReady(true)
             }
         }
 
-        initMap()
+        // Small delay to ensure DOM is fully ready
+        const timer = setTimeout(initMap, 50)
 
         return () => {
             isMounted = false
+            clearTimeout(timer)
             if (mapInstanceRef.current) {
-                (mapInstanceRef.current as L.Map).remove()
+                try { (mapInstanceRef.current as any).remove() } catch (_) { /* ignore */ }
                 mapInstanceRef.current = null
             }
         }
@@ -72,23 +104,25 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
 
         const updateMarkers = async () => {
             const L = (await import('leaflet')).default
-            const map = mapInstanceRef.current as L.Map
+            const map = mapInstanceRef.current as any
 
             // Remove existing markers
-            markersRef.current.forEach((m) => (m as L.Marker).remove())
+            markersRef.current.forEach((m) => {
+                try { (m as any).remove() } catch (_) { /* ignore */ }
+            })
             markersRef.current = []
 
             const kelasColors: Record<string, string> = {
-                mikro: '#003087',
-                kecil: '#FFB81C',
-                menengah: '#C8102E',
-                besar: '#059669',
+                mikro: '#C8102E', // Merah
+                kecil: '#FFB81C', // Kuning
+                menengah: '#003087', // Biru
+                besar: '#059669', // Hijau
             }
 
             filtered.forEach((u) => {
                 if (!u.latitude || !u.longitude) return
 
-                const color = kelasColors[u.kelas_usaha] || '#003087'
+                const color = kelasColors[u.kelas_usaha] || '#C8102E'
 
                 const icon = L.divIcon({
                     className: '',
@@ -124,11 +158,11 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
         <Paper radius="lg" p="lg" shadow="xs" withBorder>
             <Group gap="xs" mb="md" justify="space-between" wrap="wrap">
                 <Group gap="xs">
-                    <IconMap size={17} className="text-[#003087]" />
+                    <IconMap size={17} className="text-[#e65100]" />
                     <Text fw={700} size="sm">Peta Lokasi Usaha</Text>
                     <Badge size="sm" variant="light" color="blue">{filtered.length} titik</Badge>
                 </Group>
-                <Group gap="xs">
+                <Group gap="xs" wrap="wrap">
                     <Select
                         placeholder="Filter Kecamatan"
                         data={kecamatanOptions}
@@ -139,7 +173,7 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
                         style={{ width: 160 }}
                     />
                     <Select
-                        placeholder="Filter Kelas"
+                        placeholder="Filter Skala"
                         data={[
                             { value: 'mikro', label: 'Mikro' },
                             { value: 'kecil', label: 'Kecil' },
@@ -152,6 +186,16 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
                         size="xs"
                         style={{ width: 130 }}
                     />
+                    <Select
+                        placeholder="Filter KBLI"
+                        data={kbliKategoriOptions}
+                        value={filterKBLI}
+                        onChange={setFilterKBLI}
+                        clearable
+                        searchable
+                        size="xs"
+                        style={{ width: 220 }}
+                    />
                 </Group>
             </Group>
 
@@ -162,9 +206,9 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
 
             <Group mt="xs" gap="md">
                 {[
-                    { label: 'Mikro', color: '#003087' },
+                    { label: 'Mikro', color: '#C8102E' },
                     { label: 'Kecil', color: '#FFB81C' },
-                    { label: 'Menengah', color: '#C8102E' },
+                    { label: 'Menengah', color: '#003087' },
                     { label: 'Besar', color: '#059669' },
                 ].map((item) => (
                     <Group key={item.label} gap={6}>

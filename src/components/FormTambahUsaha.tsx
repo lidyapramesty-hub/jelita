@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import {
   Drawer, Stepper, TextInput, Select, Button, Group, Stack,
@@ -12,23 +12,21 @@ import {
 } from '@tabler/icons-react'
 import {
   kbliKategori, getGolonganPokokByKategori, getGolonganByGolonganPokok,
-  getSubgolonganByGolongan, getKelompokBySubgolongan,
+  getSubgolonganByGolongan, getKelompokBySubgolongan, getKbliPathByKelompokKode,
 } from '@/data/kbli2025'
-import {
-  provinsiData, getKabKotByProvinsi, getKecamatanByKabKot,
-  getDesaByKecamatan, getSLSByDesa,
-} from '@/data/wilayah'
+import { Usaha } from '@/types/usaha'
+import { useCreateUsahaMutation, useUpdateUsahaMutation } from '@/store/services/usahaApi'
 
 const GeotagMap = dynamic(() => import('./GeotagMap'), { ssr: false })
 
 const PLATFORM_OPTIONS = [
-  'Instagram', 'Facebook', 'TikTok', 'YouTube', 'Twitter/X',
-  'WhatsApp', 'Tokopedia', 'Shopee', 'Lazada', 'Bukalapak',
-  'Blibli', 'JD.ID', 'Gojek', 'Grab', 'Website Sendiri',
-  'Airbnb', 'Booking.com', 'Traveloka', 'Agoda', 'Lainnya',
+  'Agoda', 'Airbnb', 'Blibli', 'Booking.com', 'Bukalapak',
+  'Facebook', 'Gojek', 'Grab', 'Instagram', 'JD.ID',
+  'Lazada', 'Shopee', 'TikTok', 'Tokopedia', 'Traveloka',
+  'Twitter/X', 'Website Sendiri', 'WhatsApp', 'YouTube', 'Lainnya',
 ]
 
-interface Platform {
+interface PlatformEntry {
   platform: string
   nama_akun: string
 }
@@ -37,62 +35,142 @@ interface FormData {
   nama_pemilik: string
   nama_usaha: string
   deskripsi_kegiatan: string
+  // KBLI — intermediate kode fields for cascading dropdowns (UI state)
   kbli_kategori_kode: string
-  kbli_kategori_nama: string
   kbli_golongan_pokok_kode: string
-  kbli_golongan_pokok_nama: string
   kbli_golongan_kode: string
-  kbli_golongan_nama: string
   kbli_subgolongan_kode: string
-  kbli_subgolongan_nama: string
   kbli_kelompok_kode: string
-  kbli_kelompok_nama: string
-  provinsi_kode: string
-  provinsi_nama: string
-  kabkot_kode: string
-  kabkot_nama: string
-  kecamatan_kode: string
+  // Lokasi
   kecamatan_nama: string
-  desa_kode: string
   desa_nama: string
-  sls_kode: string
   sls_nama: string
   sub_sls: string
+  // Geo
   latitude: number | null
   longitude: number | null
-  platform_digital: Platform[]
+  // Platform
+  platforms: PlatformEntry[]
+  // Klasifikasi
   kelas_usaha: string
   cakupan_pasar: string
 }
 
 const initialForm: FormData = {
   nama_pemilik: '', nama_usaha: '', deskripsi_kegiatan: '',
-  kbli_kategori_kode: '', kbli_kategori_nama: '',
-  kbli_golongan_pokok_kode: '', kbli_golongan_pokok_nama: '',
-  kbli_golongan_kode: '', kbli_golongan_nama: '',
-  kbli_subgolongan_kode: '', kbli_subgolongan_nama: '',
-  kbli_kelompok_kode: '', kbli_kelompok_nama: '',
-  provinsi_kode: '', provinsi_nama: '',
-  kabkot_kode: '', kabkot_nama: '',
-  kecamatan_kode: '', kecamatan_nama: '',
-  desa_kode: '', desa_nama: '',
-  sls_kode: '', sls_nama: '',
+  kbli_kategori_kode: '',
+  kbli_golongan_pokok_kode: '',
+  kbli_golongan_kode: '',
+  kbli_subgolongan_kode: '',
+  kbli_kelompok_kode: '',
+  kecamatan_nama: '',
+  desa_nama: '',
+  sls_nama: '',
   sub_sls: '',
   latitude: null, longitude: null,
-  platform_digital: [{ platform: '', nama_akun: '' }],
+  platforms: [{ platform: '', nama_akun: '' }],
   kelas_usaha: '', cakupan_pasar: '',
+}
+
+interface SLSItem { kode: string; nama: string }
+interface DesaItem { kode: string; nama: string; sls: SLSItem[] }
+interface KecamatanItem { kode: string; nama: string; desa: DesaItem[] }
+
+function parseKodeName(s: string): { kode: string; nama: string } {
+  const trimmed = s.replace(/\r/g, '').trim()
+  const dotIdx = trimmed.indexOf('. ')
+  if (dotIdx === -1) return { kode: '', nama: trimmed }
+  return { kode: trimmed.slice(0, dotIdx).trim(), nama: trimmed.slice(dotIdx + 2).trim() }
 }
 
 interface Props {
   onClose: () => void
   onSuccess: () => void
+  editData?: Usaha | null
 }
 
-export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
+export default function FormTambahUsaha({ onClose, onSuccess, editData }: Props) {
+  const isEdit = !!editData
   const [form, setForm] = useState<FormData>(initialForm)
-  const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [activeStep, setActiveStep] = useState(0)
+  const [visitedSteps, setVisitedSteps] = useState<Set<number>>(new Set([0]))
+  const [locationData, setLocationData] = useState<KecamatanItem[]>([])
+
+  const [createUsaha, { isLoading: isCreating }] = useCreateUsahaMutation()
+  const [updateUsaha, { isLoading: isUpdating }] = useUpdateUsahaMutation()
+  const submitting = isCreating || isUpdating
+
+  useEffect(() => {
+    const fetchLocationData = async () => {
+      try {
+        const response = await fetch('https://docs.google.com/spreadsheets/d/1cJnkUdkM5zjtu6c5GHdaCAYXjjhZrC6f/export?format=csv')
+        if (!response.ok) throw new Error('Network response not ok')
+        const text = await response.text()
+        const rows = text.split('\n')
+
+        const kecMap = new Map<string, { kode: string; nama: string; desaMap: Map<string, { kode: string; nama: string; sls: SLSItem[] }> }>()
+
+        rows.slice(1).forEach(row => {
+          const cols = row.split(',')
+          if (cols.length < 5) return
+          const kec = parseKodeName(cols[2])
+          const desa = parseKodeName(cols[3])
+          const sls = parseKodeName(cols[4])
+          if (!kec.nama || !desa.nama || !sls.nama) return
+
+          if (!kecMap.has(kec.nama)) {
+            kecMap.set(kec.nama, { kode: kec.kode, nama: kec.nama, desaMap: new Map() })
+          }
+          const kecEntry = kecMap.get(kec.nama)!
+          if (!kecEntry.desaMap.has(desa.nama)) {
+            kecEntry.desaMap.set(desa.nama, { kode: desa.kode, nama: desa.nama, sls: [] })
+          }
+          const desaEntry = kecEntry.desaMap.get(desa.nama)!
+          if (!desaEntry.sls.find(s => s.nama === sls.nama)) {
+            desaEntry.sls.push({ kode: sls.kode, nama: sls.nama })
+          }
+        })
+
+        const data: KecamatanItem[] = Array.from(kecMap.values()).map(k => ({
+          kode: k.kode,
+          nama: k.nama,
+          desa: Array.from(k.desaMap.values()),
+        }))
+        setLocationData(data)
+      } catch (err) {
+        console.error('Failed to fetch location data:', err)
+      }
+    }
+    fetchLocationData()
+  }, [])
+
+  // Pre-fill form if editing
+  useEffect(() => {
+    if (editData) {
+      // Reverse lookup KBLI hierarchy from kelompok_kode
+      const kbliPath = editData.kbli_kelompok_kode ? getKbliPathByKelompokKode(editData.kbli_kelompok_kode) : null
+      setForm({
+        nama_pemilik: editData.nama_pemilik || '',
+        nama_usaha: editData.nama_usaha || '',
+        deskripsi_kegiatan: editData.deskripsi_kegiatan || '',
+        kbli_kategori_kode: kbliPath?.kategori.kode || editData.kbli_kategori_kode || '',
+        kbli_golongan_pokok_kode: kbliPath?.golongan_pokok.kode || '',
+        kbli_golongan_kode: kbliPath?.golongan.kode || '',
+        kbli_subgolongan_kode: kbliPath?.subgolongan.kode || '',
+        kbli_kelompok_kode: kbliPath?.kelompok.kode || editData.kbli_kelompok_kode || '',
+        kecamatan_nama: editData.kecamatan_nama || '',
+        desa_nama: editData.desa_nama || '',
+        sls_nama: editData.sls_nama || '',
+        sub_sls: editData.sub_sls || '',
+        latitude: editData.latitude,
+        longitude: editData.longitude,
+        platforms: editData.platforms?.length > 0 ? editData.platforms.map(p => ({ platform: p.platform, nama_akun: p.nama_akun })) : [{ platform: '', nama_akun: '' }],
+        kelas_usaha: editData.kelas_usaha || '',
+        cakupan_pasar: editData.cakupan_pasar || '',
+      })
+    }
+  }, [editData])
 
   // KBLI derived data
   const golonganPokok = form.kbli_kategori_kode ? getGolonganPokokByKategori(form.kbli_kategori_kode) : []
@@ -100,45 +178,125 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
   const subgolongan = form.kbli_golongan_kode ? getSubgolonganByGolongan(form.kbli_golongan_kode) : []
   const kelompok = form.kbli_subgolongan_kode ? getKelompokBySubgolongan(form.kbli_subgolongan_kode) : []
 
-  // Wilayah derived data
-  const kabKot = form.provinsi_kode ? getKabKotByProvinsi(form.provinsi_kode) : []
-  const kecamatan = form.kabkot_kode ? getKecamatanByKabKot(form.kabkot_kode) : []
-  const desa = form.kecamatan_kode ? getDesaByKecamatan(form.kecamatan_kode) : []
-  const sls = form.desa_kode ? getSLSByDesa(form.desa_kode) : []
-
   const setField = (key: keyof FormData, val: unknown) => {
     setForm((prev) => ({ ...prev, [key]: val }))
     setErrors((prev) => { const e = { ...prev }; delete e[key]; return e })
+  }
+
+  // Step validation checks (for red indicator)
+  const isStepComplete = (step: number): boolean => {
+    switch (step) {
+      case 0: return !!(form.nama_pemilik.trim() && form.nama_usaha.trim())
+      case 1: return !!(form.kbli_kategori_kode && form.kbli_golongan_pokok_kode && form.kbli_golongan_kode && form.kbli_subgolongan_kode && form.kbli_kelompok_kode && form.deskripsi_kegiatan.trim())
+      case 2: return !!(form.kecamatan_nama && form.desa_nama && form.sls_nama.trim())
+      case 3: return true // Geo is optional
+      case 4: {
+        const valid = form.platforms.filter((p) => p.platform && p.nama_akun)
+        const incomplete = form.platforms.some((p) => (p.platform && !p.nama_akun) || (!p.platform && p.nama_akun))
+        return valid.length > 0 && !incomplete
+      }
+      case 5: return !!(form.kelas_usaha && form.cakupan_pasar)
+      default: return true
+    }
+  }
+
+  const stepHasError = (step: number): boolean => {
+    // Only show red if user has visited or passed the step and it's incomplete
+    return visitedSteps.has(step) && !isStepComplete(step)
   }
 
   const validate = (): boolean => {
     const e: Record<string, string> = {}
     if (!form.nama_pemilik.trim()) e.nama_pemilik = 'Nama pemilik wajib diisi'
     if (!form.nama_usaha.trim()) e.nama_usaha = 'Nama usaha wajib diisi'
+    if (!form.deskripsi_kegiatan.trim()) e.deskripsi_kegiatan = 'Deskripsi kegiatan wajib diisi'
     if (!form.kbli_kategori_kode) e.kbli = 'Kategori KBLI wajib dipilih'
-    if (!form.provinsi_kode) e.provinsi = 'Provinsi wajib dipilih'
-    if (!form.kelas_usaha) e.kelas_usaha = 'Kelas usaha wajib dipilih'
+    if (!form.kbli_golongan_pokok_kode) e.kbli_gp = 'Golongan Pokok wajib dipilih'
+    if (!form.kbli_golongan_kode) e.kbli_g = 'Golongan wajib dipilih'
+    if (!form.kbli_subgolongan_kode) e.kbli_sg = 'Subgolongan wajib dipilih'
+    if (!form.kbli_kelompok_kode) e.kbli_k = 'Kelompok KBLI wajib dipilih'
+    if (!form.kecamatan_nama) e.kecamatan = 'Kecamatan wajib dipilih'
+    if (!form.desa_nama) e.desa = 'Desa/Kelurahan wajib dipilih'
+    if (!form.sls_nama.trim()) e.sls_nama = 'SLS wajib dipilih'
+    if (!form.kelas_usaha) e.kelas_usaha = 'Skala usaha wajib dipilih'
     if (!form.cakupan_pasar) e.cakupan_pasar = 'Cakupan pasar wajib dipilih'
-    if (form.platform_digital.some((p) => p.platform && !p.nama_akun)) e.platform = 'Nama akun wajib diisi untuk setiap platform'
+    const validPlatforms = form.platforms.filter((p) => p.platform && p.nama_akun)
+    if (validPlatforms.length === 0) e.platform = 'Minimal 1 platform dan nama akun wajib diisi'
+    if (form.platforms.some((p) => (p.platform && !p.nama_akun) || (!p.platform && p.nama_akun))) {
+      e.platform = 'Platform dan nama akun harus diisi keduanya'
+    }
     setErrors(e)
+    // Mark all steps as visited
+    setVisitedSteps(new Set([0, 1, 2, 3, 4, 5]))
     return Object.keys(e).length === 0
   }
 
   const handleSubmit = async () => {
     if (!validate()) {
-      setActiveStep(0)
+      // Navigate to first step with error
+      for (let s = 0; s <= 5; s++) {
+        if (!isStepComplete(s)) { setActiveStep(s); break }
+      }
       return
     }
-    setSubmitting(true)
-    // Simulate API submission
-    setTimeout(() => {
-      setSubmitting(false)
+    try {
+      const selectedKec = locationData.find(k => k.nama === form.kecamatan_nama)
+      const selectedDesa = selectedKec?.desa.find(d => d.nama === form.desa_nama)
+      const selectedSls = selectedDesa?.sls.find(s => s.nama === form.sls_nama)
+      const payload = {
+        nama_pemilik: form.nama_pemilik,
+        nama_usaha: form.nama_usaha,
+        deskripsi_kegiatan: form.deskripsi_kegiatan || undefined,
+        kbli_kategori_kode: form.kbli_kategori_kode,
+        kbli_kelompok_kode: form.kbli_kelompok_kode,
+        provinsi_kode: '51',
+        provinsi_nama: 'Bali',
+        kabkot_kode: '5102',
+        kabkot_nama: 'Tabanan',
+        kecamatan_kode: selectedKec?.kode || '',
+        kecamatan_nama: form.kecamatan_nama,
+        desa_kode: selectedDesa?.kode || '',
+        desa_nama: form.desa_nama,
+        sls_kode: selectedSls?.kode || '',
+        sls_nama: form.sls_nama,
+        sub_sls: form.sub_sls,
+        latitude: form.latitude,
+        longitude: form.longitude,
+        platforms: form.platforms.filter((p) => p.platform && p.nama_akun),
+        kelas_usaha: form.kelas_usaha,
+        cakupan_pasar: form.cakupan_pasar,
+      }
+      if (isEdit && editData) {
+        await updateUsaha({ id: editData.id, data: payload }).unwrap()
+      } else {
+        await createUsaha(payload).unwrap()
+      }
       onSuccess()
-    }, 800)
+    } catch (err) {
+      console.error('Submit error:', err)
+      setErrors({ submit: 'Gagal menyimpan data. Silakan coba lagi.' })
+    }
   }
 
-  const nextStep = () => setActiveStep((c) => Math.min(c + 1, 5))
+  const nextStep = () => {
+    const next = Math.min(activeStep + 1, 5)
+    setVisitedSteps((prev) => {
+      const s = new Set(prev)
+      s.add(next)
+      return s
+    })
+    setActiveStep(next)
+  }
   const prevStep = () => setActiveStep((c) => Math.max(c - 1, 0))
+
+  const handleStepClick = (step: number) => {
+    setVisitedSteps((prev) => {
+      const s = new Set(prev)
+      s.add(step)
+      return s
+    })
+    setActiveStep(step)
+  }
 
   return (
     <Drawer
@@ -146,28 +304,38 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
       onClose={onClose}
       title={
         <div>
-          <Text fw={700} size="lg" style={{ fontFamily: 'DM Sans' }}>Tambah Usaha Baru</Text>
+          <Text fw={700} size="lg" style={{ fontFamily: 'DM Sans' }}>{isEdit ? 'Edit Usaha' : 'Tambah Usaha Baru'}</Text>
           <Text size="xs" c="dimmed">Ekonomi Digital Kabupaten Tabanan</Text>
         </div>
       }
       position="right"
-      size="lg"
+      size="xl"
       styles={{
         header: { backgroundColor: '#003087', padding: '16px 24px' },
         title: { color: 'white' },
         close: { color: 'white', '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' } },
       }}
     >
+      <style>{`
+        .step-error .mantine-Stepper-stepIcon {
+          background-color: #fee2e2 !important;
+          border-color: #ef4444 !important;
+          color: #ef4444 !important;
+        }
+        .step-error .mantine-Stepper-stepLabel {
+          color: #ef4444 !important;
+        }
+      `}</style>
       <div className="flex flex-col h-full">
         {/* Stepper */}
         <div className="px-4 py-4 border-b border-gray-200 bg-slate-50">
-          <Stepper active={activeStep} onStepClick={setActiveStep} size="xs" color="#003087">
-            <Stepper.Step label="Data" />
-            <Stepper.Step label="KBLI" />
-            <Stepper.Step label="Lokasi" />
-            <Stepper.Step label="Geo" />
-            <Stepper.Step label="Platform" />
-            <Stepper.Step label="Kelas" />
+          <Stepper active={activeStep} onStepClick={handleStepClick} size="xs" color="#003087">
+            <Stepper.Step label="Nama" className={stepHasError(0) ? 'step-error' : ''} />
+            <Stepper.Step label="KBLI" className={stepHasError(1) ? 'step-error' : ''} />
+            <Stepper.Step label="Lokasi" className={stepHasError(2) ? 'step-error' : ''} />
+            <Stepper.Step label="Geo" className={stepHasError(3) ? 'step-error' : ''} />
+            <Stepper.Step label="Platform" className={stepHasError(4) ? 'step-error' : ''} />
+            <Stepper.Step label="Kelas" className={stepHasError(5) ? 'step-error' : ''} />
           </Stepper>
         </div>
 
@@ -179,12 +347,12 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
             </Alert>
           )}
 
-          {/* Step 0: Data Usaha */}
+          {/* Step 0: Nama Usaha */}
           {activeStep === 0 && (
             <Stack gap="md">
               <Group gap="xs" mb="sm">
                 <div className="w-7 h-7 rounded-full bg-[#003087] text-white text-xs font-bold flex items-center justify-center">1</div>
-                <Text fw={700}>Data Dasar Usaha</Text>
+                <Text fw={700}>Nama Usaha</Text>
               </Group>
               <TextInput
                 label="Nama Pemilik / Penanggung Jawab"
@@ -201,13 +369,6 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
                 onChange={(e) => setField('nama_usaha', e.currentTarget.value)}
                 error={errors.nama_usaha}
                 required
-              />
-              <Textarea
-                label="Deskripsi Kegiatan Usaha"
-                placeholder="Jelaskan kegiatan usaha secara singkat"
-                value={form.deskripsi_kegiatan}
-                onChange={(e) => setField('deskripsi_kegiatan', e.currentTarget.value)}
-                minRows={3}
               />
             </Stack>
           )}
@@ -229,15 +390,16 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
                   const item = kbliKategori.find((k) => k.kode === val)
                   setForm((prev) => ({
                     ...prev,
-                    kbli_kategori_kode: val || '', kbli_kategori_nama: item?.nama || '',
-                    kbli_golongan_pokok_kode: '', kbli_golongan_pokok_nama: '',
-                    kbli_golongan_kode: '', kbli_golongan_nama: '',
-                    kbli_subgolongan_kode: '', kbli_subgolongan_nama: '',
-                    kbli_kelompok_kode: '', kbli_kelompok_nama: '',
+                    kbli_kategori_kode: val || '',
+                    kbli_golongan_pokok_kode: '',
+                    kbli_golongan_kode: '',
+                    kbli_subgolongan_kode: '',
+                    kbli_kelompok_kode: '',
                   }))
                 }}
                 searchable
                 error={errors.kbli}
+                required
               />
               <Select
                 label="Golongan Pokok (2 digit)"
@@ -248,14 +410,16 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
                   const item = golonganPokok.find((g) => g.kode === val)
                   setForm((prev) => ({
                     ...prev,
-                    kbli_golongan_pokok_kode: val || '', kbli_golongan_pokok_nama: item?.nama || '',
-                    kbli_golongan_kode: '', kbli_golongan_nama: '',
-                    kbli_subgolongan_kode: '', kbli_subgolongan_nama: '',
-                    kbli_kelompok_kode: '', kbli_kelompok_nama: '',
+                    kbli_golongan_pokok_kode: val || '',
+                    kbli_golongan_kode: '',
+                    kbli_subgolongan_kode: '',
+                    kbli_kelompok_kode: '',
                   }))
                 }}
                 disabled={!form.kbli_kategori_kode}
                 searchable
+                error={errors.kbli_gp}
+                required
               />
               <Select
                 label="Golongan (3 digit)"
@@ -266,13 +430,15 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
                   const item = golongan.find((g) => g.kode === val)
                   setForm((prev) => ({
                     ...prev,
-                    kbli_golongan_kode: val || '', kbli_golongan_nama: item?.nama || '',
-                    kbli_subgolongan_kode: '', kbli_subgolongan_nama: '',
-                    kbli_kelompok_kode: '', kbli_kelompok_nama: '',
+                    kbli_golongan_kode: val || '',
+                    kbli_subgolongan_kode: '',
+                    kbli_kelompok_kode: '',
                   }))
                 }}
                 disabled={!form.kbli_golongan_pokok_kode}
                 searchable
+                error={errors.kbli_g}
+                required
               />
               <Select
                 label="Subgolongan (4 digit)"
@@ -283,12 +449,14 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
                   const item = subgolongan.find((g) => g.kode === val)
                   setForm((prev) => ({
                     ...prev,
-                    kbli_subgolongan_kode: val || '', kbli_subgolongan_nama: item?.nama || '',
-                    kbli_kelompok_kode: '', kbli_kelompok_nama: '',
+                    kbli_subgolongan_kode: val || '',
+                    kbli_kelompok_kode: '',
                   }))
                 }}
                 disabled={!form.kbli_golongan_kode}
                 searchable
+                error={errors.kbli_sg}
+                required
               />
               <Select
                 label="Kelompok / Kode KBLI (5 digit)"
@@ -297,121 +465,115 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
                 value={form.kbli_kelompok_kode || null}
                 onChange={(val) => {
                   const item = kelompok.find((g) => g.kode === val)
-                  setForm((prev) => ({ ...prev, kbli_kelompok_kode: val || '', kbli_kelompok_nama: item?.nama || '' }))
+                  setForm((prev) => ({ ...prev, kbli_kelompok_kode: val || '' }))
                 }}
                 disabled={!form.kbli_subgolongan_kode}
                 searchable
+                error={errors.kbli_k}
+                required
               />
 
-              {form.kbli_kelompok_kode && (
-                <Paper p="md" radius="md" bg="blue.0" withBorder style={{ borderColor: 'var(--mantine-color-blue-2)' }}>
-                  <Text size="xs" fw={700} c="blue.9" mb="xs">KBLI Terpilih:</Text>
-                  <Text size="sm" fw={700}>{form.kbli_kelompok_kode}</Text>
-                  <Text size="sm" c="dimmed">{form.kbli_kelompok_nama}</Text>
-                  <Text size="xs" c="dimmed" mt="xs">{form.kbli_kategori_nama}</Text>
-                </Paper>
-              )}
+              {form.kbli_kelompok_kode && (() => {
+                const path = getKbliPathByKelompokKode(form.kbli_kelompok_kode)
+                return (
+                  <Paper p="md" radius="md" bg="blue.0" withBorder style={{ borderColor: 'var(--mantine-color-blue-2)' }}>
+                    <Text size="xs" fw={700} c="blue.9" mb="xs">KBLI Terpilih:</Text>
+                    <Text size="sm" fw={700}>{form.kbli_kelompok_kode}</Text>
+                    <Text size="sm" c="dimmed">{path?.kelompok.nama || '-'}</Text>
+                    <Text size="xs" c="dimmed" mt="xs">{path?.kategori.nama || '-'}</Text>
+                  </Paper>
+                )
+              })()}
+
+              <Textarea
+                label="Deskripsi Kegiatan Usaha"
+                placeholder="Jelaskan kegiatan usaha secara singkat"
+                value={form.deskripsi_kegiatan}
+                onChange={(e) => setField('deskripsi_kegiatan', e.currentTarget.value)}
+                error={errors.deskripsi_kegiatan}
+                minRows={3}
+                required
+              />
             </Stack>
           )}
 
           {/* Step 2: Lokasi */}
-          {activeStep === 2 && (
-            <Stack gap="md">
-              <Group gap="xs" mb="sm">
-                <div className="w-7 h-7 rounded-full bg-[#003087] text-white text-xs font-bold flex items-center justify-center">3</div>
-                <Text fw={700}>Lokasi Usaha</Text>
-              </Group>
-              <Select
-                label="Provinsi"
-                placeholder="Pilih Provinsi"
-                data={provinsiData.map((p) => ({ value: p.kode, label: `${p.kode} — ${p.nama}` }))}
-                value={form.provinsi_kode || null}
-                onChange={(val) => {
-                  const item = provinsiData.find((p) => p.kode === val)
-                  setForm((prev) => ({
-                    ...prev,
-                    provinsi_kode: val || '', provinsi_nama: item?.nama || '',
-                    kabkot_kode: '', kabkot_nama: '',
-                    kecamatan_kode: '', kecamatan_nama: '',
-                    desa_kode: '', desa_nama: '',
-                    sls_kode: '', sls_nama: '',
-                  }))
-                }}
-                searchable
-                error={errors.provinsi}
-              />
-              <Select
-                label="Kabupaten / Kota"
-                placeholder={form.provinsi_kode ? 'Pilih Kab/Kota' : 'Pilih Provinsi dahulu'}
-                data={kabKot.map((k) => ({ value: k.kode, label: `${k.kode} — ${k.nama}` }))}
-                value={form.kabkot_kode || null}
-                onChange={(val) => {
-                  const item = kabKot.find((k) => k.kode === val)
-                  setForm((prev) => ({
-                    ...prev,
-                    kabkot_kode: val || '', kabkot_nama: item?.nama || '',
-                    kecamatan_kode: '', kecamatan_nama: '',
-                    desa_kode: '', desa_nama: '',
-                    sls_kode: '', sls_nama: '',
-                  }))
-                }}
-                disabled={!form.provinsi_kode}
-                searchable
-              />
-              <Select
-                label="Kecamatan"
-                placeholder={form.kabkot_kode ? 'Pilih Kecamatan' : 'Pilih Kab/Kota dahulu'}
-                data={kecamatan.map((k) => ({ value: k.kode, label: `${k.kode} — ${k.nama}` }))}
-                value={form.kecamatan_kode || null}
-                onChange={(val) => {
-                  const item = kecamatan.find((k) => k.kode === val)
-                  setForm((prev) => ({
-                    ...prev,
-                    kecamatan_kode: val || '', kecamatan_nama: item?.nama || '',
-                    desa_kode: '', desa_nama: '',
-                    sls_kode: '', sls_nama: '',
-                  }))
-                }}
-                disabled={!form.kabkot_kode}
-                searchable
-              />
-              <Select
-                label="Desa / Kelurahan"
-                placeholder={form.kecamatan_kode ? 'Pilih Desa/Kelurahan' : 'Pilih Kecamatan dahulu'}
-                data={desa.map((d) => ({ value: d.kode, label: `${d.kode} — ${d.nama}` }))}
-                value={form.desa_kode || null}
-                onChange={(val) => {
-                  const item = desa.find((d) => d.kode === val)
-                  setForm((prev) => ({
-                    ...prev,
-                    desa_kode: val || '', desa_nama: item?.nama || '',
-                    sls_kode: '', sls_nama: '',
-                  }))
-                }}
-                disabled={!form.kecamatan_kode}
-                searchable
-              />
-              <Select
-                label="SLS (Dusun / Lingkungan / Banjar)"
-                placeholder={form.desa_kode ? (sls.length > 0 ? 'Pilih SLS' : 'Tidak ada data SLS') : 'Pilih Desa dahulu'}
-                data={sls.map((s) => ({ value: s.kode, label: `${s.kode} — ${s.nama}` }))}
-                value={form.sls_kode || null}
-                onChange={(val) => {
-                  const item = sls.find((s) => s.kode === val)
-                  setForm((prev) => ({ ...prev, sls_kode: val || '', sls_nama: item?.nama || '' }))
-                }}
-                disabled={!form.desa_kode || sls.length === 0}
-                searchable
-              />
-              <TextInput
-                label="Sub SLS (opsional)"
-                placeholder="Cth: RT 01, Gang Melati, Blok A, dll."
-                value={form.sub_sls}
-                onChange={(e) => setField('sub_sls', e.currentTarget.value)}
-                description="Isi manual jika tidak ada dalam daftar"
-              />
-            </Stack>
-          )}
+          {activeStep === 2 && (() => {
+            const selectedKec = locationData.find(k => k.nama === form.kecamatan_nama)
+            const selectedDesa = selectedKec?.desa.find(d => d.nama === form.desa_nama)
+            const kecOptions = locationData.map(k => ({ value: k.nama, label: `${k.kode} — ${k.nama}` }))
+            const desaOptions = selectedKec?.desa.map(d => ({ value: d.nama, label: `${d.kode} — ${d.nama}` })) || []
+            const slsOptions = selectedDesa?.sls.map(s => ({ value: s.nama, label: `${s.kode} — ${s.nama}` })) || []
+            return (
+              <Stack gap="md">
+                <Group gap="xs" mb="sm">
+                  <div className="w-7 h-7 rounded-full bg-[#003087] text-white text-xs font-bold flex items-center justify-center">3</div>
+                  <Text fw={700}>Lokasi Usaha</Text>
+                </Group>
+                <Select
+                  label="Provinsi"
+                  data={[{ value: '51', label: '51 — Bali' }]}
+                  value="51"
+                  disabled
+                  required
+                />
+                <Select
+                  label="Kabupaten / Kota"
+                  data={[{ value: '02', label: '02 — Tabanan' }]}
+                  value="02"
+                  disabled
+                  required
+                />
+                <Select
+                  label="Kecamatan"
+                  placeholder={locationData.length === 0 ? 'Memuat data...' : 'Pilih Kecamatan'}
+                  data={kecOptions}
+                  value={form.kecamatan_nama || null}
+                  onChange={(val) => {
+                    setForm((prev) => ({ ...prev, kecamatan_nama: val || '', desa_nama: '', sls_nama: '' }))
+                    setErrors((prev) => { const e = { ...prev }; delete e.kecamatan; return e })
+                  }}
+                  searchable
+                  error={errors.kecamatan}
+                  required
+                />
+                <Select
+                  label="Desa / Kelurahan"
+                  placeholder={form.kecamatan_nama ? 'Pilih Desa/Kelurahan' : 'Pilih Kecamatan dahulu'}
+                  data={desaOptions}
+                  value={form.desa_nama || null}
+                  onChange={(val) => {
+                    setForm((prev) => ({ ...prev, desa_nama: val || '', sls_nama: '' }))
+                    setErrors((prev) => { const e = { ...prev }; delete e.desa; return e })
+                  }}
+                  disabled={!form.kecamatan_nama}
+                  searchable
+                  error={errors.desa}
+                  required
+                />
+                <Select
+                  label="SLS (Satuan Lingkungan Setempat)"
+                  placeholder={form.desa_nama ? 'Pilih SLS' : 'Pilih Desa/Kelurahan dahulu'}
+                  data={slsOptions}
+                  value={form.sls_nama || null}
+                  onChange={(val) => {
+                    setForm((prev) => ({ ...prev, sls_nama: val || '' }))
+                    setErrors((prev) => { const e = { ...prev }; delete e.sls_nama; return e })
+                  }}
+                  disabled={!form.desa_nama}
+                  searchable
+                  error={errors.sls_nama}
+                  required
+                />
+                <TextInput
+                  label="Sub SLS"
+                  placeholder="Cth: Jl. Pulau Nias, Gang XI, No. 14"
+                  value={form.sub_sls}
+                  onChange={(e) => setField('sub_sls', e.currentTarget.value)}
+                />
+              </Stack>
+            )
+          })()}
 
           {/* Step 3: Geotagging */}
           {activeStep === 3 && (
@@ -456,10 +618,10 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
                 <div className="w-7 h-7 rounded-full bg-[#003087] text-white text-xs font-bold flex items-center justify-center">5</div>
                 <Text fw={700}>Platform Digital yang Digunakan</Text>
               </Group>
-              <Text size="sm" c="dimmed">Tambahkan semua platform yang digunakan untuk menjalankan usaha secara digital.</Text>
+              <Text size="sm" c="dimmed">Tambahkan semua platform yang digunakan untuk menjalankan usaha secara digital. Minimal 1 platform wajib diisi.</Text>
               {errors.platform && <Text size="xs" c="red">{errors.platform}</Text>}
 
-              {form.platform_digital.map((item, idx) => (
+              {form.platforms.map((item, idx) => (
                 <Paper key={idx} p="md" radius="md" bg="gray.0" withBorder>
                   <Group align="start" gap="sm">
                     <Stack gap="sm" style={{ flex: 1 }}>
@@ -469,33 +631,35 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
                         data={PLATFORM_OPTIONS}
                         value={item.platform || null}
                         onChange={(val) => {
-                          const updated = [...form.platform_digital]
+                          const updated = [...form.platforms]
                           updated[idx] = { ...updated[idx], platform: val || '' }
-                          setField('platform_digital', updated)
+                          setField('platforms', updated)
                         }}
                         searchable
                         size="sm"
+                        required
                       />
                       <TextInput
                         label="Nama Akun"
                         placeholder="@nama_akun / URL / nomor"
                         value={item.nama_akun}
                         onChange={(e) => {
-                          const updated = [...form.platform_digital]
+                          const updated = [...form.platforms]
                           updated[idx] = { ...updated[idx], nama_akun: e.currentTarget.value }
-                          setField('platform_digital', updated)
+                          setField('platforms', updated)
                         }}
                         size="sm"
+                        required
                       />
                     </Stack>
-                    {form.platform_digital.length > 1 && (
+                    {form.platforms.length > 1 && (
                       <ActionIcon
                         variant="subtle"
                         color="red"
                         mt={28}
                         onClick={() => {
-                          const updated = form.platform_digital.filter((_, i) => i !== idx)
-                          setField('platform_digital', updated)
+                          const updated = form.platforms.filter((_, i) => i !== idx)
+                          setField('platforms', updated)
                         }}
                       >
                         <IconTrash size={16} />
@@ -510,7 +674,7 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
                 color="gray"
                 fullWidth
                 leftSection={<IconPlus size={16} />}
-                onClick={() => setField('platform_digital', [...form.platform_digital, { platform: '', nama_akun: '' }])}
+                onClick={() => setField('platforms', [...form.platforms, { platform: '', nama_akun: '' }])}
                 styles={{ root: { borderStyle: 'dashed' } }}
               >
                 Tambah Platform Lain
@@ -518,7 +682,7 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
             </Stack>
           )}
 
-          {/* Step 5: Klasifikasi */}
+          {/* Step 5: Kelas (was Skala) */}
           {activeStep === 5 && (
             <Stack gap="lg">
               <Group gap="xs" mb="sm">
@@ -527,21 +691,21 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
               </Group>
 
               <div>
-                <Text size="sm" fw={600} mb="xs">Kelas Usaha <span className="text-red-500">*</span></Text>
+                <Text size="sm" fw={600} mb="xs">Skala Usaha <span className="text-red-500">*</span></Text>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {[
-                    { val: 'mikro', label: 'Mikro', desc: 'Aset ≤ Rp50 Juta' },
-                    { val: 'kecil', label: 'Kecil', desc: 'Rp50–500 Juta' },
-                    { val: 'menengah', label: 'Menengah', desc: 'Rp500 Juta–10 M' },
-                    { val: 'besar', label: 'Besar', desc: '> Rp10 M' },
+                    { val: 'mikro', label: 'Mikro', desc: 'Hasil penjualan/tahun ≤ Rp2 Miliar' },
+                    { val: 'kecil', label: 'Kecil', desc: 'Rp2-15 Miliar' },
+                    { val: 'menengah', label: 'Menengah', desc: 'Rp15-50 Miliar' },
+                    { val: 'besar', label: 'Besar', desc: '> Rp50 Miliar' },
                   ].map((opt) => (
                     <button
                       key={opt.val}
                       type="button"
                       onClick={() => setField('kelas_usaha', opt.val)}
                       className={`p-4 rounded-xl border-2 text-left transition-all ${form.kelas_usaha === opt.val
-                          ? 'border-[#003087] bg-[#003087]/5'
-                          : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-[#003087] bg-[#003087]/5'
+                        : 'border-gray-200 hover:border-gray-300'
                         }`}
                     >
                       <p className={`font-bold text-sm ${form.kelas_usaha === opt.val ? 'text-[#003087]' : 'text-gray-700'}`}>{opt.label}</p>
@@ -556,18 +720,18 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
                 <Text size="sm" fw={600} mb="xs">Cakupan Pasar <span className="text-red-500">*</span></Text>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {[
-                    { val: 'lokal', label: 'Lokal', desc: 'Kab/Kota & sekitar' },
+                    { val: 'lokal', label: 'Lokal', desc: 'Kabupaten/kota' },
                     { val: 'regional', label: 'Regional', desc: 'Provinsi' },
-                    { val: 'nasional', label: 'Nasional', desc: 'Seluruh Indonesia' },
-                    { val: 'internasional', label: 'Internasional', desc: 'Luar negeri' },
+                    { val: 'nasional', label: 'Nasional', desc: 'Indonesia' },
+                    { val: 'internasional', label: 'Internasional', desc: 'Mancanegara' },
                   ].map((opt) => (
                     <button
                       key={opt.val}
                       type="button"
                       onClick={() => setField('cakupan_pasar', opt.val)}
                       className={`p-4 rounded-xl border-2 text-left transition-all ${form.cakupan_pasar === opt.val
-                          ? 'border-[#003087] bg-[#003087]/5'
-                          : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-[#003087] bg-[#003087]/5'
+                        : 'border-gray-200 hover:border-gray-300'
                         }`}
                     >
                       <p className={`font-bold text-sm ${form.cakupan_pasar === opt.val ? 'text-[#003087]' : 'text-gray-700'}`}>{opt.label}</p>
@@ -585,9 +749,9 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
                   {[
                     { label: 'Nama Usaha', val: form.nama_usaha || '-' },
                     { label: 'Pemilik', val: form.nama_pemilik || '-' },
-                    { label: 'KBLI', val: form.kbli_kelompok_kode ? `${form.kbli_kelompok_kode} — ${form.kbli_kelompok_nama}` : (form.kbli_kategori_nama || '-') },
-                    { label: 'Lokasi', val: [form.desa_nama, form.kecamatan_nama, form.kabkot_nama].filter(Boolean).join(', ') || '-' },
-                    { label: 'Platform', val: form.platform_digital.filter((p) => p.platform).map((p) => `${p.platform}`).join(', ') || '-' },
+                    { label: 'KBLI', val: form.kbli_kelompok_kode ? `${form.kbli_kelompok_kode} — ${getKbliPathByKelompokKode(form.kbli_kelompok_kode)?.kelompok.nama || ''}` : '-' },
+                    { label: 'Lokasi', val: [form.desa_nama, form.kecamatan_nama, 'Tabanan'].filter(Boolean).join(', ') || '-' },
+                    { label: 'Platform', val: form.platforms.filter((p) => p.platform).map((p) => `${p.platform}`).join(', ') || '-' },
                     { label: 'Koordinat', val: form.latitude ? `${form.latitude.toFixed(6)}, ${form.longitude?.toFixed(6)}` : '-' },
                   ].map((row) => (
                     <Group key={row.label} gap="sm">
@@ -624,7 +788,7 @@ export default function FormTambahUsaha({ onClose, onSuccess }: Props) {
                   leftSection={<IconDeviceFloppy size={16} />}
                   style={{ backgroundColor: '#003087' }}
                 >
-                  Simpan Usaha
+                  {isEdit ? 'Simpan Perubahan' : 'Simpan Usaha'}
                 </Button>
               )}
             </Group>

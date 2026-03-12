@@ -1,8 +1,9 @@
 'use client'
 
 import { Modal, Text, Badge, Group, Stack, Paper, Divider, Anchor } from '@mantine/core'
-import { IconTag, IconMapPin, IconDeviceMobile, IconExternalLink, IconCalendar, IconUser } from '@tabler/icons-react'
+import { IconTag, IconMapPin, IconDeviceMobile, IconExternalLink, IconCalendar, IconUser, IconPencil } from '@tabler/icons-react'
 import { Usaha } from '@/types/usaha'
+import { getKbliPathByKelompokKode } from '@/data/kbli2025'
 
 interface UsahaDetailModalProps {
     usaha: Usaha | null
@@ -25,7 +26,7 @@ const BADGE_PASAR: Record<string, string> = {
 
 export default function UsahaDetailModal({ usaha, onClose }: UsahaDetailModalProps) {
     const formatDate = (d: string) => {
-        return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+        return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
     }
 
     return (
@@ -67,7 +68,7 @@ export default function UsahaDetailModal({ usaha, onClose }: UsahaDetailModalPro
                             <Text size="xs" fw={600} c="dimmed" tt="uppercase">KBLI</Text>
                         </Group>
                         <Text size="sm" fw={700}>{usaha.kbli_kelompok_kode || '—'}</Text>
-                        <Text size="sm" c="dimmed">{usaha.kbli_kelompok_nama || usaha.kbli_kategori_nama || '—'}</Text>
+                        <Text size="sm" c="dimmed">{usaha.kbli_kelompok_kode ? (getKbliPathByKelompokKode(usaha.kbli_kelompok_kode)?.kelompok.nama || '—') : '—'}</Text>
                     </Paper>
 
                     {/* Lokasi */}
@@ -77,7 +78,7 @@ export default function UsahaDetailModal({ usaha, onClose }: UsahaDetailModalPro
                             <Text size="xs" fw={600} c="dimmed" tt="uppercase">Lokasi</Text>
                         </Group>
                         <Text size="sm">
-                            {[usaha.sub_sls, usaha.sls_nama, usaha.desa_nama, usaha.kecamatan_nama, usaha.kabkot_nama, usaha.provinsi_nama]
+                            {[usaha.sub_sls, usaha.sls_nama, usaha.desa_nama, usaha.kecamatan_nama, 'Tabanan', 'Bali']
                                 .filter(Boolean)
                                 .join(', ') || '—'}
                         </Text>
@@ -96,14 +97,14 @@ export default function UsahaDetailModal({ usaha, onClose }: UsahaDetailModalPro
                     </Paper>
 
                     {/* Platform */}
-                    {usaha.platform_digital?.length > 0 && (
+                    {usaha.platforms?.length > 0 && (
                         <Paper p="md" radius="md" bg="gray.0">
                             <Group gap="xs" mb="xs">
                                 <IconDeviceMobile size={16} className="text-gray-400" />
                                 <Text size="xs" fw={600} c="dimmed" tt="uppercase">Platform Digital</Text>
                             </Group>
                             <Stack gap="xs">
-                                {usaha.platform_digital.map((p, i) => (
+                                {usaha.platforms.map((p, i) => (
                                     <Group key={i} gap="xs">
                                         <Badge size="sm" variant="light" color="blue">{p.platform}</Badge>
                                         <Text size="sm" c="dimmed">{p.nama_akun}</Text>
@@ -116,18 +117,35 @@ export default function UsahaDetailModal({ usaha, onClose }: UsahaDetailModalPro
                     <Divider />
 
                     {/* Metadata */}
-                    <Group justify="space-between">
-                        <Group gap="xs">
-                            <IconCalendar size={14} className="text-gray-400" />
-                            <Text size="xs" c="dimmed">Ditambahkan: {formatDate(usaha.created_at)}</Text>
-                        </Group>
-                        {usaha.created_by_email && (
+                    <Stack gap={6}>
+                        {/* Created info */}
+                        <Group justify="space-between">
                             <Group gap="xs">
-                                <IconUser size={14} className="text-gray-400" />
-                                <Text size="xs" c="dimmed">Pelapor: {usaha.created_by_email}</Text>
+                                <IconCalendar size={14} className="text-gray-400" />
+                                <Text size="xs" c="dimmed">Ditambahkan: {formatDate(usaha.created_at)}</Text>
+                            </Group>
+                            {usaha.creator && (
+                                <Group gap="xs">
+                                    <IconUser size={14} className="text-gray-400" />
+                                    <Text size="xs" c="dimmed">Pelapor: {usaha.creator.role === 'mitra' ? usaha.creator.name : usaha.creator.username} ({usaha.creator.role})</Text>
+                                </Group>
+                            )}
+                        </Group>
+
+                        {/* Updated info */}
+                        {usaha.updated_at && usaha.updater && (
+                            <Group justify="space-between">
+                                <Group gap="xs">
+                                    <IconPencil size={14} className="text-orange-400" />
+                                    <Text size="xs" c="orange.7">Diedit: {formatDate(usaha.updated_at)}</Text>
+                                </Group>
+                                <Group gap="xs">
+                                    <IconUser size={14} className="text-orange-400" />
+                                    <Text size="xs" c="orange.7">Editor: {usaha.updater.role === 'mitra' ? usaha.updater.name : usaha.updater.username} ({usaha.updater.role})</Text>
+                                </Group>
                             </Group>
                         )}
-                    </Group>
+                    </Stack>
                 </Stack>
             )}
         </Modal>

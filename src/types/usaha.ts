@@ -1,8 +1,16 @@
 // ===== Shared TypeScript interfaces =====
 
 export interface Platform {
+    id?: number;
     platform: string;
     nama_akun: string;
+}
+
+export interface UserInfo {
+    id: number;
+    name: string;
+    username: string;
+    role: 'pegawai' | 'mitra';
 }
 
 export interface Usaha {
@@ -10,41 +18,32 @@ export interface Usaha {
     nama_pemilik: string;
     nama_usaha: string;
     deskripsi_kegiatan?: string;
-    // KBLI
+    // KBLI (only codes — names from reference data)
     kbli_kategori_kode: string;
-    kbli_kategori_nama: string;
-    kbli_golongan_pokok_kode: string;
-    kbli_golongan_pokok_nama: string;
-    kbli_golongan_kode: string;
-    kbli_golongan_nama: string;
-    kbli_subgolongan_kode: string;
-    kbli_subgolongan_nama: string;
     kbli_kelompok_kode: string;
-    kbli_kelompok_nama: string;
     // Lokasi
-    provinsi_kode: string;
-    provinsi_nama: string;
-    kabkot_kode: string;
-    kabkot_nama: string;
-    kecamatan_kode: string;
     kecamatan_nama: string;
-    desa_kode: string;
     desa_nama: string;
-    sls_kode: string;
     sls_nama: string;
     sub_sls: string;
     // Geo
     latitude: number | null;
     longitude: number | null;
-    // Platform
-    platform_digital: Platform[];
+    // Platform (separate table)
+    platforms: Platform[];
     // Klasifikasi
     kelas_usaha: 'mikro' | 'kecil' | 'menengah' | 'besar';
     cakupan_pasar: 'lokal' | 'regional' | 'nasional' | 'internasional';
+    // User tracking
+    created_by: number | null;
+    updated_by: number | null;
+    creator?: UserInfo | null;
+    updater?: UserInfo | null;
+    // Verifikasi
+    status: 'pending' | 'approved' | 'declined';
     // Meta
     created_at: string;
-    created_by?: string;
-    created_by_email?: string;
+    updated_at?: string;
     is_active: boolean;
 }
 
@@ -60,42 +59,6 @@ export interface StatsData {
     internasional: number;
     byKecamatan: Record<string, number>;
     byKategori: Record<string, number>;
+    byPlatform?: Record<string, number>;
     recentCount: number;
-}
-
-export interface UsahaFormData {
-    nama_pemilik: string;
-    nama_usaha: string;
-    deskripsi_kegiatan: string;
-    // KBLI
-    kbli_kategori_kode: string;
-    kbli_kategori_nama: string;
-    kbli_golongan_pokok_kode: string;
-    kbli_golongan_pokok_nama: string;
-    kbli_golongan_kode: string;
-    kbli_golongan_nama: string;
-    kbli_subgolongan_kode: string;
-    kbli_subgolongan_nama: string;
-    kbli_kelompok_kode: string;
-    kbli_kelompok_nama: string;
-    // Lokasi
-    provinsi_kode: string;
-    provinsi_nama: string;
-    kabkot_kode: string;
-    kabkot_nama: string;
-    kecamatan_kode: string;
-    kecamatan_nama: string;
-    desa_kode: string;
-    desa_nama: string;
-    sls_kode: string;
-    sls_nama: string;
-    sub_sls: string;
-    // Geo
-    latitude: number | null;
-    longitude: number | null;
-    // Platform
-    platform_digital: Platform[];
-    // Klasifikasi
-    kelas_usaha: string;
-    cakupan_pasar: string;
 }

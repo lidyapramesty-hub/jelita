@@ -2,12 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import {
-  NavLink,
   Text,
   ActionIcon,
-  Tooltip,
 } from '@mantine/core'
 import {
   IconChartBar,
@@ -15,56 +13,49 @@ import {
   IconLogout,
   IconMenu2,
   IconX,
-  IconActivity,
   IconChevronRight,
+  IconShieldCheck,
 } from '@tabler/icons-react'
+import useAuth from '@/hooks/useAuth'
+import Image from 'next/image'
 
 interface NavItem {
   href: string
   label: string
   icon: React.ReactNode
   description?: string
+  adminOnly?: boolean
 }
 
-const navItems: NavItem[] = [
-  {
-    href: '/dashboard',
-    label: 'Dashboard',
-    icon: <IconChartBar size={20} />,
-    description: 'Statistik & Peta',
-  },
-  {
-    href: '/daftar-usaha',
-    label: 'Daftar Usaha',
-    icon: <IconBuildingStore size={20} />,
-    description: 'Kelola Data Usaha',
-  },
-]
-
-export default function Sidebar({ userEmail }: { userEmail?: string }) {
+export default function Sidebar() {
   const pathname = usePathname()
-  const router = useRouter()
+  const { user, logout, isLoggingOut } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [loggingOut, setLoggingOut] = useState(false)
 
-  const handleLogout = async () => {
-    setLoggingOut(true)
-    // Clear local session
-    localStorage.removeItem('user_email')
-    router.push('/login')
-  }
+  const displayName = user?.role === 'mitra' ? user?.name : user?.username
+  const isAdmin = user?.role === 'admin'
+
+  const navItems: NavItem[] = [
+    { href: '/dashboard', label: 'Dashboard', icon: <IconChartBar size={20} />, description: 'Statistik & Peta' },
+    { href: '/daftar-usaha', label: 'Daftar Usaha', icon: <IconBuildingStore size={20} />, description: 'Kelola Data Usaha' },
+    { href: '/admin', label: 'Admin Panel', icon: <IconShieldCheck size={20} />, description: 'Kelola Pengguna', adminOnly: true },
+  ].filter(item => !item.adminOnly || isAdmin)
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-white rounded-lg flex items-center justify-center flex-shrink-0 shadow">
-            <IconChartBar className="w-5 h-5 text-[#003087]" />
-          </div>
+      <div className="px-4 py-4 border-b border-white/10">
+        <div className="flex items-center gap-2">
+          <Image
+            src="/assets/asset12.png"
+            alt="BPS"
+            width={38}
+            height={38}
+            style={{ objectFit: 'contain', flexShrink: 0 }}
+          />
           <div className="min-w-0">
-            <p className="text-white font-bold text-sm leading-tight truncate">Ekonomi Digital</p>
-            <p className="text-white/50 text-xs truncate">Kab. Tabanan</p>
+            <p className="text-white font-bold text-sm leading-tight">BPS</p>
+            <p className="text-white/60 text-xs leading-tight">Kabupaten Tabanan</p>
           </div>
         </div>
       </div>
@@ -80,8 +71,8 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
               href={item.href}
               onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all group relative ${isActive
-                  ? 'bg-white/15 text-white shadow-sm'
-                  : 'text-white/60 hover:bg-white/10 hover:text-white'
+                ? 'bg-white/15 text-white shadow-sm'
+                : 'text-white/60 hover:bg-white/10 hover:text-white'
                 }`}
             >
               {isActive && (
@@ -98,37 +89,23 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
         })}
       </nav>
 
-      {/* Status indicator */}
-      <div className="px-3 pb-3">
-        <div className="bg-white/5 rounded-xl p-3 border border-white/10">
-          <div className="flex items-center gap-2 mb-1">
-            <IconActivity size={14} className="text-green-400" />
-            <span className="text-xs text-white/50 font-medium">Status Sistem</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-xs text-green-400">Online — Data Statis</span>
-          </div>
-        </div>
-      </div>
-
       {/* User & Logout */}
       <div className="px-3 pb-4 border-t border-white/10 pt-3">
         <div className="flex items-center gap-3 px-3 py-2 mb-2">
           <div className="w-8 h-8 rounded-full bg-[#FFB81C] flex items-center justify-center text-[#003087] font-bold text-sm flex-shrink-0">
-            {userEmail?.charAt(0).toUpperCase() || 'U'}
+            {displayName?.charAt(0).toUpperCase() || 'U'}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-white text-xs font-semibold truncate">{userEmail || 'Pengguna'}</p>
-            <p className="text-white/40 text-xs">BPS Tabanan</p>
+            <p className="text-white text-xs font-semibold truncate">{displayName || user?.name || 'Pengguna'}</p>
+            <p className="text-white/40 text-xs">{user?.role === 'admin' ? 'Administrator' : user?.role === 'mitra' ? 'Mitra BPS' : 'Pegawai BPS'}</p>
           </div>
         </div>
         <button
-          onClick={handleLogout}
-          disabled={loggingOut}
+          onClick={logout}
+          disabled={isLoggingOut}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-all text-sm font-medium"
         >
-          {loggingOut ? (
+          {isLoggingOut ? (
             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <IconLogout size={18} />
@@ -151,14 +128,11 @@ export default function Sidebar({ userEmail }: { userEmail?: string }) {
 
       {/* Mobile Header */}
       <div
-        className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 shadow-md"
+        className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-1.5 shadow-md"
         style={{ background: '#003087' }}
       >
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center">
-            <IconChartBar className="w-4 h-4 text-[#003087]" />
-          </div>
-          <span className="text-white font-bold text-sm">Ekonomi Digital Tabanan</span>
+        <div className="flex items-center">
+          <Image src="/assets/asset3.png" alt="BPS Kabupaten Tabanan" width={95} height={22} style={{ objectFit: 'contain' }} />
         </div>
         <ActionIcon variant="transparent" color="white" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <IconX size={24} /> : <IconMenu2 size={24} />}
