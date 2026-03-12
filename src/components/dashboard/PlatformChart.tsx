@@ -27,8 +27,7 @@ export default function PlatformChart({ byPlatform, total }: PlatformChartProps)
         return `rgb(${r}, ${g}, ${b})`
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const CustomTooltip = ({ active, payload }: any) => {
+    const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { platform: string; count: number } }> }) => {
         if (active && payload?.length) {
             const { platform, count } = payload[0].payload
             const pct = total > 0 ? ((count / total) * 100).toFixed(1) : '0.0'
