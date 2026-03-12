@@ -133,7 +133,7 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
             filtered.forEach((u) => {
                 if (!u.latitude || !u.longitude) return
 
-                const color = (u.kelas_usaha ? kelasColors[u.kelas_usaha] : null) || '#C8102E'
+                const color = kelasColors[u.kelas_usaha ?? ''] || '#C8102E'
 
                 const icon = L.divIcon({
                     className: '',
