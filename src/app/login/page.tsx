@@ -127,7 +127,7 @@ export default function LoginPage() {
           className="flex-shrink-0 mt-10"
           style={mounted ? { animation: 'slideUp 0.8s ease-out 0.2s both' } : { opacity: 0 }}
         >
-          <h1 className="jelita-title leading-none mb-5" style={{ fontSize: '6.5rem' }}>
+          <h1 className="jelita-title leading-none mb-5" style={{ fontSize: '5.5rem' }}>
             JELITA
           </h1>
           <p style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '1.65rem', color: '#FFBB00', lineHeight: 1.3, marginBottom: '0.25rem' }}>
@@ -145,13 +145,13 @@ export default function LoginPage() {
         <div className="flex-1" />
 
         {/* Asset1: bottom-left illustration (bigger) */}
-        <div className="absolute bottom-0 left-[8%] z-10 pointer-events-none" style={{ width: '68%' }}>
+        <div className="absolute bottom-0 left-[16%] z-10 pointer-events-none" style={{ width: '70%' }}>
           <Image
             src="/assets/asset1.png"
             alt=""
             width={560}
             height={400}
-            style={{ objectFit: 'contain', objectPosition: 'bottom left' }}
+            style={{ objectFit: 'contain', objectPosition: 'bottom center' }}
           />
         </div>
       </div>
@@ -192,7 +192,7 @@ export default function LoginPage() {
               <>
                 <div className="text-center mb-8">
                   <div className="mx-auto mb-4 flex items-center justify-center" style={{ width: 72, height: 72 }}>
-                    <Image src="/assets/asset5.png" alt="JELITA" width={72} height={72} style={{ objectFit: 'contain' }} />
+                    <Image src="/assets/asset14.png" alt="JELITA" width={72} height={72} style={{ objectFit: 'contain' }} />
                   </div>
                   <Title order={2} style={{ fontFamily: 'Montserrat, sans-serif' }}>Selamat Datang</Title>
                   <Text size="sm" c="dimmed" mt={4}>Pilih peran Anda untuk masuk ke sistem</Text>

@@ -36,6 +36,23 @@ interface UsahaListParams {
   per_page?: number
 }
 
+interface MapUsaha {
+  id: string
+  nama_usaha: string
+  nama_pemilik: string
+  latitude: number
+  longitude: number
+  kbli_kategori_kode: string | null
+  kbli_kategori_nama: string | null
+  kelas_usaha: string | null
+  cakupan_pasar: string | null
+  kecamatan_nama: string | null
+}
+
+interface UsahaMapResponse {
+  data: MapUsaha[]
+}
+
 interface CreatorUser {
   id: number
   name: string
@@ -136,6 +153,10 @@ export const usahaApi = baseApi.injectEndpoints({
         'UsahaStats',
       ],
     }),
+    getUsahaForMap: builder.query<UsahaMapResponse, void>({
+      query: () => '/usaha/map-data',
+      providesTags: ['UsahaStats'],
+    }),
     getUsahaCreators: builder.query<CreatorUser[], void>({
       query: () => '/usaha-creators',
     }),
@@ -147,6 +168,7 @@ export const {
   useLazyGetUsahaListQuery,
   useGetUsahaByIdQuery,
   useGetUsahaStatsQuery,
+  useGetUsahaForMapQuery,
   useCreateUsahaMutation,
   useUpdateUsahaMutation,
   useDeleteUsahaMutation,

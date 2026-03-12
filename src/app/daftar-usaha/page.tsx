@@ -18,6 +18,8 @@ import {
   Paper,
   ThemeIcon,
   Autocomplete,
+  Modal,
+  Divider,
 } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import {
@@ -25,14 +27,16 @@ import {
   IconSearch,
   IconRefresh,
   IconX,
+  IconCheck,
   IconBuildingStore,
   IconChevronLeft,
   IconChevronRight,
   IconUser,
   IconDownload,
   IconFileSpreadsheet,
+  IconShieldCheck,
 } from '@tabler/icons-react'
-import { useGetUsahaListQuery, useLazyGetUsahaListQuery, useDeleteUsahaMutation, useGetUsahaCreatorsQuery } from '@/store/services/usahaApi'
+import { useGetUsahaListQuery, useLazyGetUsahaListQuery, useDeleteUsahaMutation, useGetUsahaCreatorsQuery, useVerifyUsahaMutation } from '@/store/services/usahaApi'
 import useAuth from '@/hooks/useAuth'
 import { kbliKategori, kbliKelompok } from '@/data/kbli2025'
 
@@ -60,6 +64,19 @@ export default function DaftarUsahaPage() {
   const [pelaporSearch, setPelaporSearch] = useState('')
   const [showMineOnly, setShowMineOnly] = useState(false)
 
+  // Verify modal
+  const [verifyTarget, setVerifyTarget] = useState<Usaha | null>(null)
+
+  // Export modal
+  const [exportOpened, setExportOpened] = useState(false)
+  const [exportType, setExportType] = useState<'xlsx' | 'pdf'>('xlsx')
+  const [expKecamatan, setExpKecamatan] = useState<string | null>(null)
+  const [expKelas, setExpKelas] = useState<string | null>(null)
+  const [expPasar, setExpPasar] = useState<string | null>(null)
+  const [expPlatform, setExpPlatform] = useState('')
+  const [expKbli, setExpKbli] = useState<string | null>(null)
+  const [expStatus, setExpStatus] = useState<string | null>(null)
+
   const queryParams = useMemo(() => ({
     search: search || undefined,
     kelas_usaha: filterKelas || undefined,
@@ -73,6 +90,7 @@ export default function DaftarUsahaPage() {
 
   const { data: usahaResponse, isLoading: loading, refetch } = useGetUsahaListQuery(queryParams)
   const [deleteUsaha, { isLoading: deleting }] = useDeleteUsahaMutation()
+  const [verifyUsaha, { isLoading: verifying }] = useVerifyUsahaMutation()
   const { data: creators = [] } = useGetUsahaCreatorsQuery()
   const [fetchAllForExport] = useLazyGetUsahaListQuery()
 
@@ -115,88 +133,126 @@ export default function DaftarUsahaPage() {
     }
   }
 
+  const handleVerify = async (status: 'approved' | 'declined') => {
+    if (!verifyTarget) return
+    try {
+      await verifyUsaha({ id: verifyTarget.id, status }).unwrap()
+      setVerifyTarget(null)
+      notifications.show({ title: 'Berhasil', message: `Usaha berhasil ${status === 'approved' ? 'disetujui' : 'ditolak'}.`, color: status === 'approved' ? 'green' : 'red' })
+    } catch {
+      notifications.show({ title: 'Gagal', message: 'Gagal memperbarui status.', color: 'red' })
+    }
+  }
+
+  const runExport = async (type: 'xlsx' | 'pdf') => {
+    const expParams = {
+      search: queryParams.search,
+      kelas_usaha: expKelas || undefined,
+      cakupan_pasar: expPasar || undefined,
+      kecamatan_nama: expKecamatan || undefined,
+      kbli_kategori_kode: expKbli || undefined,
+      status: expStatus || undefined,
+      created_by: queryParams.created_by,
+      sort_by: 'nama_usaha',
+      sort_dir: 'asc' as const,
+      page: 1,
+      per_page: 99999,
+    }
+    try {
+      notifications.show({ id: 'export', title: 'Mengambil data...', message: 'Harap tunggu.', color: 'blue', loading: true, autoClose: false })
+      const result = await fetchAllForExport(expParams).unwrap()
+      let allData = result.data
+      if (expPlatform.trim()) {
+        const pf = expPlatform.trim().toLowerCase()
+        allData = allData.filter(u => u.platforms?.some((p: { platform: string }) => p.platform.toLowerCase().includes(pf)))
+      }
+
+      if (type === 'xlsx') {
+        const XLSX = await import('xlsx')
+        const exportData = allData.map((u, i) => ({
+          No: i + 1,
+          'Nama Usaha': u.nama_usaha,
+          'Nama Pemilik': u.nama_pemilik,
+          'Deskripsi': u.deskripsi_kegiatan || '',
+          'KBLI Kategori Kode': u.kbli_kategori_kode || '',
+          'KBLI Kategori Nama': u.kbli_kategori_kode ? (kbliKategoriMap[u.kbli_kategori_kode] || '') : '',
+          'KBLI Kelompok Kode': u.kbli_kelompok_kode || '',
+          'KBLI Kelompok Nama': u.kbli_kelompok_kode ? (kbliKelompokMap[u.kbli_kelompok_kode] || '') : '',
+          'Platform Digital': u.platforms?.length ? u.platforms.map((p: { platform: string; nama_akun: string }) => `${p.platform}: ${p.nama_akun}`).join('; ') : '',
+          'Provinsi': 'Bali',
+          'Kabupaten': 'Tabanan',
+          'Kecamatan': u.kecamatan_nama || '',
+          'Desa': u.desa_nama || '',
+          'SLS': u.sls_nama || '',
+          'Sub SLS': u.sub_sls || '',
+          'Latitude': u.latitude || '',
+          'Longitude': u.longitude || '',
+          'Skala Usaha': u.kelas_usaha || '',
+          'Cakupan Pasar': u.cakupan_pasar || '',
+          'Status': u.status || '',
+          'Pelapor': u.creator ? (u.creator.role === 'mitra' ? u.creator.name : u.creator.username) : '',
+          'Waktu Ditambahkan': u.created_at ? new Date(u.created_at).toLocaleString('id-ID') : '',
+          'Editor': u.updater ? (u.updater.role === 'mitra' ? u.updater.name : u.updater.username) : '',
+          'Waktu Diedit': u.updated_at ? new Date(u.updated_at).toLocaleString('id-ID') : '',
+        }))
+        const ws = XLSX.utils.json_to_sheet(exportData)
+        const wb = XLSX.utils.book_new()
+        XLSX.utils.book_append_sheet(wb, ws, 'Daftar Usaha')
+        XLSX.writeFile(wb, 'daftar-usaha.xlsx')
+      } else {
+        const { default: jsPDF } = await import('jspdf')
+        const { default: autoTable } = await import('jspdf-autotable')
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+        doc.setFontSize(14)
+        doc.text('Daftar Usaha Digital - BPS Kabupaten Tabanan', 14, 15)
+        autoTable(doc, {
+          startY: 22,
+          head: [['No', 'Nama Usaha', 'Pemilik', 'Deskripsi', 'Kategori KBLI', 'Kelompok KBLI', 'Platform', 'Kecamatan', 'Desa', 'SLS', 'Lat', 'Lng', 'Skala', 'Pasar', 'Status', 'Pelapor', 'Tgl Ditambah']],
+          body: allData.map((u, i) => [
+            i + 1,
+            u.nama_usaha,
+            u.nama_pemilik,
+            u.deskripsi_kegiatan || '—',
+            u.kbli_kategori_kode ? `${u.kbli_kategori_kode} — ${kbliKategoriMap[u.kbli_kategori_kode] || ''}` : '—',
+            u.kbli_kelompok_kode ? `${u.kbli_kelompok_kode} — ${kbliKelompokMap[u.kbli_kelompok_kode] || ''}` : '—',
+            u.platforms?.length ? u.platforms.map((p: { platform: string; nama_akun: string }) => `${p.platform}: ${p.nama_akun}`).join(', ') : '—',
+            u.kecamatan_nama || '—',
+            u.desa_nama || '—',
+            u.sls_nama || '—',
+            u.latitude || '—',
+            u.longitude || '—',
+            u.kelas_usaha || '—',
+            u.cakupan_pasar || '—',
+            u.status || '—',
+            u.creator ? (u.creator.role === 'mitra' ? u.creator.name : u.creator.username) : '—',
+            u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : '—',
+          ]),
+          styles: { fontSize: 5.5, cellPadding: 1.5 },
+          headStyles: { fillColor: [0, 48, 135] },
+          didParseCell: (data) => {
+            if (data.section === 'body') {
+              const rowData = allData[data.row.index]
+              if (rowData?.status === 'declined') {
+                data.cell.styles.textColor = [220, 38, 38]
+              } else if (rowData?.status === 'pending') {
+                data.cell.styles.textColor = [234, 88, 12]
+              }
+            }
+          },
+        })
+        doc.save('daftar-usaha.pdf')
+      }
+
+      notifications.hide('export')
+      notifications.show({ title: 'Berhasil', message: `${allData.length} data diekspor ke ${type.toUpperCase()}.`, color: 'green' })
+      setExportOpened(false)
+    } catch {
+      notifications.hide('export')
+      notifications.show({ title: 'Error', message: `Gagal mengekspor ke ${type.toUpperCase()}.`, color: 'red' })
+    }
+  }
+
   const hasFilters = search || filterKelas || filterPasar || filterKecamatan || filterStatus || filterCreatedBy || showMineOnly
-
-  const handleExportXlsx = async () => {
-    try {
-      notifications.show({ id: 'export-xlsx', title: 'Mengambil data...', message: 'Harap tunggu.', color: 'blue', loading: true, autoClose: false })
-      const result = await fetchAllForExport({ ...queryParams, page: 1, per_page: 10000 }).unwrap()
-      const allData = result.data
-      const XLSX = await import('xlsx')
-      const exportData = allData.map((u, i) => ({
-        No: i + 1,
-        'Nama Usaha': u.nama_usaha,
-        'Nama Pemilik': u.nama_pemilik,
-        'Deskripsi': u.deskripsi_kegiatan || '',
-        'KBLI Kategori Kode': u.kbli_kategori_kode || '',
-        'KBLI Kategori Nama': u.kbli_kategori_kode ? (kbliKategoriMap[u.kbli_kategori_kode] || '') : '',
-        'KBLI Kelompok Kode': u.kbli_kelompok_kode || '',
-        'KBLI Kelompok Nama': u.kbli_kelompok_kode ? (kbliKelompokMap[u.kbli_kelompok_kode] || '') : '',
-        'Platform Digital': u.platforms?.length ? u.platforms.map(p => `${p.platform}: ${p.nama_akun}`).join('; ') : '',
-        'Kecamatan': u.kecamatan_nama || '',
-        'Desa': u.desa_nama || '',
-        'SLS': u.sls_nama || '',
-        'Sub SLS': u.sub_sls || '',
-        'Latitude': u.latitude || '',
-        'Longitude': u.longitude || '',
-        'Skala Usaha': u.kelas_usaha || '',
-        'Cakupan Pasar': u.cakupan_pasar || '',
-        'Status': u.status || '',
-        'Pelapor': u.creator ? (u.creator.role === 'mitra' ? u.creator.name : u.creator.username) : '',
-        'Waktu Ditambahkan': u.created_at ? new Date(u.created_at).toLocaleString('id-ID') : '',
-        'Editor': u.updater ? (u.updater.role === 'mitra' ? u.updater.name : u.updater.username) : '',
-        'Waktu Diedit': u.updated_at ? new Date(u.updated_at).toLocaleString('id-ID') : '',
-      }))
-      const ws = XLSX.utils.json_to_sheet(exportData)
-      const wb = XLSX.utils.book_new()
-      XLSX.utils.book_append_sheet(wb, ws, 'Daftar Usaha')
-      XLSX.writeFile(wb, 'daftar-usaha.xlsx')
-      notifications.hide('export-xlsx')
-      notifications.show({ title: 'Berhasil', message: `${allData.length} data diekspor ke XLSX.`, color: 'green' })
-    } catch {
-      notifications.hide('export-xlsx')
-      notifications.show({ title: 'Error', message: 'Gagal mengekspor ke XLSX.', color: 'red' })
-    }
-  }
-
-  const handleExportPdf = async () => {
-    try {
-      notifications.show({ id: 'export-pdf', title: 'Mengambil data...', message: 'Harap tunggu.', color: 'blue', loading: true, autoClose: false })
-      const result = await fetchAllForExport({ ...queryParams, page: 1, per_page: 10000 }).unwrap()
-      const allData = result.data
-      const { default: jsPDF } = await import('jspdf')
-      const { default: autoTable } = await import('jspdf-autotable')
-      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
-      doc.setFontSize(14)
-      doc.text('Daftar Usaha Digital - BPS Kabupaten Tabanan', 14, 15)
-      autoTable(doc, {
-        startY: 22,
-        head: [['No', 'Nama Usaha', 'Pemilik', 'Kategori KBLI', 'Kelompok KBLI', 'Platform', 'Kecamatan', 'Skala', 'Pasar', 'Status', 'Pelapor', 'Tgl Ditambah']],
-        body: allData.map((u, i) => [
-          i + 1,
-          u.nama_usaha,
-          u.nama_pemilik,
-          u.kbli_kategori_kode ? `${u.kbli_kategori_kode} — ${kbliKategoriMap[u.kbli_kategori_kode] || ''}` : '—',
-          u.kbli_kelompok_kode ? `${u.kbli_kelompok_kode} — ${kbliKelompokMap[u.kbli_kelompok_kode] || ''}` : '—',
-          u.platforms?.length ? u.platforms.map(p => `${p.platform}: ${p.nama_akun}`).join('\n') : '—',
-          u.kecamatan_nama || '—',
-          u.kelas_usaha || '—',
-          u.cakupan_pasar || '—',
-          u.status || '—',
-          u.creator ? (u.creator.role === 'mitra' ? u.creator.name : u.creator.username) : '—',
-          u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : '—',
-        ]),
-        styles: { fontSize: 6.5, cellPadding: 2 },
-        headStyles: { fillColor: [0, 48, 135] },
-      })
-      doc.save('daftar-usaha.pdf')
-      notifications.hide('export-pdf')
-      notifications.show({ title: 'Berhasil', message: `${allData.length} data diekspor ke PDF.`, color: 'green' })
-    } catch {
-      notifications.hide('export-pdf')
-      notifications.show({ title: 'Error', message: 'Gagal mengekspor ke PDF.', color: 'red' })
-    }
-  }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -234,7 +290,7 @@ export default function DaftarUsahaPage() {
                 size="sm"
                 variant="default"
                 leftSection={<IconFileSpreadsheet size={16} />}
-                onClick={handleExportXlsx}
+                onClick={() => { setExportType('xlsx'); setExportOpened(true) }}
                 visibleFrom="sm"
               >
                 XLSX
@@ -243,7 +299,7 @@ export default function DaftarUsahaPage() {
                 size="sm"
                 variant="default"
                 leftSection={<IconDownload size={16} />}
-                onClick={handleExportPdf}
+                onClick={() => { setExportType('pdf'); setExportOpened(true) }}
                 visibleFrom="sm"
               >
                 PDF
@@ -401,6 +457,7 @@ export default function DaftarUsahaPage() {
                 onView={(usaha) => setSelectedUsaha(usaha)}
                 onEdit={handleEdit}
                 onDelete={(id) => setDeleteId(id)}
+                onVerifyRequest={isAdmin ? (usaha) => setVerifyTarget(usaha) : undefined}
                 isAdmin={isAdmin}
               />
 
@@ -428,6 +485,134 @@ export default function DaftarUsahaPage() {
           )}
         </div>
       </main>
+
+      {/* Verify Modal */}
+      <Modal
+        opened={!!verifyTarget}
+        onClose={() => setVerifyTarget(null)}
+        title="Verifikasi Usaha"
+        centered
+        size="sm"
+      >
+        {verifyTarget && (
+          <Stack gap="md">
+            <Text size="sm">Pilih tindakan untuk:</Text>
+            <Paper radius="md" p="sm" withBorder>
+              <Text fw={600} size="sm">{verifyTarget.nama_usaha}</Text>
+              <Text size="xs" c="dimmed">{verifyTarget.nama_pemilik}</Text>
+            </Paper>
+            <Group justify="space-between" mt="sm">
+              <Button color="red" variant="light" leftSection={<IconX size={14} />} onClick={() => handleVerify('declined')} loading={verifying}>
+                Tolak
+              </Button>
+              <Button color="green" leftSection={<IconCheck size={14} />} onClick={() => handleVerify('approved')} loading={verifying} style={{ backgroundColor: '#16a34a' }}>
+                Setujui
+              </Button>
+            </Group>
+          </Stack>
+        )}
+      </Modal>
+
+      {/* Export Filter Modal */}
+      <Modal
+        opened={exportOpened}
+        onClose={() => setExportOpened(false)}
+        title={`Opsi Unduh ${exportType.toUpperCase()}`}
+        centered
+        size="lg"
+      >
+        <Stack gap="sm">
+          <Text size="sm" c="dimmed">Filter data yang akan diunduh (opsional). Kosongkan untuk mengunduh semua data.</Text>
+          <Divider />
+          <div className="grid grid-cols-2 gap-3">
+            <Select
+              label="Kecamatan"
+              placeholder="Semua Kecamatan"
+              data={['Selemadeg', 'Selemadeg Barat', 'Selemadeg Timur', 'Kerambitan', 'Tabanan', 'Kediri', 'Marga', 'Penebel', 'Baturiti', 'Pupuan'].map(v => ({ value: v, label: v }))}
+              value={expKecamatan}
+              onChange={setExpKecamatan}
+              clearable
+              searchable
+              size="sm"
+            />
+            <Select
+              label="Skala Usaha"
+              placeholder="Semua Skala"
+              data={[{ value: 'mikro', label: 'Mikro' }, { value: 'kecil', label: 'Kecil' }, { value: 'menengah', label: 'Menengah' }, { value: 'besar', label: 'Besar' }]}
+              value={expKelas}
+              onChange={setExpKelas}
+              clearable
+              size="sm"
+            />
+            <Select
+              label="Cakupan Pasar"
+              placeholder="Semua Pasar"
+              data={[{ value: 'lokal', label: 'Lokal' }, { value: 'regional', label: 'Regional' }, { value: 'nasional', label: 'Nasional' }, { value: 'internasional', label: 'Internasional' }]}
+              value={expPasar}
+              onChange={setExpPasar}
+              clearable
+              size="sm"
+            />
+            <Select
+              label="Platform Digital"
+              placeholder="Semua Platform"
+              data={[
+                'Agoda', 'Airbnb', 'Blibli', 'Booking.com', 'Bukalapak',
+                'Facebook', 'Gojek', 'Grab', 'Instagram', 'JD.ID',
+                'Lazada', 'Shopee', 'TikTok', 'Tokopedia', 'Traveloka',
+                'Twitter/X', 'Website Sendiri', 'WhatsApp', 'YouTube', 'Lainnya',
+              ].map(v => ({ value: v, label: v }))}
+              value={expPlatform || null}
+              onChange={(v) => setExpPlatform(v || '')}
+              clearable
+              searchable
+              size="sm"
+            />
+            <Select
+              label="Kategori KBLI"
+              placeholder="Semua Kategori"
+              data={kbliKategori.map(k => ({ value: k.kode, label: `${k.kode} — ${k.nama}` }))}
+              value={expKbli}
+              onChange={setExpKbli}
+              clearable
+              searchable
+              size="sm"
+            />
+            <Select
+              label="Status"
+              placeholder="Semua Status"
+              data={[{ value: 'pending', label: 'Pending' }, { value: 'approved', label: 'Disetujui' }, { value: 'declined', label: 'Ditolak' }]}
+              value={expStatus}
+              onChange={setExpStatus}
+              clearable
+              size="sm"
+            />
+          </div>
+          <Divider />
+          <Group justify="space-between" mt="xs">
+            <Button variant="subtle" color="gray" onClick={() => { setExpKecamatan(null); setExpKelas(null); setExpPasar(null); setExpPlatform(''); setExpKbli(null); setExpStatus(null) }}>
+              Reset Filter
+            </Button>
+            {exportType === 'xlsx' ? (
+              <Button
+                leftSection={<IconFileSpreadsheet size={15} />}
+                onClick={() => runExport('xlsx')}
+                style={{ backgroundColor: '#003087' }}
+              >
+                Unduh XLSX
+              </Button>
+            ) : (
+              <Button
+                leftSection={<IconDownload size={15} />}
+                onClick={() => runExport('pdf')}
+                style={{ backgroundColor: '#003087' }}
+              >
+                Unduh PDF
+              </Button>
+            )}
+          </Group>
+        </Stack>
+      </Modal>
 
       {/* Form Modal */}
       {showForm && (

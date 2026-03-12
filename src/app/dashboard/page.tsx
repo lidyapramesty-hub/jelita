@@ -7,7 +7,8 @@ import KelasUsahaChart from '@/components/dashboard/KelasUsahaChart'
 import CakupanPasarChart from '@/components/dashboard/CakupanPasarChart'
 import KecamatanBarChart from '@/components/dashboard/KecamatanBarChart'
 import KategoriKBLIChart from '@/components/dashboard/KategoriKBLIChart'
-import { useGetUsahaStatsQuery, useGetUsahaListQuery } from '@/store/services/usahaApi'
+import PlatformChart from '@/components/dashboard/PlatformChart'
+import { useGetUsahaStatsQuery, useGetUsahaForMapQuery } from '@/store/services/usahaApi'
 import { Button, Title, Text, Stack } from '@mantine/core'
 import { IconRefresh } from '@tabler/icons-react'
 
@@ -15,7 +16,7 @@ const DashboardMap = dynamic(() => import('@/components/dashboard/DashboardMap')
 
 export default function DashboardPage() {
   const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useGetUsahaStatsQuery()
-  const { data: usahaData, isLoading: usahaLoading, refetch: refetchUsaha } = useGetUsahaListQuery({ per_page: 2000, status: 'approved' })
+  const { data: usahaData, isLoading: usahaLoading, refetch: refetchUsaha } = useGetUsahaForMapQuery()
 
   const loading = statsLoading || usahaLoading
 
@@ -36,6 +37,7 @@ export default function DashboardPage() {
     internasional: 0,
     byKecamatan: {} as Record<string, number>,
     byKategori: {} as Record<string, number>,
+    byPlatform: {} as Record<string, number>,
     recentCount: 0,
   }
 
@@ -89,8 +91,11 @@ export default function DashboardPage() {
                 <KecamatanBarChart byKecamatan={currentStats.byKecamatan} />
               </div>
 
-              {/* KBLI Distribution */}
-              <KategoriKBLIChart byKategori={currentStats.byKategori} total={currentStats.total} />
+              {/* KBLI + Platform Distribution */}
+              <div className="grid lg:grid-cols-2 gap-6">
+                <KategoriKBLIChart byKategori={currentStats.byKategori} total={currentStats.total} />
+                <PlatformChart byPlatform={currentStats.byPlatform || {}} total={currentStats.total} />
+              </div>
             </Stack>
           )}
         </div>

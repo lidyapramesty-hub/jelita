@@ -59,5 +59,6 @@ export interface StatsData {
     internasional: number;
     byKecamatan: Record<string, number>;
     byKategori: Record<string, number>;
+    byPlatform?: Record<string, number>;
     recentCount: number;
 }

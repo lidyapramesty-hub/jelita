@@ -2,12 +2,10 @@
 
 import { useMemo, useState } from 'react'
 import { DataTable, type DataTableSortStatus } from 'mantine-datatable'
-import { Badge, Text, Group, ActionIcon, Tooltip, Menu } from '@mantine/core'
-import { IconEye, IconExternalLink, IconTrash, IconPencil, IconCheck, IconX, IconClock } from '@tabler/icons-react'
+import { Badge, Text, Group, ActionIcon, Tooltip } from '@mantine/core'
+import { IconEye, IconExternalLink, IconTrash, IconPencil, IconShieldCheck } from '@tabler/icons-react'
 import { Usaha } from '@/types/usaha'
 import { kbliKategori } from '@/data/kbli2025'
-import { useVerifyUsahaMutation } from '@/store/services/usahaApi'
-import { notifications } from '@mantine/notifications'
 
 const kategoriNamaMap: Record<string, string> = Object.fromEntries(kbliKategori.map(k => [k.kode, k.nama]))
 
@@ -16,6 +14,7 @@ interface UsahaTableProps {
     onView: (usaha: Usaha) => void
     onEdit: (usaha: Usaha) => void
     onDelete: (id: string) => void
+    onVerifyRequest?: (usaha: Usaha) => void
     isAdmin?: boolean
 }
 
@@ -39,12 +38,11 @@ const BADGE_STATUS: Record<string, { color: string; label: string }> = {
     declined: { color: 'red', label: 'Ditolak' },
 }
 
-export default function UsahaTable({ data, onView, onEdit, onDelete, isAdmin }: UsahaTableProps) {
+export default function UsahaTable({ data, onView, onEdit, onDelete, onVerifyRequest, isAdmin }: UsahaTableProps) {
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus<Usaha>>({
         columnAccessor: 'nama_usaha',
         direction: 'asc',
     })
-    const [verifyUsaha] = useVerifyUsahaMutation()
 
     const sortedData = useMemo(() => {
         const sorted = [...data].sort((a, b) => {
@@ -60,15 +58,6 @@ export default function UsahaTable({ data, onView, onEdit, onDelete, isAdmin }: 
         })
         return sorted
     }, [data, sortStatus])
-
-    const handleVerify = async (id: string, status: 'approved' | 'declined' | 'pending') => {
-        try {
-            await verifyUsaha({ id, status }).unwrap()
-            notifications.show({ title: 'Berhasil', message: `Status usaha diperbarui ke ${status}.`, color: 'green' })
-        } catch {
-            notifications.show({ title: 'Gagal', message: 'Gagal memperbarui status.', color: 'red' })
-        }
-    }
 
     return (
         <DataTable
@@ -158,7 +147,7 @@ export default function UsahaTable({ data, onView, onEdit, onDelete, isAdmin }: 
                     accessor: 'actions',
                     title: 'Aksi',
                     textAlign: 'right',
-                    width: isAdmin ? 190 : 150,
+                    width: isAdmin ? 170 : 130,
                     render: (record) => (
                         <Group gap={4} justify="flex-end" wrap="nowrap">
                             <Tooltip label="Lihat Detail">
@@ -186,25 +175,12 @@ export default function UsahaTable({ data, onView, onEdit, onDelete, isAdmin }: 
                                     </ActionIcon>
                                 </Tooltip>
                             )}
-                            {isAdmin && (
-                                <Menu shadow="md" width={160} position="bottom-end" withinPortal>
-                                    <Menu.Target>
-                                        <ActionIcon
-                                            variant="subtle"
-                                            color="violet"
-                                            title="Verifikasi"
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            <IconCheck size={16} />
-                                        </ActionIcon>
-                                    </Menu.Target>
-                                    <Menu.Dropdown>
-                                        <Menu.Label>Ubah Status</Menu.Label>
-                                        <Menu.Item leftSection={<IconCheck size={14} />} color="green" onClick={(e) => { e.stopPropagation(); handleVerify(record.id, 'approved') }}>Setujui</Menu.Item>
-                                        <Menu.Item leftSection={<IconClock size={14} />} color="yellow" onClick={(e) => { e.stopPropagation(); handleVerify(record.id, 'pending') }}>Pending</Menu.Item>
-                                        <Menu.Item leftSection={<IconX size={14} />} color="red" onClick={(e) => { e.stopPropagation(); handleVerify(record.id, 'declined') }}>Tolak</Menu.Item>
-                                    </Menu.Dropdown>
-                                </Menu>
+                            {isAdmin && onVerifyRequest && (
+                                <Tooltip label="Verifikasi">
+                                    <ActionIcon variant="subtle" color="violet" onClick={(e) => { e.stopPropagation(); onVerifyRequest(record) }}>
+                                        <IconShieldCheck size={16} />
+                                    </ActionIcon>
+                                </Tooltip>
                             )}
                             {isAdmin && (
                                 <Tooltip label="Hapus">

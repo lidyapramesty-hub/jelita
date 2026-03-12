@@ -324,7 +324,7 @@ export default function AdminPage() {
           {formRole === 'mitra' ? (
             <TextInput
               label="Nomor Telepon"
-              placeholder="812xxxxxxxx"
+              placeholder="xxxxxxxxxxx"
               value={formPhone}
               onChange={(e) => setFormPhone(e.currentTarget.value)}
               required
@@ -349,7 +349,7 @@ export default function AdminPage() {
           {editUser?.role === 'mitra' ? (
             <TextInput
               label="Nomor Telepon"
-              placeholder="812xxxxxxxx"
+              placeholder="xxxxxxxxxxx"
               value={formPhone}
               onChange={(e) => setFormPhone(e.currentTarget.value)}
               leftSection={<Text size="sm" fw={600} c="dimmed" style={{ whiteSpace: 'nowrap', paddingLeft: 4 }}>+62</Text>}
