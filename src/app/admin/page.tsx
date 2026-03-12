@@ -55,6 +55,16 @@ export default function AdminPage() {
   const [updateUser, { isLoading: updating }] = useUpdateAdminUserMutation()
   const [deleteUser, { isLoading: deleting }] = useDeleteAdminUserMutation()
 
+  const users = usersData?.data || []
+  const totalPages = usersData?.last_page || 1
+
+  const pageNumbers = useMemo(() => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1)
+    if (page <= 4) return [1, 2, 3, 4, 5, 6, 7]
+    if (page >= totalPages - 3) return Array.from({ length: 7 }, (_, i) => totalPages - 6 + i)
+    return Array.from({ length: 7 }, (_, i) => page - 3 + i)
+  }, [totalPages, page])
+
   if (user?.role !== 'admin') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -134,16 +144,6 @@ export default function AdminPage() {
     setFormPassword('')
     setFormRole(u.role)
   }
-
-  const users = usersData?.data || []
-  const totalPages = usersData?.last_page || 1
-
-  const pageNumbers = useMemo(() => {
-    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1)
-    if (page <= 4) return [1, 2, 3, 4, 5, 6, 7]
-    if (page >= totalPages - 3) return Array.from({ length: 7 }, (_, i) => totalPages - 6 + i)
-    return Array.from({ length: 7 }, (_, i) => page - 3 + i)
-  }, [totalPages, page])
 
   const handleSort = (col: string) => {
     if (sortCol === col) {

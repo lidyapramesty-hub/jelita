@@ -4,11 +4,23 @@ import { useEffect, useRef, useState } from 'react'
 import { Paper, Text, Group, Select, Badge, LoadingOverlay } from '@mantine/core'
 import { IconMap } from '@tabler/icons-react'
 import 'leaflet/dist/leaflet.css'
-import { Usaha } from '@/types/usaha'
 import { kbliKategori } from '@/data/kbli2025'
 
+interface MapUsaha {
+    id: string
+    nama_usaha: string
+    nama_pemilik: string
+    latitude: number
+    longitude: number
+    kbli_kategori_kode: string | null
+    kbli_kategori_nama: string | null
+    kelas_usaha: string | null
+    cakupan_pasar: string | null
+    kecamatan_nama: string | null
+}
+
 interface DashboardMapProps {
-    usahaList: Usaha[]
+    usahaList: MapUsaha[]
 }
 
 export default function DashboardMap({ usahaList }: DashboardMapProps) {
@@ -26,8 +38,8 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
     }))
 
     const kecamatanOptions = Array.from(new Set(usahaList.map((u) => u.kecamatan_nama).filter(Boolean))).map((k) => ({
-        value: k,
-        label: k,
+        value: k as string,
+        label: k as string,
     }))
 
     const filtered = usahaList.filter((u) => {
@@ -122,7 +134,7 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
             filtered.forEach((u) => {
                 if (!u.latitude || !u.longitude) return
 
-                const color = kelasColors[u.kelas_usaha] || '#C8102E'
+                const color = kelasColors[u.kelas_usaha ?? ''] || '#C8102E'
 
                 const icon = L.divIcon({
                     className: '',
