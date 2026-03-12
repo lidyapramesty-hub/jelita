@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://jelita-bps.vercel.app/api'
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://jelita-backend.vercel.app/api'
 
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null
