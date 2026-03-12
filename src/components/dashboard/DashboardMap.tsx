@@ -10,10 +10,9 @@ interface MapUsaha {
     id: string
     nama_usaha: string
     nama_pemilik: string
-    latitude: number
-    longitude: number
+    latitude: number | null
+    longitude: number | null
     kbli_kategori_kode: string | null
-    kbli_kategori_nama: string | null
     kelas_usaha: string | null
     cakupan_pasar: string | null
     kecamatan_nama: string | null
@@ -37,9 +36,9 @@ export default function DashboardMap({ usahaList }: DashboardMapProps) {
         label: `${k.kode} — ${k.nama}`,
     }))
 
-    const kecamatanOptions = Array.from(new Set(usahaList.map((u) => u.kecamatan_nama).filter(Boolean))).map((k) => ({
-        value: k as string,
-        label: k as string,
+    const kecamatanOptions = Array.from(new Set(usahaList.map((u) => u.kecamatan_nama).filter((k): k is string => !!k))).map((k) => ({
+        value: k,
+        label: k,
     }))
 
     const filtered = usahaList.filter((u) => {
