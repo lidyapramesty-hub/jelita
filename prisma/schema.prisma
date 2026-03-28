@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             BigInt    @id @default(autoincrement())
+  name           String    @db.VarChar(255)
+  username       String?   @unique(map: "users_username_unique") @db.VarChar(255)
+  password       String    @db.VarChar(255)
+  remember_token String?   @db.VarChar(100)
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @updatedAt @db.Timestamp(0)
+  role           String    @default("user") @db.VarChar(255)
+  phone          String?   @unique(map: "users_phone_unique") @db.VarChar(255)
+
+  created_usaha Usaha[] @relation("UsahaCreator")
+  updated_usaha Usaha[] @relation("UsahaUpdater")
+  tokens        PersonalAccessToken[]
+
+  @@map("users")
+}
+
+model Usaha {
+  id                       String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nama_pemilik             String    @db.VarChar(255)
+  nama_usaha               String    @db.VarChar(255)
+  deskripsi_kegiatan       String?
+  kbli_kategori_kode       String?   @db.VarChar(255)
+  kbli_kategori_nama       String?   @db.VarChar(255)
+  kbli_golongan_pokok_kode String?   @db.VarChar(255)
+  kbli_golongan_pokok_nama String?   @db.VarChar(255)
+  kbli_golongan_kode       String?   @db.VarChar(255)
+  kbli_golongan_nama       String?   @db.VarChar(255)
+  kbli_subgolongan_kode    String?   @db.VarChar(255)
+  kbli_subgolongan_nama    String?   @db.VarChar(255)
+  kbli_kelompok_kode       String?   @db.VarChar(255)
+  kbli_kelompok_nama       String?   @db.VarChar(255)
+  provinsi_kode            String?   @db.VarChar(255)
+  provinsi_nama            String?   @db.VarChar(255)
+  kabkot_kode              String?   @db.VarChar(255)
+  kabkot_nama              String?   @db.VarChar(255)
+  kecamatan_kode           String?   @db.VarChar(255)
+  kecamatan_nama           String?   @db.VarChar(255)
+  desa_kode                String?   @db.VarChar(255)
+  desa_nama                String?   @db.VarChar(255)
+  sls_kode                 String?   @db.VarChar(255)
+  sls_nama                 String?   @db.VarChar(255)
+  sub_sls                  String?   @db.VarChar(255)
+  latitude                 Float?
+  longitude                Float?
+  platform_digital         Json      @default("[]")
+  kelas_usaha              String?   @db.VarChar(255)
+  cakupan_pasar            String?   @db.VarChar(255)
+  created_by               BigInt?
+  updated_by               BigInt?
+  is_active                Boolean   @default(true)
+  created_at               DateTime? @db.Timestamp(0)
+  updated_at               DateTime? @updatedAt @db.Timestamp(0)
+  status                   String    @default("pending") @db.VarChar(255)
+
+  creator User? @relation("UsahaCreator", fields: [created_by], references: [id], onDelete: Cascade)
+  updater User? @relation("UsahaUpdater", fields: [updated_by], references: [id], onDelete: Cascade)
+
+  @@index([created_by], map: "usaha_created_by_index")
+  @@index([kabkot_kode], map: "usaha_kabkot_kode_index")
+  @@index([kbli_kategori_kode], map: "usaha_kbli_kategori_kode_index")
+  @@index([kecamatan_kode], map: "usaha_kecamatan_kode_index")
+  @@index([kelas_usaha], map: "usaha_kelas_usaha_index")
+  @@index([status], map: "usaha_status_index")
+  @@map("usaha")
+}
+
+model PersonalAccessToken {
+  id             BigInt    @id @default(autoincrement())
+  tokenable_type String    @db.VarChar(255)
+  tokenable_id   BigInt
+  name           String
+  token          String    @unique(map: "personal_access_tokens_token_unique") @db.VarChar(64)
+  abilities      String?
+  last_used_at   DateTime? @db.Timestamp(0)
+  expires_at     DateTime? @db.Timestamp(0)
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @updatedAt @db.Timestamp(0)
+
+  user User @relation(fields: [tokenable_id], references: [id], onDelete: Cascade)
+
+  @@map("personal_access_tokens")
+}
+
+// Laravel infrastructure tables - kept for compatibility but not used by Next.js
+model migrations {
+  id        Int    @id @default(autoincrement())
+  migration String @db.VarChar(255)
+  batch     Int
+}
+
+model cache {
+  key        String @id @db.VarChar(255)
+  value      String
+  expiration Int
+
+  @@index([expiration], map: "cache_expiration_index")
+}
+
+model cache_locks {
+  key        String @id @db.VarChar(255)
+  owner      String @db.VarChar(255)
+  expiration Int
+
+  @@index([expiration], map: "cache_locks_expiration_index")
+}
+
+model sessions {
+  id            String  @id @db.VarChar(255)
+  user_id       BigInt?
+  ip_address    String? @db.VarChar(45)
+  user_agent    String?
+  payload       String
+  last_activity Int
+
+  @@index([last_activity], map: "sessions_last_activity_index")
+  @@index([user_id], map: "sessions_user_id_index")
+}
+
+model password_reset_tokens {
+  email      String    @id @db.VarChar(255)
+  token      String    @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+}
+
+model failed_jobs {
+  id         BigInt   @id @default(autoincrement())
+  uuid       String   @unique(map: "failed_jobs_uuid_unique") @db.VarChar(255)
+  connection String
+  queue      String
+  payload    String
+  exception  String
+  failed_at  DateTime @default(now()) @db.Timestamp(0)
+}
+
+model jobs {
+  id           BigInt @id @default(autoincrement())
+  queue        String @db.VarChar(255)
+  payload      String
+  attempts     Int    @db.SmallInt
+  reserved_at  Int?
+  available_at Int
+  created_at   Int
+
+  @@index([queue], map: "jobs_queue_index")
+}
+
+model job_batches {
+  id             String  @id @db.VarChar(255)
+  name           String  @db.VarChar(255)
+  total_jobs     Int
+  pending_jobs   Int
+  failed_jobs    Int
+  failed_job_ids String
+  options        String?
+  cancelled_at   Int?
+  created_at     Int
+  finished_at    Int?
+}
